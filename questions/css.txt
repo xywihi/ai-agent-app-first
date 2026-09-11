@@ -1,0 +1,4 @@
+isolation:isolate 新建一个独立堆叠上下文，配合z-index把内部z-index关在盒子里
+
+inset-2
+indent-8 首行缩进

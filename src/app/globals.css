@@ -18,9 +18,101 @@
     --foreground: #ededed;
   }
 }
-
+*{
+  -webkit-user-select: none;
+    user-select: none;
+}
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+[data-radix-popover-content-wrapper] {
+  /* background: var(--background);
+  color: var(--foreground); */
+  z-index: 999!important;
+}
+@layer utilities {
+  @keyframes border-flow-lr {
+    0% {
+      transform:translateX(-100%)
+    }
+    100% {
+      transform:translateX(100%)
+    }
+  }
+  .animate-border-lr {
+    animation:border-flow-lr 2.5s linear infinite;
+  }
+
+  @keyframes clock-shake {
+    0% {
+      transform:rotate(0deg);
+      border-color: #46edd5;
+      background-color: rgb(255, 171, 171);
+      border-width: 1px;
+      box-shadow: 0 0 0px rgb(255, 171, 171);
+    }
+    25% {
+      transform:rotate(10deg);
+      border-color: rgb(255, 102, 102);
+      background-color: rgb(255, 102, 102);
+      border-width: 2px;
+      /* box-shadow: 0 0 20px rgb(255, 102, 102); */
+    }
+    50% {
+      transform:rotate(0deg);
+      border-color: red;
+      background-color: red;
+      border-width: 3px;
+      box-shadow: 0 0 30px red;
+    }
+    75% {
+      transform:rotate(-10deg);
+      border-color: rgb(255, 102, 102);
+      background-color: rgb(255, 102, 102);
+      border-width: 2px;
+      /* box-shadow: 0 0 20px rgb(255, 102, 102); */
+    }
+    100% {
+      transform:rotate(0deg);
+      border-color: rgb(255, 171, 171);
+      background-color: rgb(255, 171, 171);
+      border-width: 1px;
+      box-shadow: 0 0 0px rgb(255, 171, 171);
+    }
+    
+  }
+  .animate-clock-shake {
+    animation:clock-shake .2s linear infinite;
+  }
+
+  @keyframes bg-change {
+    0% {
+      border-color:#46edd5;
+      /* 渐变背景 */
+      background-image:linear-gradient(to right,transparent,white);
+      background-color: #46edd4cd;
+    }
+    50% {
+      border-color:rgba(246, 225, 34, 0.807);
+      background-image:linear-gradient(to right,transparent,white);
+      background-color: rgb(246, 225, 34);
+    }
+    100% {
+      border-color:#46edd5;
+      background-image:linear-gradient(to right,transparent,white);
+      background-color: #46edd4cd;
+    }
+  }
+  .animate-bg-change {
+    animation:bg-change .2s linear infinite;
+  }
+
+  .pause-animation {
+    animation-play-state:paused;
+  }
+  .run-animation {
+    animation-play-state:running;
+  }
 }

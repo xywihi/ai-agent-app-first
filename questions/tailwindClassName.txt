@@ -1,0 +1,3 @@
+aspect-video:16:9的宽高比例
+aspect-square:1:1的宽高比例
+aspect-[4/3]:4:3宽高比例

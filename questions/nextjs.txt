@@ -1,0 +1,1 @@
+使用<Icon name="computer" />，需要使用<Suspense>包裹，不然页面会闪烁。

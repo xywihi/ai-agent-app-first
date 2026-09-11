@@ -1,0 +1,142 @@
+ESLint 规则 react-hooks/refs：禁止在渲染阶段读取 ref.current。
+
+
+Supabase上传本地音频：解析ID3元信息（歌名、歌手、专辑）
+关键原理：
+1.Supabase Storage本身不会解析音频ID3标签，它只存二进制文件，拿不到歌名/歌手。
+2.✅在浏览器端，选择本地File对象的时候，就用music‑metadata‑browser解析ID3标签（此时文件还在用户本地，还没上传）。
+3.解析完得到 title(歌名) / artist(歌手) / album / lyrics，把元数据存入Supabase数据库表，音频文件存Storage。
+4.之后播放器读取：从数据库拿歌名歌手，Storage拿音频url播放。
+5.上传完成后，再去请求supabase存储的音频url，浏览器因为跨域无法读取二进制解析ID3，不能事后解析。
+
+1. 安装依赖
+pnpm add music-metadata-browser
+
+2. Supabase数据库表设计（tracks）
+在Supabase SQL编辑器执行建表语句
+create table public.tracks (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid references auth.users(id) not null,
+    storage_path text not null, -- supabase storage的文件路径
+    title text, -- 歌名（ID3解析）
+    artist text, --歌手
+    album text,
+    duration_seconds numeric,
+    lyrics text, --内嵌歌词
+    file_size bigint,
+    created_at timestamp with time zone default now()
+  );
+  -- RLS策略，用户只能读写自己上传的歌曲
+  alter table public.tracks enable row level security;
+  create policy "user can manage own tracks"
+  on public.tracks
+  to authenticated
+  using (auth.uid() = user_id);
+
+3. 前端完整流程：选择文件 → 解析ID3 → 上传Storage → 写入DB
+import { parseBlob } from "music-metadata-browser";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+// 上传处理函数
+async function handleAudioUpload(file: File) {
+  // 1️⃣ 【重点】解析本地File对象的ID3元数据（此时文件还在浏览器本地）
+  const meta = await parseBlob(file);
+  const songMeta = {
+    title: meta.common.title || file.name, // 如果没有标签就用文件名
+    artist: meta.common.artist || "未知歌手",
+    album: meta.common.album || "",
+    lyrics: meta.common.lyrics || "",
+    durationSeconds: meta.format.duration,
+    fileSize: file.size,
+  };
+
+  // 2️⃣ 生成storage路径，用uuid避免重名
+  const uuid = crypto.randomUUID();
+  const storagePath = `audio/${uuid}.${file.name.split(".").pop()}`;
+
+  // 3️⃣ 上传文件到Supabase Storage
+  const { data: uploadData, error: uploadErr } = await supabase.storage
+    .from("audio-bucket") //你的存储桶名称
+    .upload(storagePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+  if (uploadErr) throw uploadErr;
+
+  // 4️⃣ 获取公开访问url
+  const { data: urlData } = supabase.storage
+    .from("audio-bucket")
+    .getPublicUrl(storagePath);
+
+  // 5️⃣ 将解析出来的元信息 + storage路径写入数据库tracks表
+  const { data: dbData, error: dbErr } = await supabase
+    .from("tracks")
+    .insert({
+      user_id: (await supabase.auth.getUser()).data.user?.id,
+      storage_path: storagePath,
+      title: songMeta.title,
+      artist: songMeta.artist,
+      album: songMeta.album,
+      duration_seconds: songMeta.durationSeconds,
+      lyrics: songMeta.lyrics,
+      file_size: songMeta.fileSize,
+    })
+    .select()
+    .single();
+
+  return {
+    ...dbData,
+    publicUrl: urlData.publicUrl,
+  };
+}
+
+组件调用示例
+<input
+  type="file"
+  accept="audio/*"
+  onChange={async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const res = await handleAudioUpload(file);
+    console.log("上传完成，歌曲信息：", res);
+    // 得到：{title,artist,publicUrl,...} 直接给你的播放器使用
+  }}
+/>
+
+4. 播放器读取歌曲列表
+从tracks表查询，直接拿到歌名、歌手、音频url，不需要再解析音频文件：
+async function getMySongs() {
+    const { data } = await supabase.from("tracks").select("*").order("created_at", { ascending: false });
+    return data?.map(item=>{
+      const {data:urlRes} = supabase.storage.from("audio-bucket").getPublicUrl(item.storage_path);
+      return {
+        ...item,
+        url: urlRes.publicUrl
+      }
+    }) || []
+  }
+
+5. 两个重要坑点
+
+坑1：上传之后，不能再去读取supabase的音频url解析ID3
+浏览器跨域限制， fetch 获取supabase存储的mp3二进制会被拦截，只能在选择本地File的那一刻解析，上传完就解析不了。
+坑2：有些音频文件没有ID3标签
+-  meta.common.title 会是 undefined ，代码做兜底，使用文件名作为歌名。
+坑3：内嵌歌词 meta.common.lyrics 
+很多mp3没有内嵌歌词，一般需要单独上传 .lrc 文件，把lrc文本存入数据库。
+可选方案：Supabase Edge Function（服务端解析）
+如果你不想前端解析，也可以写Edge Function，上传完成后服务端读取音频二进制解析ID3。
+缺点：需要额外写edge函数，大音频文件会消耗服务端资源；前端解析方案简单优先。
+
+结合你现有播放器
+你播放器拿到 {url,title,artist} 之后：
+// 播放
+switchSong(song.url);
+// UI展示
+<div>歌名：{song.title}</div>
+<div>歌手：{song.artist}</div>
