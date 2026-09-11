@@ -93,11 +93,13 @@ export const AsideNav = () => {
         if (item.id === seconde_id) {
           return item;
         }
+        if (item.parent_id === root?.id) {
+          return item;
+        }
       }
     );
-
     return _secondes;
-  }, [root_category, seconde_id, currentRootCategory]);
+  }, [root_category, seconde_id, currentRootCategory, root]);
 
   // useEffect(() => {
   //   if (!(root_category as CategoryTree).seconde) return;

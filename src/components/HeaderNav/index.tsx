@@ -28,7 +28,7 @@ const paths: {
   },
   {
     name: "AI-Chat",
-    path: "/ai-chat",
+    path: "/chat",
     icon: "bot",
   },
   {
