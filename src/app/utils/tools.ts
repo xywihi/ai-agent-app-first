@@ -22,3 +22,28 @@ export const debounce = <T extends <T>(...args: T[]) => void>(
     }, delay);
   };
 };
+
+// 处理日期格式
+export function getDateTime(currentTime: number | string): string {
+  const date = new Date(currentTime);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+  return `${year}-${month}-${day} ${hour < 10 ? "0" + hour : hour}:${
+    minute < 10 ? "0" + minute : minute
+  }`;
+}
+
+//处理时间格式
+export function getTime(currentTime: number | string): string {
+  const date = new Date(currentTime);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+  return `${month}月${day}日 ${hour < 10 ? "0" + hour : hour}:${
+    minute < 10 ? "0" + minute : minute
+  }`;
+}

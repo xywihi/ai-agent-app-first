@@ -1,6 +1,7 @@
 "use client";
 import { createPortal } from "react-dom";
 import { JSX, useEffect, useRef, useState } from "react";
+import { useScrollLock } from "@/hooks/use-scroll-lock";
 export const GlobalModel = ({
   children,
   handleShowModel,
@@ -10,6 +11,7 @@ export const GlobalModel = ({
 }) => {
   const containerRef = useRef<HTMLElement | null>(null);
   const [portalDom, setPortalDom] = useState<HTMLElement | null>(null);
+  useScrollLock(true);
   useEffect(() => {
     const div = document.getElementById("global-loading");
     containerRef.current = div;

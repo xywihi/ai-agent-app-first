@@ -29,13 +29,16 @@ import { Input } from "../ui/input";
 import {
   addNote,
   getNoteSecondCategories,
+  updateNote,
 } from "@/app/utils/api/font-notes/requery";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm, useWatch } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { Spinner } from "../ui/spinner";
+import { id } from "zod/v4/locales";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -74,6 +77,7 @@ export const EditeNoteForm = ({
   note_data?: Note;
   setEditable: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -113,7 +117,8 @@ export const EditeNoteForm = ({
     name: ["root", "seconde"],
   });
   // 提交编辑笔记表单
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormData, noteId: string | null) => {
+    debugger;
     console.log("data", data);
     const newNote = {
       title: data.title,
@@ -126,8 +131,27 @@ export const EditeNoteForm = ({
     };
     console.log("newNote", newNote);
     try {
-      // 创建新的笔记
-      await addNote(newNote);
+      if (!noteId) {
+        // 创建新的笔记
+        const res = await addNote({ ...newNote });
+        if (res?.status !== 200) {
+          toast.error("创建失败", {
+            position: "top-center",
+            style: { backgroundColor: "white" },
+          });
+          return;
+        }
+      } else {
+        //更新笔记
+        const res = await updateNote({ ...newNote, id: noteId });
+        if (res?.status !== 200) {
+          toast.error("更新失败", {
+            position: "top-center",
+            style: { backgroundColor: "white" },
+          });
+          return;
+        }
+      }
 
       // 重置表单
       reset();
@@ -136,13 +160,24 @@ export const EditeNoteForm = ({
       // 滚动到顶部
       window.scrollTo(0, 0);
       setEditable(false);
-      toast.success("创建成功", { position: "top-center" });
+      // 更新(刷新)笔记列表请求
+      queryClient.refetchQueries({
+        queryKey: ["fontendNoteRootCategories"],
+      });
+      toast.success("创建成功", {
+        position: "top-center",
+        style: { backgroundColor: "white" },
+      });
     } catch (error) {
       console.log("error", error);
     }
   };
+  console.log("root_category_______", root_category);
   return (
-    <form action="" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      action=""
+      onSubmit={handleSubmit((data) => onSubmit(data, note_data?.id ?? null))}
+    >
       <FieldGroup>
         <FieldSet>
           <FieldLegend className="border-gray-300 text-2xl font-bold">
@@ -168,12 +203,26 @@ export const EditeNoteForm = ({
             <div className="flex gap-4">
               <Field>
                 <FieldLabel htmlFor="note-framework" className="text-xl">
-                  一级类型
+                  一级类型{(root_category as CategoryTree)?.root?.length}
                 </FieldLabel>
                 <Combobox
                   items={root_category && (root_category as CategoryTree)?.root}
                 >
-                  {root_second[0] && (
+                  {/* {!note_data && (
+                      <ComboboxInput
+                        placeholder="选在一级类型"
+                        required
+                        // id="note-framework"
+                      />
+                    )} */}
+
+                  {!root_second[0] ? (
+                    <ComboboxInput
+                      placeholder="选在一级类型"
+                      required
+                      // id="note-framework"
+                    />
+                  ) : (
                     <ComboboxInput
                       placeholder="选在一级类型"
                       required
@@ -248,19 +297,27 @@ export const EditeNoteForm = ({
           </FieldGroup>
         </FieldSet>
       </FieldGroup>
-      <CardFooter className="border-gray-300 mt-4">
-        <Button
-          className="cursor-pointer text-gray-400"
-          onClick={() => {
-            reset();
-            setEditable(false);
-          }}
-        >
-          取消
-        </Button>
-        <Button className="cursor-pointer hover:bg-teal-500" type="submit">
-          提交
-        </Button>
+      <CardFooter className="border-gray-300 mt-4 justify-between items-center gap-2">
+        <div>
+          <Button
+            className="cursor-pointer text-gray-400"
+            onClick={() => {
+              reset();
+              setEditable(false);
+            }}
+          >
+            取消
+          </Button>
+          <Button className="cursor-pointer hover:bg-teal-500" type="submit">
+            提交
+          </Button>
+        </div>
+        {isSubmitting && (
+          <div className="flex ">
+            <Spinner className="size-6" />
+            笔记正在上传中...
+          </div>
+        )}
       </CardFooter>
     </form>
   );

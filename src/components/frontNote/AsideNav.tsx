@@ -242,7 +242,7 @@ export const AsideNav = () => {
               更新时间：2026-09-01
             </CardFooter>
             {editable && (
-              <GlobalModel handleShowModel={() => setEditable(false)}>
+              <GlobalModel>
                 <Card className="bg-white w-full self-center">
                   <CardContent>
                     <EditeNoteForm

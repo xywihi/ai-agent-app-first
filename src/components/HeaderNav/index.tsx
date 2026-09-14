@@ -33,7 +33,7 @@ const paths: {
   },
   {
     name: "AI-Agent",
-    path: "/aI-agent",
+    path: "/ai-agent",
     icon: "computer",
   },
 ];

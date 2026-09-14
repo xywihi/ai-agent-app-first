@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/server/client";
-import { createClient as createSupabase } from "@supabase/supabase-js";
 import { CategoryItem, CategoryTree, Note, Root } from "./typs";
 import { reportErrorLog } from "@/lib/reportError";
+
+// 获取公共值
+const client = createClient();
+
 // 记录笔记访问
 export async function recordNoteVisit(noteId: string) {
-  const client = createClient();
   const {
     data: { user },
   } = await client.auth.getUser();
@@ -42,7 +44,6 @@ export async function recordNoteVisit(noteId: string) {
 export async function getNoteSecondCategories(
   currentRootId: string | null = null
 ) {
-  const client = createClient();
   if (!currentRootId) {
     return [];
   }
@@ -55,7 +56,6 @@ export async function getNoteSecondCategories(
   return data;
 }
 export async function getCategoryTree() {
-  const client = createClient();
   const { data, error } = await client
     .from("note_categories")
     .select("*")
@@ -113,7 +113,6 @@ export async function getCategoryTree() {
 }
 // 获取笔记访问记录
 export async function getNoteVisits(noteId: string) {
-  const client = createClient();
   const { data } = await client
     .from("frontend_note_visits")
     .select("*")
@@ -123,7 +122,6 @@ export async function getNoteVisits(noteId: string) {
 
 // 新增笔记
 export async function addNote(note: Note) {
-  const client = createClient();
   try {
     const {
       data: { user },
@@ -132,10 +130,13 @@ export async function addNote(note: Note) {
     if (error) {
       throw error;
     }
-    const { data } = await client
+    const { data, error: insertError } = await client
       .from("frontend_notes")
       .insert({ ...note, owner_id: user?.id });
-    return data;
+    if (insertError) {
+      throw insertError;
+    }
+    return new Response(JSON.stringify({ error: null, data }), { status: 200 });
   } catch (error) {
     console.log("chat api error", error);
     await reportErrorLog({
@@ -147,10 +148,37 @@ export async function addNote(note: Note) {
     });
   }
 }
-
+//更新笔记
+export async function updateNote(note: Note) {
+  try {
+    const {
+      data: { user },
+      error,
+    } = await client.auth.getUser();
+    if (error) {
+      throw error;
+    }
+    const { data, error: updateError } = await client
+      .from("frontend_notes")
+      .update({ ...note, owner_id: user?.id })
+      .eq("id", note.id);
+    if (updateError) {
+      throw updateError;
+    }
+    return new Response(JSON.stringify({ error: null, data }), { status: 200 });
+  } catch (error) {
+    console.log("chat api error", error);
+    await reportErrorLog({
+      errorType: "api_update_note_error",
+      error,
+    });
+    return new Response(JSON.stringify({ error: "服务异常", data: null }), {
+      status: 500,
+    });
+  }
+}
 // 查询笔记
 export async function getNote(noteId: string) {
-  const client = createClient();
   const { data } = await client
     .from("frontend_notes")
     .select("*")
@@ -161,7 +189,6 @@ export async function getNote(noteId: string) {
 
 // 新增类别
 export async function addCategory(category: CategoryItem) {
-  const client = createClient();
   try {
     const { data } = await client.from("note_categories").insert(category);
     return data;

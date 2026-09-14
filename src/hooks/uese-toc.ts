@@ -7,7 +7,7 @@ export type TocItem = {
   level: number;
 };
 
-export function useToc(containerSelector: string) {
+export function useToc(containerSelector: string, note_id: string) {
   const [list, setList] = useState<TocItem[]>([]);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export function useToc(containerSelector: string) {
     }, 1220);
 
     return () => clearTimeout(timer);
-  }, [containerSelector]);
+  }, [containerSelector, note_id]);
 
   return list;
 }
