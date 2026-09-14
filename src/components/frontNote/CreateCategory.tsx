@@ -113,7 +113,10 @@ export const CreateCategory = ({
       queryClient.invalidateQueries({
         queryKey: ["fontendNoteRootCategories"],
       });
-      toast.success("创建成功", { position: "top-center" });
+      toast.success("创建成功", {
+        position: "top-center",
+        style: { backgroundColor: "white" },
+      });
       setCategory({
         name: "",
         icon_name: "computer",

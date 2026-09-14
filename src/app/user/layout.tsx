@@ -75,8 +75,6 @@ export default function UserLayout({
       return data.data;
     },
   });
-  console.log("user", user);
-  console.log("user_profiles", user_profiles);
   return (
     <div className="flex gap-4 p-6">
       <aside className="shrink-0 p-6 flex flex-col justify-between bg-linear-to-b from-gray-200 to-white  bg-white rounded-2xl min-w-90 h-[calc(100vh-13rem)] shadow-2xl">

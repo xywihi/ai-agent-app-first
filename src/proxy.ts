@@ -35,18 +35,17 @@ export async function proxy(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const isProtected = request.nextUrl.pathname.startsWith("/chat");
+  // const isProtected = request.nextUrl.pathname.startsWith("/chat");
   console.log("全局路由守卫");
-  if (isProtected && !user) {
+  if (!user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  return response;
+  // return response;
 }
 
 export const config = {
   matcher: [
     "/",
-
     "/frontend/:path*",
     "/design/:path*",
     "/user/:path*",

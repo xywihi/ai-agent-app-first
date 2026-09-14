@@ -12,7 +12,6 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { type User } from "@/app/api/admin/list-users/type";
-import { get } from "http";
 export default function User() {
   const router = useRouter();
   const { data, isPending } = useQuery({
@@ -45,7 +44,6 @@ export default function User() {
       return data;
     },
   });
-  console.log("users---------", users);
   return (
     <div className="h-full grid grid-cols-4 gap-4">
       <div className="bg-white/20 backdrop-blur-md p-4 shadow-xl rounded-2xl">

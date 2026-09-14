@@ -19,7 +19,7 @@ export const UserCenter = () => {
   return (
     user?.id && (
       <div
-        className="w-12 p-1.5 border border-gray-200 rounded-lg group hover:w-20 hover:text-teal-400 cursor-pointer transition-all"
+        className="w-fit p-1.5 border border-gray-200 rounded-lg group hover:text-teal-400 cursor-pointer"
         onClick={() => router.push("/user")}
       >
         <User size={18} />

@@ -36,17 +36,23 @@ export default function LoginPage() {
     });
     if (error) {
       if (error.code === "invalid_credentials") {
-        toast.error("用户名或密码错误", { position: "top-center" });
+        toast.error("用户名或密码错误", {
+          position: "top-center",
+          style: { backgroundColor: "white" },
+        });
       }
     } else {
-      toast.success("登录成功", { position: "top-center" });
+      toast.success("登录成功", {
+        position: "top-center",
+        style: { backgroundColor: "white" },
+      });
       localStorage.setItem("user", JSON.stringify(user));
-      router.replace("/");
+      router.replace("/user");
       router.refresh();
     }
   };
   return (
-    <div className="flex flex-col h-full flex-1 justify-center items-center">
+    <div className="flex flex-col h-[calc(100vh-4.5rem)] flex-1 justify-center items-center">
       <div className="bg-gray-100 p-8 rounded-xl shadow-gray-100 shadow-lg">
         <form
           className="flex flex-col items-center space-y-4 w-lg"
