@@ -15,7 +15,7 @@ import { type User } from "@/app/api/admin/list-users/type";
 export default function User() {
   const router = useRouter();
   const { data, isPending } = useQuery({
-    queryKey: ["frontend"],
+    queryKey: ["frontend-new-notes"],
     queryFn: async () => {
       const _data = await fetch(`/api/user/frontend/new-notes`);
       const data = await _data.json();
@@ -44,6 +44,7 @@ export default function User() {
       return data;
     },
   });
+  console.log("users", data, data?.data);
   return (
     <div className="h-full grid grid-cols-4 gap-4">
       <div className="bg-white/20 backdrop-blur-md p-4 shadow-xl rounded-2xl">
@@ -54,6 +55,11 @@ export default function User() {
           <h1 className="text-2xl font-bold">前端笔记</h1>
           <hr className="my-4 border-gray-200" />
           <div className="overflow-y-scroll pb-4 h-[calc(100vh-24rem)]">
+            {!data && !isPending && (
+              <p className="text-gray-400 text-center h-full flex flex-col justify-center">
+                暂无笔记
+              </p>
+            )}
             {isPending && (
               <p className="text-gray-400 text-center h-full flex flex-col justify-center">
                 加载中...

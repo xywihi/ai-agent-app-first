@@ -28,18 +28,21 @@ export default function User() {
 
   const data_update = useMemo(() => {
     const _data: React.JSX.Element[] = [];
+    if (!data) return null;
     for (const key in data) {
       const items = data[key];
-      _data.push(
-        <div key={key}>
-          <p className="font-bold text-4xl text-gray-400 mb-4">{key}</p>
-          <div className="grid grid-cols-4 gap-4">
-            {items.map((_item: Note) => (
-              <NoteItem key={_item.id} note={_item} />
-            ))}
+      if (typeof items === "object")
+        _data.push(
+          <div key={key}>
+            <p className="font-bold text-4xl text-gray-400 mb-4">{key}</p>
+            <div className="grid grid-cols-4 gap-4">
+              {items &&
+                items?.map((_item: Note) => (
+                  <NoteItem key={_item.id} note={_item} />
+                ))}
+            </div>
           </div>
-        </div>
-      );
+        );
     }
     return _data;
   }, [data]);
