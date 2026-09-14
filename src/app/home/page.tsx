@@ -176,14 +176,6 @@ export default function Chat() {
           className="w-1/2 2xl:max-w-1/4 min-w-md"
           cardClassName="pt-0 max-h-110"
         >
-          {/* <div className="absolute inset-0 z-30 aspect-video bg-black/35" /> */}
-          {/* <Image
-      width={300}
-      height={300}
-      src="https://images.dog.ceo/breeds/pembroke/n02113023_3913.jpg"
-      alt="Event cover"
-      className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40"
-    /> */}
           <div className="relative max-h-[20vh] min-h-[210px] flex">
             <Carousel
               className="w-full flex-1 overflow-auto flex"
@@ -201,7 +193,7 @@ export default function Chat() {
                       width={800}
                       height={600}
                       loading="eager"
-                      fetchPriority="high"
+                      fetchPriority="auto"
                       src={item}
                       alt="Event cover"
                       className="relative z-20 aspect-video w-full object-cover object-top"
@@ -327,7 +319,7 @@ export default function Chat() {
                 className="text-teal-400 underline decoration-1 decoration-teal-400 italic"
                 href="https://www.github.com.cn/u/ZNjEyODMzODA="
               >
-                https://www.github.com.cn/u/ZNjEyODMzODA=
+                https://www.github.com/xywhi
               </a>
             </p>
           </CardFooter>

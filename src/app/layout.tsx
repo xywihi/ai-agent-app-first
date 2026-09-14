@@ -6,13 +6,23 @@ import LogoutButton from "@/components/LogoutButton";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import QueryProviders from "@/components/QueryProviders";
 import PerformanceClock from "@/components/PerformanceClock";
-import { MusicPlayer } from "@/components/MusicPlayer";
+// import { MusicPlayer } from "@/components/MusicPlayer";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HeaderNav } from "@/components/HeaderNav";
 import { SearchAll } from "@/components/SearchAll";
-import { User } from "lucide-react";
 import { UserCenter } from "@/components/UserCenter";
+import dynamic from "next/dynamic";
 
+// 需懒加载的组件
+const MusicPlayer = dynamic(
+  () =>
+    import("@/components/MusicPlayer").then((mod) => ({
+      default: mod.MusicPlayer,
+    })),
+  {
+    ssr: false,
+  }
+);
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
