@@ -16,7 +16,7 @@ import { BookSearch, Calendar, Edit, Eye, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { memo, useMemo, useState } from "react";
 
-export default function User() {
+export default function Frontend() {
   const { data, isPending } = useQuery({
     queryKey: ["frontend"],
     queryFn: async () => {
@@ -100,7 +100,10 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
       className="p-4 bg-white rounded-2xl shadow-xl transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
       onClick={handleToSee}
     >
-      <p className="font-bold text-lg mb-4 truncate">{note.title}</p>
+      <p className="font-bold text-lg mb-2 truncate">{note.title}</p>
+      <span className="bg-gray-100 text-gray-400 rounded-xl px-2 py-1 inline-block text-xs mb-4 truncate">
+        {note.note_categories?.name}
+      </span>
       <div className="flex justify-between">
         <p className="text-sm text-gray-400 flex items-center gap-2">
           <Calendar size={14} />

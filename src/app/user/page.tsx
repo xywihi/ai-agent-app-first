@@ -48,7 +48,8 @@ export default function User() {
   return (
     <div className="h-full grid grid-cols-4 gap-4">
       <div className="bg-white/20 backdrop-blur-md p-4 shadow-xl rounded-2xl">
-        <h1>UI 作品集</h1>
+        <h1 className="text-2xl font-bold">UI 作品集</h1>
+        <hr className="my-4 border-gray-200" />
       </div>
       <div className="bg-white/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
         <div>

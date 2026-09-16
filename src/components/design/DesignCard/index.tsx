@@ -17,37 +17,28 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Maximize, Share2, Star, ThumbsUp, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import {
+  startTransition,
+  Suspense,
+  use,
+  useCallback,
+  useEffect,
+  useOptimistic,
+  useRef,
+  useState,
+} from "react";
+import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
+import { useQueryClient } from "@tanstack/react-query";
+import { getTime } from "@/app/utils/tools";
 
 interface props {
-  data: {
-    id: number;
-    title: string;
-    description: string;
-    imageUrl: string;
-    badges: string[];
-    updatedAt: string;
-    actions: {
-      like: {
-        count: number;
-        active: boolean;
-      };
-      star: {
-        count: number;
-        active: boolean;
-      };
-      share: {
-        count: number;
-        active: boolean;
-      };
-    };
-  };
+  data: ProcessedPortfolioWork;
   height?: number;
   className?: string;
   getCardHeight?: (height: number) => void;
-  cardHeightsRef?: React.RefObject<Map<number, number>>;
+  cardHeightsRef?: React.RefObject<Map<string, number>>;
   calcLayout?: () => void;
 }
 export const DesignCard = ({
@@ -60,6 +51,8 @@ export const DesignCard = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const [showImage, setShowImage] = useState<boolean>(false);
   const router = useRouter();
+  const { type } = useParams();
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (!cardRef.current) return;
     // 先渲染所有卡片（但透明不可见），测量高度后重新计算布局
@@ -96,7 +89,91 @@ export const DesignCard = ({
     return () => {
       cardRef.current = null;
     };
-  }, [cardHeightsRef, card, cardRef]);
+  }, [cardHeightsRef, card, cardRef, calcLayout]);
+  const handleToLike = useCallback(
+    async (id?: string): Promise<void> => {
+      const res = await fetch(`/api/user/design/portfolio/like`, {
+        method: "POST",
+        body: JSON.stringify({
+          workId: card.id,
+          id,
+        }),
+      });
+      console.log("res", res);
+      if (res.ok) {
+        queryClient.invalidateQueries({
+          queryKey: ["portfolio_works", type],
+        });
+        queryClient.setQueryData(
+          ["portfolio_works", type],
+          (oldData: ProcessedPortfolioWork[]) => {
+            if (!oldData) return oldData;
+            return oldData.map((item: ProcessedPortfolioWork) => {
+              if (item.id === card.id) {
+                return {
+                  ...item,
+                  actions: {
+                    ...item.actions,
+                    like: {
+                      ...item.actions.like,
+                      active: !item.actions.like.active,
+                      count: id
+                        ? item.actions.like.count - 1
+                        : item.actions.like.count + 1,
+                    },
+                  },
+                };
+              }
+              return item;
+            });
+          }
+        );
+      }
+    },
+    [card.id, queryClient, type]
+  );
+  const handleToCollect = useCallback(
+    async (id?: string) => {
+      const res = await fetch(`/api/user/design/portfolio/collect`, {
+        method: "POST",
+        body: JSON.stringify({
+          workId: card.id,
+          id,
+        }),
+      });
+      console.log("res", res);
+      if (res.ok) {
+        queryClient.invalidateQueries({
+          queryKey: ["portfolio_works", type],
+        });
+        queryClient.setQueryData(
+          ["portfolio_works", type],
+          (oldData: ProcessedPortfolioWork[]) => {
+            if (!oldData) return oldData;
+            return oldData.map((item: ProcessedPortfolioWork) => {
+              if (item.id === card.id) {
+                return {
+                  ...item,
+                  actions: {
+                    ...item.actions,
+                    star: {
+                      ...item.actions.star,
+                      active: !item.actions.star.active,
+                      count: id
+                        ? item.actions.star.count - 1
+                        : item.actions.star.count + 1,
+                    },
+                  },
+                };
+              }
+              return item;
+            });
+          }
+        );
+      }
+    },
+    [card.id, queryClient, type]
+  );
   return (
     <Card
       className={cn("pt-0 bg-white shadow-md", className)}
@@ -106,9 +183,9 @@ export const DesignCard = ({
       <Image
         width={200}
         height={300}
-        src={card.imageUrl}
+        src={card.portfolio_work_images[0].image_url}
         alt="Event cover"
-        className="relative z-20 w-full h-auto object-cover select-none [-webkit-user-drag:none]"
+        className="relative z-20 w-full h-auto max-h-140 object-cover object-top select-none [-webkit-user-drag:none]"
         // className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40 select-none [-webkit-user-drag:none]"
         onClick={() => {
           setShowImage(true);
@@ -122,7 +199,7 @@ export const DesignCard = ({
           vocab="https://schema.org"
           className="flex space-x-2 mb-4"
         >
-          {card.badges.map((badge) => (
+          {card.tags.map((badge) => (
             <Badge key={badge} variant="outline" className="opacity-50">
               {badge}
             </Badge>
@@ -132,20 +209,10 @@ export const DesignCard = ({
           <p className="text-gray-500 line-clamp-2">{card.description}</p>
         </section>
         <CardAction className="flex space-x-2 justify-self-start mt-2">
-          <Button className="rounded-full cursor-pointer hover:bg-amber-300 hover:drop-shadow-[0_4px_12px_#f59e0bcc]">
-            <ThumbsUp
-              fill={card.actions.like.active ? "#f59e0b" : "transparent"}
-            />
-            <span>{card.actions.like.count}</span>
-          </Button>
-          <Button className="rounded-full cursor-pointer hover:bg-rose-300 hover:drop-shadow-[0_4px_12px_#f43f5ecc]">
-            <Star fill={card.actions.star.active ? "#f43f5e" : "transparent"} />
-            <span>{card.actions.star.count}</span>
-          </Button>
+          <LikeButton card={card} handleToLike={handleToLike} />
+          <CollectButton card={card} handleToCollect={handleToCollect} />
           <Button className="rounded-full cursor-pointer hover:bg-teal-400 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
-            <Share2
-              fill={card.actions.share.active ? "#14b8a6" : "transparent"}
-            />
+            <Share2 />
             <span>{card.actions.share.count}</span>
           </Button>
         </CardAction>
@@ -189,25 +256,29 @@ export const DesignCard = ({
                 </Tooltip>
               </div>
             </div>
-            <Card className="bg-white flex flex-row">
-              <Image
-                width={200}
-                height={300}
-                loading="eager"
-                src={card.imageUrl}
-                alt="Event cover"
-                className="relative z-20 w-full object-cover max-h-[60vh] object-center rounded-none! select-none [-webkit-user-drag:none]"
-              />
+            <Card className="bg-white pt-0 flex flex-row">
+              <div className="flex-1 max-h-[calc(100vh-200px)] overflow-auto">
+                <Image
+                  width={200}
+                  height={300}
+                  loading="eager"
+                  src={card.portfolio_work_images[0].image_url}
+                  alt="Event cover"
+                  className="relative z-20 w-full object-top rounded-none! select-none [-webkit-user-drag:none]"
+                />
+              </div>
 
-              <div className="w-1/2 flex flex-col justify-between">
+              <div className="flex-1 max-w-90 pt-4 flex flex-col justify-between">
                 {/* <CardHeader className="py-4"></CardHeader> */}
                 <CardContent className="py-4">
-                  <CardTitle className="text-2xl mb-4">{card.title}</CardTitle>
+                  <CardTitle className="text-4xl mb-4 font-bold">
+                    {card.title}
+                  </CardTitle>
                   <CardDescription
                     vocab="https://schema.org"
                     className="flex space-x-2 mb-4"
                   >
-                    {card.badges.map((badge) => (
+                    {card.tags.map((badge) => (
                       <Badge
                         key={badge}
                         variant="outline"
@@ -238,17 +309,13 @@ export const DesignCard = ({
                       <span>{card.actions.star.count}</span>
                     </Button>
                     <Button className="rounded-full cursor-pointer hover:bg-teal-400 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
-                      <Share2
-                        fill={
-                          card.actions.share.active ? "#14b8a6" : "transparent"
-                        }
-                      />
+                      <Share2 />
                       <span>{card.actions.share.count}</span>
                     </Button>
                   </CardAction>
                 </CardContent>
                 <CardFooter className="border-t-gray-200 text-gray-500">
-                  更新时间：{card.updatedAt}
+                  更新时间：{getTime(card.updated_at)}
                 </CardFooter>
               </div>
             </Card>
@@ -256,5 +323,93 @@ export const DesignCard = ({
         </GlobalModel>
       )}
     </Card>
+  );
+};
+
+const LikeButton = ({
+  card,
+  handleToLike,
+}: {
+  card: ProcessedPortfolioWork;
+  handleToLike: (id?: string) => Promise<void>;
+}) => {
+  const [optLiked, setOptLiked] = useOptimistic(
+    card.actions.like.active,
+    (pre: boolean, _action: "toggle") => {
+      console.log("pre", pre, _action);
+      return !pre;
+    }
+  );
+  const [optLikeCount, setOptLikeCount] = useOptimistic(
+    card.actions.like.count,
+    (pre: number, _action: "add" | "remove") => {
+      console.log("pre", pre, _action);
+      if (_action === "remove") {
+        return pre - 1;
+      }
+      return pre + 1;
+    }
+  );
+  return (
+    <Button
+      className="rounded-full cursor-pointer hover:bg-amber-300 hover:drop-shadow-[0_4px_12px_#f59e0bcc]"
+      onClick={() => {
+        startTransition(async () => {
+          setOptLiked("toggle");
+          setOptLikeCount(optLiked ? "remove" : "add");
+          // 乐观更新后的值会在异步结束后立即结束，返回旧值
+          await handleToLike(
+            card.portfolio_work_likes?.[0] && card.portfolio_work_likes?.[0].id
+          );
+        });
+      }}
+    >
+      <ThumbsUp fill={optLiked ? "#f59e0b" : "transparent"} />
+      <span>{optLikeCount}</span>
+    </Button>
+  );
+};
+const CollectButton = ({
+  card,
+  handleToCollect,
+}: {
+  card: ProcessedPortfolioWork;
+  handleToCollect: (id?: string) => Promise<void>;
+}) => {
+  const [optCollected, setOptCollected] = useOptimistic(
+    card.actions.star.active,
+    (pre: boolean, _action: "toggle") => {
+      console.log("pre", pre, _action);
+      return !pre;
+    }
+  );
+  const [optCollectCount, setOptCollectCount] = useOptimistic(
+    card.actions.star.count,
+    (pre: number, _action: "add" | "remove") => {
+      console.log("pre", pre, _action);
+      if (_action === "remove") {
+        return pre - 1;
+      }
+      return pre + 1;
+    }
+  );
+  return (
+    <Button
+      className="rounded-full cursor-pointer hover:bg-rose-300 hover:drop-shadow-[0_4px_12px_#f43f5ecc]"
+      onClick={() => {
+        startTransition(async () => {
+          setOptCollected("toggle");
+          setOptCollectCount(optCollected ? "remove" : "add");
+          // 乐观更新后的值会在异步结束后立即结束，返回旧值
+          await handleToCollect(
+            card.portfolio_work_collects?.[0] &&
+              card.portfolio_work_collects?.[0].id
+          );
+        });
+      }}
+    >
+      <Star fill={optCollected ? "#f43f5e" : "transparent"} />
+      <span>{optCollectCount}</span>
+    </Button>
   );
 };

@@ -8,8 +8,6 @@ export async function POST(req: NextRequest) {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser();
-    console.log("user", user);
-    console.log("authError", authError);
     if (authError || !user) {
       return NextResponse.json({ error: "未登录" }, { status: 401 });
     }

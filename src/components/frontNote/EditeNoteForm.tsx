@@ -172,7 +172,6 @@ export const EditeNoteForm = ({
       console.log("error", error);
     }
   };
-  console.log("root_category_______", root_category);
   return (
     <form
       action=""
@@ -218,13 +217,13 @@ export const EditeNoteForm = ({
 
                   {!root_second[0] ? (
                     <ComboboxInput
-                      placeholder="选在一级类型"
+                      placeholder="选择一级类型"
                       required
                       // id="note-framework"
                     />
                   ) : (
                     <ComboboxInput
-                      placeholder="选在一级类型"
+                      placeholder="选择一级类型"
                       required
                       value={root_second[0]?.name}
                       // id="note-framework"

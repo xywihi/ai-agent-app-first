@@ -77,7 +77,7 @@ export default function UserLayout({
   });
   return (
     <div className="flex gap-4 p-6">
-      <aside className="shrink-0 p-6 flex flex-col justify-between bg-linear-to-b from-gray-200 to-white  bg-white rounded-2xl min-w-90 h-[calc(100vh-13rem)] shadow-2xl">
+      <aside className="shrink-0 p-6 sticky top-24 flex flex-col justify-between bg-linear-to-b from-gray-200 to-white  bg-white rounded-2xl min-w-90 h-[calc(100vh-13rem)] shadow-2xl">
         <div>
           {user && (
             <div className="flex  items-center gap-4">
@@ -134,20 +134,6 @@ export default function UserLayout({
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        <div>
-          <Separator className="h-px bg-gray-400 mb-4" />
-          <div className="flex gap-2">
-            <Button
-              className={cn(
-                "w-fit p-2 backdrop-blur-md border border-gray-200 flex items-center gap-2 rounded-lg hover:text-teal-400 cursor-pointer"
-              )}
-            >
-              <LogOut size={18} />
-              退出帐号
-            </Button>
           </div>
         </div>
       </aside>

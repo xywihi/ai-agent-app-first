@@ -14,6 +14,7 @@ export interface Note {
   created_at?: string; // 创建时间
   updated_at?: string; // 更新时间
   owner_id?: string; // 所属用户
+  note_categories?: CategoryItem;
 }
 
 export const CategorySchema = z.object({

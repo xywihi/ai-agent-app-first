@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const supabase = await createServer();
     const { data: _data } = await supabase
       .from("frontend_notes")
-      .select("*")
+      .select(`*, note_categories(name)`)
       .order("created_at", { ascending: false });
     if (!_data) return;
     //根据创建月份，进行分类

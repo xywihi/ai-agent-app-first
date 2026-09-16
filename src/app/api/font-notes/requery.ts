@@ -5,7 +5,6 @@ export async function recordNoteVisit(noteId: string) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  console.log("user", user);
   return [];
   // // 游客：每次访问直接记录，不做去重
   // if(!userId){

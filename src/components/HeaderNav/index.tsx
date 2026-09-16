@@ -54,7 +54,7 @@ export const HeaderNav = () => {
           <MovingBorder
             className={cn(
               "group-hover:block hidden absolute -top-0.5 left-1/2 -translate-x-1/2",
-              pathname.includes(item.path) && "block"
+              pathname.startsWith(item.path) && "block"
             )}
             innerClassName="bg-white px-4 py-0"
           >

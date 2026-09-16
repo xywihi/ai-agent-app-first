@@ -8,7 +8,7 @@ import {
   CommandEmpty,
   CommandInput,
 } from "@/components/ui/command";
-import { Eye, FileIcon, Search } from "lucide-react";
+import { Eye, FileIcon, Search, ThumbsUp } from "lucide-react";
 import { cn } from "@/app/utils/tools";
 import { useQuery } from "@tanstack/react-query";
 import { fuzzySearchAll } from "@/app/utils/api/requery";
@@ -16,6 +16,7 @@ import { debounce } from "@/app/utils/tools";
 import { useRouter } from "next/navigation";
 import { Note } from "@/app/utils/api/font-notes/typs";
 import { Spinner } from "../ui/spinner";
+import { PortfolioWork } from "@/app/utils/api/design/type";
 const debounceFn = debounce((fn) => {
   if (typeof fn !== "function") return;
   // 在此处做你的搜索逻辑
@@ -49,6 +50,7 @@ export const SearchAll = () => {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
+  console.log("data", data);
   return (
     <div className="flex flex-col gap-4">
       <Button
@@ -87,38 +89,76 @@ export const SearchAll = () => {
             )}
 
             {data && (
-              <div className="mt-2">
-                <div className="px-2  text-gray-500 text-sm">前端笔记</div>
-                {data
-                  .slice(0, !keyValue ? 4 : data.length)
-                  ?.map((item: Note) => (
-                    <div
-                      className="flex items-center justify-between gap-2 p-2 hover:bg-white hover:text-teal-400 cursor-pointer"
-                      key={item.id}
-                      onClick={() => {
-                        const searchParams = new URLSearchParams();
-                        searchParams.set("category_id", item.category_id);
-                        searchParams.set("seconde_id", item.sub_category_id);
-                        searchParams.set("note_id", item.id as string);
-                        const url = `/frontend?${searchParams.toString()}`;
-                        router.push(url);
-                        setOpen(false);
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <FileIcon size={16} />
-                        <span>{item.title}</span>
-                      </div>
-                      <span className="ml-auto text-xs text-gray-400 flex items-center gap-1">
-                        <Eye size={16} />
-                        {item.view_count}
-                      </span>
-                    </div>
-                  ))}
-                {data?.length === 0 && (
-                  <CommandEmpty>No results found.</CommandEmpty>
+              <div>
+                {!!data?.notes?.length && (
+                  <div className="mt-2">
+                    <div className="px-2  text-gray-500 text-sm">前端笔记</div>
+                    {data.notes
+                      .slice(0, !keyValue ? 4 : data.length)
+                      ?.map((item: Note) => (
+                        <div
+                          className="flex items-center justify-between gap-2 p-2 hover:bg-white hover:text-teal-400 cursor-pointer"
+                          key={item.id}
+                          onClick={() => {
+                            const searchParams = new URLSearchParams();
+                            searchParams.set("category_id", item.category_id);
+                            searchParams.set(
+                              "seconde_id",
+                              item.sub_category_id
+                            );
+                            searchParams.set("note_id", item.id as string);
+                            const url = `/frontend?${searchParams.toString()}`;
+                            router.push(url);
+                            setOpen(false);
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <FileIcon size={16} />
+                            <span>{item.title}</span>
+                          </div>
+                          <span className="ml-auto text-xs text-gray-400 flex items-center gap-1">
+                            <Eye size={16} />
+                            {item.view_count}
+                          </span>
+                        </div>
+                      ))}
+                    {data.notes?.length === 0 && (
+                      <CommandEmpty>无相关前端笔记</CommandEmpty>
+                    )}
+                  </div>
+                )}
+
+                {!!data?.portfolios?.length && (
+                  <div className="mt-2">
+                    <div className="px-2  text-gray-500 text-sm">设计作品</div>
+                    {data.portfolios
+                      .slice(0, !keyValue ? 4 : data.length)
+                      ?.map((item: PortfolioWork) => (
+                        <div
+                          className="flex items-center justify-between gap-2 p-2 hover:bg-white hover:text-teal-400 cursor-pointer"
+                          key={item.id}
+                          onClick={() => {
+                            const url = `/design/detail/${item.id}`;
+                            router.push(url);
+                            setOpen(false);
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <FileIcon size={16} />
+                            <span>{item.title}</span>
+                          </div>
+                          <span className="ml-auto text-xs text-gray-400 flex items-center gap-1">
+                            <ThumbsUp size={16} />
+                            {item.like_count}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
                 )}
               </div>
+            )}
+            {!data?.portfolios?.length && !data?.notes?.length && (
+              <CommandEmpty className="text-gray-400">无相关结果</CommandEmpty>
             )}
           </div>
         </Command>

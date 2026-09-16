@@ -73,7 +73,6 @@ export const weatherTool = tool({
   }),
   execute: async ({ location }, { context }) => {
     const temperature = Math.round(Math.random() * (90 - 32) + 32);
-    console.log("模拟数据：", { location, temperature });
     try {
       return {
         location,
