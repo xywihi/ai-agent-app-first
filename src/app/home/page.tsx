@@ -3,7 +3,7 @@ import { GlobalLoading } from "@/components/GlobalLoading";
 import { MovingBorder } from "@/components/MovingBorder";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/server/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { createContext, useEffect, useRef, useState } from "react";
 import Image from "next/image";
@@ -25,20 +25,25 @@ import {
   CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
+// const CarouselComponent = dynamic(()=> import("@/components/ui/carousel").then((mod) => mod.Carousel),{
+//   loading:()=> <GlobalLoading/>,
+//   ssr:false
+// })
 import Autoplay from "embla-carousel-autoplay";
-import { GlobalModel } from "@/components/GlobalModel";
 import { GroundGlassCard } from "@/components/GroundGlassCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Item,
   ItemActions,
   ItemContent,
-  ItemDescription,
   ItemTitle,
 } from "@/components/ui/item";
+import { ProcessedPortfolioWork } from "../utils/api/design/type";
+import { cn } from "../utils/tools";
+import { Note } from "../utils/api/font-notes/typs";
+import { type User as SupabaseUser } from "@supabase/supabase-js";
+import dynamic from "next/dynamic";
 interface ConverInterface {
   currentConverId: number | string;
   currentConverName: string;
@@ -58,29 +63,13 @@ const initialState: ChatConverInterface = {
     currentConverName: "",
   },
 };
-const Schema = z.object({
-  user: z.object({
-    id: z.string(),
-    user_metadata: z.object({
-      email: z.string(),
-      username: z.string(),
-    }),
-  }),
-});
-type User = z.infer<typeof Schema>;
+
 export const ChatContext = createContext<ChatContextInterface>({
   chatState: initialState,
   dispatch: () => {},
   handleRefreshConerHistoryList: () => {},
 });
-const images = [
-  "https://qflukknufugagvwhtpgs.supabase.co/storage/v1/object/sign/images/0168c85d22f766a80121376304ede5.webp?token=eyJraWQiOiJmZjBlMjA3MC1mZmZjLTRlOWYtYmRhYy1jODg5NDdkYmRkODIiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJpbWFnZXMvMDE2OGM4NWQyMmY3NjZhODAxMjEzNzYzMDRlZGU1LndlYnAiLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg4NTQ5NDM4LCJleHAiOjE4MjAwODU0Mzh9.SVL0VBNAPBlCUYXKoVsuGPdVAi_H-KirCDNrGxw2ZrDy_yeo_ZegKuZp9HmfC4iZgQMwCT00XNZ0iXQ9PePfew",
-  "https://qflukknufugagvwhtpgs.supabase.co/storage/v1/object/sign/images/looking.webp?token=eyJraWQiOiJmZjBlMjA3MC1mZmZjLTRlOWYtYmRhYy1jODg5NDdkYmRkODIiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJpbWFnZXMvbG9va2luZy53ZWJwIiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc4ODU0OTY1NiwiZXhwIjoxODIwMDg1NjU2fQ.3bgKPdwzKRN5xeoPXctidG3BZrZClt1r2SInTm-khrL8qUH9clb3rGT0KBIa6OORyHbkUYN66OHYPwDQk-9IYg",
-  "https://qflukknufugagvwhtpgs.supabase.co/storage/v1/object/sign/images/panda.webp?token=eyJraWQiOiJmZjBlMjA3MC1mZmZjLTRlOWYtYmRhYy1jODg5NDdkYmRkODIiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJpbWFnZXMvcGFuZGEud2VicCIsInNjb3BlIjoiZG93bmxvYWQiLCJpYXQiOjE3ODg1NDk2OTksImV4cCI6MTgyMDA4NTY5OX0.qYTDRrlbBwO3nw_DfttMyrxCwwJDVerNXXlsuEQmiWY1r3GZZwgWky2OQly0dtUXSgsw-7KOeG6DnSyn5rLrIA",
-  "https://qflukknufugagvwhtpgs.supabase.co/storage/v1/object/sign/images/trip.webp?token=eyJraWQiOiJmZjBlMjA3MC1mZmZjLTRlOWYtYmRhYy1jODg5NDdkYmRkODIiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJpbWFnZXMvdHJpcC53ZWJwIiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc4ODU0OTcxMywiZXhwIjoxODIwMDg1NzEzfQ.gZMsy6HA0xV6uWguaDzUjoHBRvURidEe3_kN6Ue8VBvsFBJpjam6J1HRs0KaPba2ixl0BfSXT6R1_dYRUY9xkQ",
-  "https://qflukknufugagvwhtpgs.supabase.co/storage/v1/object/sign/images/vi.webp?token=eyJraWQiOiJmZjBlMjA3MC1mZmZjLTRlOWYtYmRhYy1jODg5NDdkYmRkODIiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJpbWFnZXMvdmkud2VicCIsInNjb3BlIjoiZG93bmxvYWQiLCJpYXQiOjE3ODg1NDk3MjcsImV4cCI6MTgyMDA4NTcyN30.muV02BpxhJJ652OSWz6jdzV10uIhUys5nDr-dYJTKl--ROKfPzeHWHTUX6E_hRtS4hrk26m-DmJFh0TLM_7EAw",
-  "https://img.zcool.cn/community/031oaeewl93qrdodxkbghtg3030.png?k=616de91a187927b7389f41c6721eec2b&t=6a9d8e00&x-oss-process=image/resize,m_fill,w_520,h_390,limit_1/auto-orient,1/sharpen,100/quality,q_80/format,webp",
-];
+
 const technologies = [
   "React / React19 新特性与Hooks实战",
   "Next.js App Router 路由、布局、服务端组件",
@@ -95,14 +84,21 @@ const technologies = [
   "Vercel AI SDK - AI Agent工具调用开发4",
 ];
 export default function Chat() {
-  const supabase = createClient();
   const router = useRouter();
-  const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: true }));
+  const autoplayPlugin = Autoplay({
+    delay: 3500,
+    stopOnInteraction: true,
+    stopOnMouseEnter: true,
+  });
+  // const plugin = useRef(
+  //   Autoplay({ delay: 2000, stopOnInteraction: true })
+  // ).current;
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
-  const [showImageIndex, setShowImageIndex] = useState<number | null>(null);
-  // const [user, setUser] = useState<User>();
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<SupabaseUser | null>(["user_data"]);
+
   useEffect(() => {
     if (!api) {
       return;
@@ -116,15 +112,39 @@ export default function Chat() {
       });
     });
   }, [api]);
-  const { data, isFetching, error } = useQuery({
-    queryKey: ["authUser"],
+  // const { data, isFetching, error } = useQuery({
+  //   queryKey: ["authUser"],
+  //   queryFn: async () => {
+  //     const result = await supabase.auth.getUser();
+  //     const user = Schema.safeParse(result.data);
+  //     if (user.success) {
+  //       return user.data;
+  //     } else {
+  //       throw new Error(user.error.message);
+  //     }
+  //   },
+  //   refetchOnWindowFocus: false,
+  // });
+  const { data: portfolios_data, isPending: portfolios_isPending } = useQuery({
+    queryKey: ["portfolios_data"],
     queryFn: async () => {
-      const result = await supabase.auth.getUser();
-      const user = Schema.safeParse(result.data);
-      if (user.success) {
-        return user.data;
-      } else {
-        throw new Error(user.error.message);
+      const result = await fetch(
+        `/api/user/design/portfolio/default?category=all`
+      );
+      if (result.ok) {
+        const data = await result.json();
+        return data.data;
+      }
+    },
+    refetchOnWindowFocus: false,
+  });
+  const { data: frontnotes_data, isPending: frontnotes_isPending } = useQuery({
+    queryKey: ["frontnotes_data"],
+    queryFn: async () => {
+      const result = await fetch(`/api/user/frontend/new-notes`);
+      if (result.ok) {
+        const data = await result.json();
+        return data.data;
       }
     },
     refetchOnWindowFocus: false,
@@ -140,9 +160,10 @@ export default function Chat() {
     // const data = await response.json();
     // return data;
   };
-  if (isFetching) {
+  if (!user) {
     return <GlobalLoading />;
   }
+  console.log("frontnotes_data", frontnotes_data);
   return (
     // <div className="flex-1 flex flex-col justify-between items-center bg-linear-to-br from-white via-slate-50 to-zinc-50">
     <div className="flex-1 flex flex-col justify-between items-center pb-98">
@@ -173,48 +194,49 @@ export default function Chat() {
 
       <div className="flex-1 flex flex-col 2xl:flex-row justify-center items-center gap-8">
         <GroundGlassCard
-          className="w-1/2 2xl:max-w-1/4 min-w-md"
-          cardClassName="pt-0 max-h-110"
+          className={cn("w-1/2 2xl:max-w-1/4 min-w-md")}
+          cardClassName={cn(
+            "pt-0 max-h-110 opacity-0 transition-opacity duration-300 ease-out",
+            {
+              "opacity-100": portfolios_data,
+            }
+          )}
         >
           <div className="relative max-h-[20vh] min-h-[210px] flex">
             <Carousel
               className="w-full flex-1 overflow-auto flex"
-              plugins={[plugin.current]}
+              plugins={[autoplayPlugin]}
               setApi={setApi}
               opts={{
                 align: "start",
                 loop: true,
+                dragFree: false, // 阻止拖拽
               }}
             >
               <CarouselContent className="flex-1">
-                {images.map((item, index) => (
-                  <CarouselItem key={index}>
-                    <Image
-                      width={800}
-                      height={600}
-                      loading="eager"
-                      fetchPriority="auto"
-                      src={item}
-                      alt="Event cover"
-                      className="relative z-20 aspect-video w-full object-cover object-top"
-                      onClick={() => setShowImageIndex(index)}
-                    />
-                    {showImageIndex === index && (
-                      <GlobalModel
-                        handleShowModel={() => setShowImageIndex(null)}
+                {portfolios_data &&
+                  portfolios_data.map(
+                    (item: ProcessedPortfolioWork, index: number) => (
+                      <CarouselItem
+                        key={index}
+                        onClick={() => router.push(`/design/detail/${item.id}`)}
                       >
                         <Image
-                          width={600}
-                          height={900}
-                          loading="eager"
-                          src={item}
+                          width={800}
+                          height={600}
+                          loading={index === 0 ? "eager" : "lazy"}
+                          fetchPriority={index === 0 ? "high" : "auto"} // 预加载
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          src={
+                            item.portfolio_work_images[0]?.image_url +
+                            "?width=800&quality=75"
+                          }
                           alt="Event cover"
-                          className="relative z-20 aspect-video w-full object-cover object-top rounded-2xl select-none [-webkit-user-drag:none]"
+                          className="relative z-20 aspect-video w-full object-cover object-top cursor-pointer"
                         />
-                      </GlobalModel>
-                    )}
-                  </CarouselItem>
-                ))}
+                      </CarouselItem>
+                    )
+                  )}
               </CarouselContent>
             </Carousel>
             <div className="absolute bottom-2 left-2 text-white">
@@ -255,8 +277,13 @@ export default function Chat() {
           </CardFooter>
         </GroundGlassCard>
         <GroundGlassCard
-          className="w-1/2 2xl:max-w-1/4 min-w-md"
-          cardClassName="flex flex-col max-h-110"
+          className={cn("w-1/2 2xl:max-w-1/4 min-w-md")}
+          cardClassName={cn(
+            "flex flex-col max-h-110 opacity-0 transition-all duration-300 ease-out",
+            {
+              "opacity-100": frontnotes_data,
+            }
+          )}
         >
           <CardHeader>
             <CardTitle className="text-3xl flex items-center">
@@ -290,24 +317,33 @@ export default function Chat() {
             </CardDescription>
             <ScrollArea className="flex-1 overflow-auto rounded-md mt-4">
               <div className="flex flex-col space-y-2">
-                {technologies.map((item, index) => (
-                  // 解决border影响元素高度问题
-                  <div key={index} className="h-11 relative group">
-                    <Item className="flex-nowrap border border-gray-200 group-hover:border-transparent">
-                      <ItemContent className="flex-1 min-w-0 flex max-w-md">
-                        {/* 文本省略号会受flex、width: fit-content影响 */}
-                        <ItemTitle className="block w-auto flex-1 min-w-0 truncate">
-                          {item}
-                        </ItemTitle>
-                        {/* <ItemDescription>{item}</ItemDescription> */}
-                      </ItemContent>
-                      <ItemActions className="group-hover:block hidden shrink-0">
-                        <CircleChevronRight size={20} color="teal" />
-                      </ItemActions>
-                    </Item>
-                    <div className="absolute inset-0 rounded-lg pointer-events-none border-2 border-transparent group-hover:border-teal-400 transition-colors" />
-                  </div>
-                ))}
+                {frontnotes_data &&
+                  frontnotes_data.map((item: Note, index: number) => (
+                    // 解决border影响元素高度问题
+                    <div key={index} className="h-11 relative group">
+                      <Item className="flex-nowrap border border-gray-200 group-hover:border-transparent">
+                        <ItemContent className="flex-1 min-w-0 flex max-w-md">
+                          {/* 文本省略号会受flex、width: fit-content影响 */}
+                          <ItemTitle className="block w-auto flex-1 min-w-0 truncate">
+                            {item.title}
+                          </ItemTitle>
+                          {/* <ItemDescription>{item}</ItemDescription> */}
+                        </ItemContent>
+                        <ItemActions className="group-hover:block hidden shrink-0">
+                          <CircleChevronRight
+                            size={20}
+                            color="teal"
+                            onClick={() =>
+                              router.push(
+                                `/frontend?category_id=${item.category_id}&seconde_id=${item.sub_category_id}&note_id=${item.id}`
+                              )
+                            }
+                          />
+                        </ItemActions>
+                      </Item>
+                      <div className="absolute inset-0 rounded-lg pointer-events-none border-2 border-transparent group-hover:border-teal-400 transition-colors" />
+                    </div>
+                  ))}
               </div>
             </ScrollArea>
             <p className="mt-8 text-xs text-gray-400">最后更新：2026‑09‑05</p>
@@ -317,7 +353,7 @@ export default function Chat() {
               GitHub：
               <a
                 className="text-teal-400 underline decoration-1 decoration-teal-400 italic"
-                href="https://www.github.com.cn/u/ZNjEyODMzODA="
+                href="https://github.com/xywihi"
               >
                 https://www.github.com/xywhi
               </a>
@@ -325,8 +361,13 @@ export default function Chat() {
           </CardFooter>
         </GroundGlassCard>
         <GroundGlassCard
-          className="w-1/2 2xl:max-w-1/4 min-w-md"
-          cardClassName="flex flex-col max-h-110"
+          className={cn("w-1/2 2xl:max-w-1/4 min-w-md")}
+          cardClassName={cn(
+            "flex flex-col max-h-110 opacity-0 transition-all duration-300 ease-out delay-500",
+            {
+              "opacity-100": user,
+            }
+          )}
         >
           <CardContent className="flex-1 p-8">
             <p className="mb-10 flex justify-center items-center flex-wrap space-x-2 text-xl text-center">
@@ -337,11 +378,11 @@ export default function Chat() {
               <Bot size={26} />
             </p>
             <MovingBorder className="mb-4">
-              {data?.user ? (
+              {user ? (
                 <p className="text-lg flex items-center flex-wrap">
                   <Bot />： Hello，
                   <b>
-                    <strong> {data?.user.user_metadata.username}</strong>
+                    <strong> {user.user_metadata.username}</strong>
                   </b>
                   ！高兴你的到来。
                 </p>
@@ -355,7 +396,7 @@ export default function Chat() {
                 </p>
               )}
             </MovingBorder>
-            {data?.user ? (
+            {user ? (
               <div className="flex space-x-4">
                 {/* <input
           type="text"

@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   const category = url.searchParams.get("category");
   const supabase = await createServer();
   console.log("category", category);
-  let data: any = [];
+  let data: ProcessedPortfolioWork[] = [];
   if (category === "all") {
     const { data: _data, error } = await supabase
       .from("portfolio_works")
@@ -20,7 +20,7 @@ export async function GET(req: Request) {
       )
       .eq("is_published", true)
       .order("created_at", { ascending: false });
-    data = _data;
+    data = _data as ProcessedPortfolioWork[];
     if (error) return NextResponse.json({ error: error }, { status: 500 });
   } else {
     const { data: _data, error } = await supabase
@@ -42,7 +42,7 @@ export async function GET(req: Request) {
         .eq("category_id", category_id)
         .order("created_at", { ascending: false })
         .limit(1, { referencedTable: "portfolio_work_likes" });
-      data = __data;
+      data = __data as ProcessedPortfolioWork[];
     }
     if (error) {
       return NextResponse.json({ error: error }, { status: 500 });

@@ -1,21 +1,22 @@
 "use client";
-import { createClient } from "@/lib/server/client";
 import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { type User as SupabaseUser } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const UserCenter = () => {
   const router = useRouter();
-  const [user, setUser] = useState<SupabaseUser | null>(null);
-  // 获取用户信息
-  useEffect(() => {
-    const getUser = async () => {
-      const _user = await createClient().auth.getUser();
-      setUser(_user.data.user);
-    };
-    getUser();
-  }, []);
+  // const [user, setUser] = useState<SupabaseUser | null>(null);
+  // // 获取用户信息
+  // useEffect(() => {
+  //   const getUser = async () => {
+  //     const _user = await createClient().auth.getUser();
+  //     setUser(_user.data.user);
+  //   };
+  //   getUser();
+  // }, []);
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<SupabaseUser | null>(["user_data"]);
   return (
     user?.id && (
       <div

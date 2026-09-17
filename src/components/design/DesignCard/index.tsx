@@ -34,6 +34,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getTime } from "@/app/utils/tools";
 
 interface props {
+  index?: number;
   data: ProcessedPortfolioWork;
   height?: number;
   className?: string;
@@ -43,6 +44,7 @@ interface props {
 }
 export const DesignCard = ({
   data: card,
+  index,
   height,
   className,
   cardHeightsRef,
@@ -183,8 +185,11 @@ export const DesignCard = ({
       <Image
         width={200}
         height={300}
-        src={card.portfolio_work_images[0].image_url}
         alt="Event cover"
+        loading="eager"
+        fetchPriority="high" // 预加载
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        src={card.portfolio_work_images[0].image_url + "?width=800&quality=75"}
         className="relative z-20 w-full h-auto max-h-140 object-cover object-top select-none [-webkit-user-drag:none]"
         // className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40 select-none [-webkit-user-drag:none]"
         onClick={() => {

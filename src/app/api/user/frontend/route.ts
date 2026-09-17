@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     }, {});
 
     return NextResponse.json({ data }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     await reportErrorLog({
       errorType: "api_update_note_error",
       error,

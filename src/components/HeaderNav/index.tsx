@@ -5,6 +5,7 @@ import { MovingBorder } from "../MovingBorder";
 import { cn } from "@/app/utils/tools";
 import { usePathname } from "next/navigation";
 import { Icon } from "../Icon";
+import { useQuery } from "@tanstack/react-query";
 
 const paths: {
   name: string;
@@ -38,6 +39,14 @@ const paths: {
   },
 ];
 export const HeaderNav = () => {
+  useQuery({
+    queryKey: ["user_data"],
+    queryFn: async () => {
+      const _data = await fetch("/api/user");
+      const data = await _data.json();
+      return data.data.user;
+    },
+  });
   const pathname = usePathname();
   return (
     <ul className="flex flex-row items-center space-x-14">

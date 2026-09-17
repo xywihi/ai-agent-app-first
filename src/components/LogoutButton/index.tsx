@@ -6,18 +6,19 @@ import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
-
+import { useQueryClient } from "@tanstack/react-query";
+import { type User as SupabaseUser } from "@supabase/supabase-js";
 export default function LogoutButton() {
-  const [user, setUser] = useState<User | null>(null);
   // 获取用户信息
-  useEffect(() => {
-    const getUser = async () => {
-      const _user = await createClient().auth.getUser();
-      setUser(_user.data.user);
-    };
-    getUser();
-  }, []);
-
+  // useEffect(() => {
+  //   const getUser = async () => {
+  //     const _user = await createClient().auth.getUser();
+  //     setUser(_user.data.user);
+  //   };
+  //   getUser();
+  // }, []);
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<SupabaseUser | null>(["user_data"]);
   const router = useRouter();
   const handleSignOut = async () => {
     try {
