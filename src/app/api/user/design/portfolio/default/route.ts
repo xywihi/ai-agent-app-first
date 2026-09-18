@@ -48,7 +48,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: error }, { status: 500 });
     }
   }
-  data.map((item: ProcessedPortfolioWork) => {
+  data.forEach((item: ProcessedPortfolioWork) => {
     item.actions = {
       like: {
         count: item.like_count,
@@ -63,5 +63,8 @@ export async function GET(req: Request) {
       },
     };
   });
-  return NextResponse.json({ success: true, data }, { status: 200 });
+  return NextResponse.json(
+    { success: true, data: { list: data } },
+    { status: 200 }
+  );
 }

@@ -32,7 +32,6 @@ export async function fuzzySearchAll(keyValue: string) {
     if (_error) {
       throw _error;
     }
-    console.log("data", data);
     return new Response(
       JSON.stringify({ error: null, data: { notes: data, portfolios: _data } }),
       {

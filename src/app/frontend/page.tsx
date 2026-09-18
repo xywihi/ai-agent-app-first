@@ -22,6 +22,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EditeNoteForm } from "@/components/frontNote/EditeNoteForm";
 import { useTime } from "@/hooks/use-time";
 import { NoteAsideNav } from "@/components/frontNote/NoteAsideNav";
+import { QueryKeys } from "../utils/query-keys";
 export default function Page({ children }: { children: React.ReactNode }) {
   const [editable, setEditable] = useState(false);
   const note_id = useSearchParams().get("note_id");
@@ -29,7 +30,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
 
   // 处理用户浏览笔记记录
   const { data: data2 = [] } = useQuery({
-    queryKey: ["fontendNoteVisit"],
+    queryKey: QueryKeys.fronend.visit,
     // enabled: !userId,
     queryFn: async () => {
       try {
@@ -45,7 +46,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
     refetchOnWindowFocus: false,
   });
   const { data: root_category = {}, isPending: rooting } = useQuery({
-    queryKey: ["fontendNoteRootCategories"],
+    queryKey: QueryKeys.fronend.rootCategories(),
     // enabled: !!category_id,
     queryFn: async () => {
       try {
@@ -61,7 +62,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
   });
   // 获取笔记请求
   const { data: note_data, isPending } = useQuery({
-    queryKey: ["fontendNote", note_id],
+    queryKey: QueryKeys.fronend.note(note_id as string),
     // enabled: !!note_id,
     queryFn: async () => {
       try {
@@ -79,7 +80,6 @@ export default function Page({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // 更新笔记更新时间
-    console.log("setUpdateTime", note_data);
     if (!note_data) return;
     setUpdateTime(note_data.updated_at);
   }, [setUpdateTime, note_data]);
@@ -121,7 +121,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
         <Tooltip disableHoverablePopup>
           <TooltipTrigger
             className={cn(
-              "bg-white border border-gray-400 cursor-pointer shadow-xl hover:bg-teal-400 font-bold py-2 px-4 rounded-full",
+              "bg-white dark:bg-gray-700 border border-gray-400 cursor-pointer shadow-xl hover:bg-teal-400 dark:bg-teal-600 font-bold py-2 px-4 rounded-full",
               {
                 hidden: !note_id,
               }
@@ -137,7 +137,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
         <ToTop />
         {editable && (
           <GlobalModel>
-            <Card className="bg-white w-full self-center">
+            <Card className="bg-white dark:bg-gray-700 w-full self-center">
               <CardContent>
                 <EditeNoteForm
                   root_category={root_category as CategoryTree}

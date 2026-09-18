@@ -64,7 +64,7 @@ export const MusicPlayer = ({
           <Item
             key={item.id}
             className={cn(
-              "z-90 flex-nowrap border bg-white/20 backdrop-blur-md border-gray-200 opacity-0 transform translate-y-60 hover:-translate-x-5 group-hover:opacity-100 transition-all ease-in-out",
+              "z-90 flex-nowrap border bg-white dark:bg-gray-700/20 backdrop-blur-md border-gray-200 dark:border-gray-700 opacity-0 transform translate-y-60 hover:-translate-x-5 group-hover:opacity-100 transition-all ease-in-out",
               `group-hover:translate-y-0 group-hover:delay-${
                 200 + index * 100
               } delay-${200 + index * 100} duration-${1650 + index * 50} ${
@@ -121,7 +121,7 @@ export const MusicPlayer = ({
           {/* 时间 */}
           <div
             className={cn(
-              "shrink-0 items-center gap-1 text-gray-600 opacity-0 group-hover:opacity-100 group-hover:flex group-hover:relative group-hover:duration-300 group-hover:delay-600 absolute transition-opacity duration-0 delay-300",
+              "shrink-0 items-center gap-1 text-gray-600 dark:text-gray-300 opacity-0 group-hover:opacity-100 group-hover:flex group-hover:relative group-hover:duration-300 group-hover:delay-600 absolute transition-opacity duration-0 delay-300",
               currentTime && "relative opacity-100"
             )}
           >
@@ -134,7 +134,7 @@ export const MusicPlayer = ({
             <div className="relative">
               <div className="bg-gray-300 w-40 h-2 rounded-full"></div>
               <div
-                className="bg-teal-300 h-2 rounded-full absolute top-0 left-0"
+                className="bg-teal-300 dark:bg-teal-600 h-2 rounded-full absolute top-0 left-0"
                 style={{ width: `${percent}%` }}
               ></div>
             </div>
@@ -196,7 +196,7 @@ export const MusicPlayer = ({
         {/* <button
         onClick={toggleLoop}
         className={`px-3 py-1 rounded-lg ${
-          loop ? "bg-teal-400 text-white" : "bg-gray-200"
+          loop ? "bg-teal-400 dark:bg-teal-600 text-white" : "bg-gray-200 dark:bg-gray-700"
         }`}
       >
         {loop ? "循环开启" : "循环关闭"}

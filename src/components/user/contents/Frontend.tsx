@@ -1,10 +1,11 @@
 "use client";
 import { getCategoryTree } from "@/app/utils/api/font-notes/requery";
 import { CategoryTree, Note } from "@/app/utils/api/font-notes/typs";
+import { Delete, Get } from "@/app/utils/query";
+import { QueryKeys } from "@/app/utils/query-keys";
 import { getTime } from "@/app/utils/tools";
 import { EditeNoteForm } from "@/components/frontNote/EditeNoteForm";
 import { GlobalModel } from "@/components/GlobalModel";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
@@ -15,14 +16,14 @@ import { useQuery } from "@tanstack/react-query";
 import { BookSearch, Calendar, Edit, Eye, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { memo, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 export default function Frontend() {
   const { data, isPending } = useQuery({
-    queryKey: ["frontend"],
+    queryKey: QueryKeys.fronend.notesAll,
     queryFn: async () => {
-      const _data = await fetch(`/api/user/frontend`);
-      const data = await _data.json();
-      return data.data;
+      const data = await Get(`/api/user/frontend`);
+      return data;
     },
   });
 
@@ -46,7 +47,6 @@ export default function Frontend() {
     }
     return _data;
   }, [data]);
-  console.log("data", data);
   return (
     <div>
       {isPending ? (
@@ -64,7 +64,7 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
   const router = useRouter();
   const [editable, setEditable] = useState(false);
   const { data: root_category = {}, isPending: rooting } = useQuery({
-    queryKey: ["fontendNoteRootCategories"],
+    queryKey: QueryKeys.fronend.rootCategories(),
     // enabled: !!category_id,
     queryFn: async () => {
       try {
@@ -83,25 +83,22 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
       `/frontend?category_id=${note.category_id}&seconde_id=${note.sub_category_id}&note_id=${note.id}`
     );
   };
-  const handleToDelete = (id: string) => {
+  const handleToDelete = async (id: string) => {
     const res = confirm("确定删除吗?");
     if (res) {
-      fetch(`/api/user/frontend/${id}`, {
-        method: "DELETE",
-      }).then((res) => {
-        if (res.status === 200) {
-          alert("删除成功");
-        }
-      });
+      const res = await Delete(`/api/user/frontend/${id}`);
+      if (res.status === 200) {
+        toast.success("删除成功");
+      }
     }
   };
   return (
     <div
-      className="p-4 bg-white rounded-2xl shadow-xl transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
+      className="p-4 bg-white dark:bg-gray-700 rounded-2xl shadow-xl transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
       onClick={handleToSee}
     >
       <p className="font-bold text-lg mb-2 truncate">{note.title}</p>
-      <span className="bg-gray-100 text-gray-400 rounded-xl px-2 py-1 inline-block text-xs mb-4 truncate">
+      <span className="bg-gray-100 dark:bg-gray-800 text-gray-400 rounded-xl px-2 py-1 inline-block text-xs mb-4 truncate">
         {note.note_categories?.name}
       </span>
       <div className="flex justify-between">
@@ -117,7 +114,7 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
       <div className="flex justify-between space-x-2 mt-4">
         <Tooltip>
           <TooltipTrigger
-            className="flex-1 rounded hover:bg-gray-100 py-2 cursor-pointer"
+            className="flex-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-600 py-2 cursor-pointer"
             onClick={handleToSee}
           >
             <div className="flex justify-center">
@@ -130,13 +127,13 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger
-            className="flex-1 rounded hover:bg-gray-100 py-2 cursor-pointer"
+            className="flex-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-600 py-2 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               setEditable(true);
             }}
           >
-            <div className="border-gray-300 flex justify-center">
+            <div className="border-gray-300 dark:border-gray-600 flex justify-center">
               <Edit size={14} />
             </div>
           </TooltipTrigger>
@@ -146,13 +143,13 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger
-            className="flex-1 rounded hover:bg-gray-100 py-2 cursor-pointer"
+            className="flex-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-600 py-2 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               handleToDelete(note.id as string);
             }}
           >
-            <div className="border-gray-300 flex justify-center">
+            <div className="border-gray-300 dark:border-gray-600 flex justify-center">
               <Trash size={14} />
             </div>
           </TooltipTrigger>
@@ -163,7 +160,7 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
       </div>
       {editable && (
         <GlobalModel>
-          <Card className="bg-white w-full self-center">
+          <Card className="bg-white dark:bg-gray-700 w-full self-center">
             <CardContent>
               <EditeNoteForm
                 root_category={root_category as CategoryTree}

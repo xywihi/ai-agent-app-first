@@ -60,7 +60,6 @@ export default function RegisterPage() {
       alert("请先完成验证");
       return;
     }
-    console.log("data", data);
     const { error } = await createClient().auth.signUp({
       email: data.email,
       password: data.password,
@@ -98,7 +97,7 @@ export default function RegisterPage() {
   }
   return (
     <div className="flex flex-col h-full flex-1 justify-center items-center">
-      <div className="bg-gray-100 p-8 rounded-xl shadow-gray-100 shadow-lg">
+      <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-xl shadow-gray-100 shadow-lg">
         <form
           className="flex flex-col items-center space-y-4 w-lg"
           action=""
@@ -198,7 +197,7 @@ export default function RegisterPage() {
               </span>
             )} */}
           </div>
-          <div className="rounded-lg w-full bg-teal-400 mt-4">
+          <div className="rounded-lg w-full bg-teal-400 dark:bg-teal-600 mt-4">
             <button
               type="submit"
               className="rounded-lg px-4 py-2 w-full text-center text-white text-xl cursor-pointer"

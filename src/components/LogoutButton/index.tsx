@@ -4,25 +4,20 @@ import { createClient } from "@/lib/server/client";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
-import { User } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
-import { type User as SupabaseUser } from "@supabase/supabase-js";
+import { QueryKeys } from "@/app/utils/query-keys";
+import { useUserQuery } from "@/hooks/use-user-query";
 export default function LogoutButton() {
+  const queryclient = useQueryClient();
   // 获取用户信息
-  // useEffect(() => {
-  //   const getUser = async () => {
-  //     const _user = await createClient().auth.getUser();
-  //     setUser(_user.data.user);
-  //   };
-  //   getUser();
-  // }, []);
-  const queryClient = useQueryClient();
-  const user = queryClient.getQueryData<SupabaseUser | null>(["user_data"]);
+  const { data: user } = useUserQuery();
   const router = useRouter();
   const handleSignOut = async () => {
     try {
       await createClient().auth.signOut();
+      queryclient.removeQueries({
+        queryKey: QueryKeys.userCenter.data,
+      });
       router.push("/login");
       router.refresh();
     } catch (error) {
@@ -33,7 +28,7 @@ export default function LogoutButton() {
     user?.id && (
       <div>
         <Button
-          className="p-2 bg-gray-200 rounded-lg hover:bg-teal-400 hover:text-white cursor-pointer"
+          className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-teal-400 dark:bg-teal-600 hover:text-white cursor-pointer"
           onClick={handleSignOut}
         >
           <LogOut />

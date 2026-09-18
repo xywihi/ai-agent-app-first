@@ -73,7 +73,7 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json(
-      { users: result, totalCount: profileCount },
+      { data: { users: result, totalCount: profileCount } },
       { status: 200 }
     );
   } catch (error) {

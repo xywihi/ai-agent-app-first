@@ -157,7 +157,7 @@ export default function PerformanceClock() {
       <HoverCardTrigger delay={0} closeDelay={0}>
         <Button
           className={cn(
-            "p-2 backdrop-blur-md border-gray-200 rounded-lg  hover:text-teal-400 cursor-pointer",
+            "p-2 backdrop-blur-md border-gray-200 dark:border-gray-700 rounded-lg  hover:text-teal-400 cursor-pointer",
             shakeClock ? "animate-clock-shake" : ""
           )}
         >
@@ -171,28 +171,28 @@ export default function PerformanceClock() {
         alignOffset={(offeset) => {
           return (offeset.anchor.width - offeset.positioner.width) / 2;
         }}
-        className="flex flex-col bg-white w-fit"
+        className="flex flex-col bg-white dark:bg-gray-700 w-fit"
       >
         {!clockOpened ? (
           <div>
             <div className="mb-2">设置闹钟倒计时：</div>
             <ButtonGroup>
               <Button
-                className="hover:text-teal-400 cursor-pointer border-gray-200"
+                className="hover:text-teal-400 cursor-pointer border-gray-200 dark:border-gray-700"
                 variant="outline"
                 onClick={() => handleShakeClock(10)}
               >
                 30秒
               </Button>
               <Button
-                className="hover:text-teal-400 cursor-pointer border-gray-200"
+                className="hover:text-teal-400 cursor-pointer border-gray-200 dark:border-gray-700"
                 variant="outline"
                 onClick={() => handleShakeClock(30 * 60)}
               >
                 半小时
               </Button>
               <Button
-                className="hover:text-teal-400 cursor-pointer border-gray-200"
+                className="hover:text-teal-400 cursor-pointer border-gray-200 dark:border-gray-700"
                 variant="outline"
                 onClick={() => handleShakeClock(60 * 60)}
               >
@@ -203,7 +203,9 @@ export default function PerformanceClock() {
         ) : (
           <Button
             onClick={handleStopClock}
-            className={"hover:text-teal-400 cursor-pointer border-gray-200"}
+            className={
+              "hover:text-teal-400 cursor-pointer border-gray-200 dark:border-gray-700"
+            }
           >
             停止当前闹钟 <AlarmClock />
           </Button>

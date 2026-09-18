@@ -29,7 +29,10 @@ export async function GET(req: NextRequest) {
       data.reduce((acc, item) => {
         return acc + (item.view_count ?? 0);
       }, 0) || 0;
-    return NextResponse.json({ data, noteTotal, totalView }, { status: 200 });
+    return NextResponse.json(
+      { data: { list: data, noteTotal, totalView } },
+      { status: 200 }
+    );
   } catch (error: unknown) {
     await reportErrorLog({
       errorType: "api_update_note_error",

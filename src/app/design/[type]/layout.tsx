@@ -6,16 +6,13 @@ import { ChevronRight, Feather } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/app/utils/tools";
-import { GlobalModel } from "@/components/GlobalModel";
-import { ca } from "zod/v4/locales";
 import { useQuery } from "@tanstack/react-query";
-import { getUserInfo, getUserProfiles } from "@/app/utils/api/user/requery";
-import {
-  getPortfolioCategories,
-  getPortfolioWorks,
-} from "@/app/utils/api/design/reuqery";
+import { getUserProfiles } from "@/app/utils/api/user/requery";
+import { QueryKeys } from "@/app/utils/query-keys";
 import { PortfolioCategory } from "@/app/utils/api/design/type";
-import { Suspense } from "react";
+import { Suspense, useMemo } from "react";
+import { useUserQuery } from "@/hooks/use-user-query";
+import { Get } from "@/app/utils/query";
 
 export default function DesignLayout({
   children,
@@ -24,42 +21,33 @@ export default function DesignLayout({
 }) {
   const { type } = useParams();
   const router = useRouter();
-  const { data: user } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const _data = await getUserInfo();
-      const data = await _data.json();
-      return data.data;
-    },
-  });
+  const { data: user } = useUserQuery();
   const { data: user_profiles } = useQuery({
-    queryKey: ["user_profiles"],
+    queryKey: QueryKeys.userCenter.profiles,
     enabled: !!user,
     queryFn: async () => {
       if (!user) return null;
-      const _data = await getUserProfiles(user?.user.id);
+      const _data = await getUserProfiles(user?.id);
       const data = await _data.json();
       return data.data;
     },
   });
   const { data: portfolio_categories } = useQuery({
-    queryKey: ["portfolio_categories"],
+    queryKey: QueryKeys.portfolio.categories,
     enabled: !!user,
     queryFn: async () => {
       if (!user) return null;
-      const _data = await fetch(`/api/user/design/portfolio/categories`);
-      const data = await _data.json();
-      console.log("data---", data.data);
-      return data.data;
+      const data = await Get(`/api/user/design/portfolio/categories`);
+      return data;
     },
   });
 
   return (
     <div className="flex justify-start items-start p-4">
       <div className="w-1/4 h-screen shrink-0 sticky top-22">
-        <div className="min-h-[calc(100%-10rem)] bg-gray-100  rounded-2xl shadow-2xl py-8 px-6 m-4 flex flex-col justify-between">
+        <div className="min-h-[calc(100%-10rem)] bg-gray-100 dark:bg-gray-800  rounded-2xl shadow-2xl py-8 px-6 m-4 flex flex-col justify-between">
           <div>
-            <div className="w-[calc(100%+1.5rem)] mb-4 flex felx-row flex-nowrap items-center gap-6 shadow-md bg-white p-4 py-8 rounded-l-2xl">
+            <div className="w-[calc(100%+1.5rem)] mb-4 flex felx-row flex-nowrap items-center gap-6 shadow-md bg-white dark:bg-gray-700 p-4 py-8 rounded-l-2xl">
               <div className="w-20 h-20">
                 {user_profiles?.avatar_url && (
                   <Image
@@ -81,7 +69,7 @@ export default function DesignLayout({
             <div className="mt-2 text-sm mb-6">
               自2017年投身UI与网页设计行业，擅长界面交互、网页、插画、海报及KV主视觉设计，兼顾设计创意与落地实现，注重真实可用的用户体验。
             </div>
-            <hr className="border-gray-200 my-4" />
+            <hr className="border-gray-200 dark:border-gray-700 my-4" />
             <div className="overflow-auto max-h-[calc(100vh-20rem)]">
               <div className="flex flex-col gap-6">
                 {portfolio_categories &&
@@ -89,10 +77,11 @@ export default function DesignLayout({
                     <Item
                       key={design.id}
                       className={cn(
-                        "border overflow-hidden shadow-xl border-gray-300 group h-13 2xl:hover:h-42 hover:h-48 transition-all duration-500 ease-in-out",
+                        "border overflow-hidden shadow-xl border-gray-300 dark:border-gray-600 group h-13 2xl:hover:h-42 hover:h-48 transition-all duration-500 ease-in-out",
                         design.path.includes(type as string) && "2xl:h-42 h-48",
                         {
-                          "bg-teal-300": design.key_name === type,
+                          "bg-teal-300 dark:bg-teal-600":
+                            design.key_name === type,
                         }
                       )}
                     >
@@ -113,7 +102,7 @@ export default function DesignLayout({
                           {design.title}
                         </ItemContent>
                         <ItemActions>
-                          <div className="bg-gray-200 hover:bg-teal-300 cursor-pointer rounded-lg">
+                          <div className="bg-gray-200 dark:bg-gray-700 hover:bg-teal-300 dark:bg-teal-600 cursor-pointer rounded-lg">
                             <div className="group-hover:hidden px-2 py-1">
                               共计 {design.total_count} 个
                             </div>
@@ -145,10 +134,10 @@ export default function DesignLayout({
           <div className="flex justify-between items-center mt-6">
             <div className="flex items-center gap-2">
               <Feather size={16} />
-              Anln
+              {user_profiles?.display_name}
             </div>
             <div className="text-sm flex flex-row text-gray-500 justify-self-center">
-              有 0 种设计·有 0 个人浏览
+              有 {portfolio_categories?.[0]?.total_count} 个设计作品
             </div>
           </div>
         </div>

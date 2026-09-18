@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { Note } from "@/app/utils/api/font-notes/typs";
 import { Spinner } from "../ui/spinner";
 import { PortfolioWork } from "@/app/utils/api/design/type";
+import { QueryKeys } from "@/app/utils/query-keys";
 const debounceFn = debounce((fn) => {
   if (typeof fn !== "function") return;
   // 在此处做你的搜索逻辑
@@ -35,7 +36,7 @@ export const SearchAll = () => {
     []
   );
   const { data, isPending } = useQuery({
-    queryKey: ["fuzzySearchAll", keyValue],
+    queryKey: QueryKeys.public.fuzzySearchAll(keyValue as string),
     enabled: open,
     queryFn: async () => {
       try {
@@ -50,12 +51,11 @@ export const SearchAll = () => {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
-  console.log("data", data);
   return (
     <div className="flex flex-col gap-4">
       <Button
         className={cn(
-          "w-12 p-2 backdrop-blur-md border-gray-200 rounded-lg group hover:w-20 hover:text-teal-400 cursor-pointer transition-all"
+          "w-12 p-2 backdrop-blur-md border-gray-200 dark:border-gray-700 rounded-lg group hover:w-20 hover:text-teal-400 cursor-pointer transition-all"
         )}
         onClick={() => setOpen(true)}
       >
@@ -71,7 +71,7 @@ export const SearchAll = () => {
       <CommandDialog
         open={open}
         onOpenChange={setOpen}
-        className="bg-white/80 backdrop-blur-md"
+        className="bg-white dark:bg-gray-700/80 backdrop-blur-md"
       >
         <Command>
           <CommandInput
@@ -82,7 +82,7 @@ export const SearchAll = () => {
           />
           <div>
             {isPending && (
-              <div className="flex items-center gap-2 p-2 hover:bg-white hover:text-teal-400 cursor-pointer">
+              <div className="flex items-center gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer">
                 <Spinner className="size-3 text-gray-400" />
                 <span>搜索中...</span>
               </div>
@@ -97,7 +97,7 @@ export const SearchAll = () => {
                       .slice(0, !keyValue ? 4 : data.length)
                       ?.map((item: Note) => (
                         <div
-                          className="flex items-center justify-between gap-2 p-2 hover:bg-white hover:text-teal-400 cursor-pointer"
+                          className="flex items-center justify-between gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer"
                           key={item.id}
                           onClick={() => {
                             const searchParams = new URLSearchParams();
@@ -135,7 +135,7 @@ export const SearchAll = () => {
                       .slice(0, !keyValue ? 4 : data.length)
                       ?.map((item: PortfolioWork) => (
                         <div
-                          className="flex items-center justify-between gap-2 p-2 hover:bg-white hover:text-teal-400 cursor-pointer"
+                          className="flex items-center justify-between gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer"
                           key={item.id}
                           onClick={() => {
                             const url = `/design/detail/${item.id}`;

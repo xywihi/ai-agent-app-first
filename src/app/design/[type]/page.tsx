@@ -1,11 +1,14 @@
 "use client";
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
 import { getUserInfo } from "@/app/utils/api/user/requery";
+import { Get } from "@/app/utils/query";
+import { QueryKeys } from "@/app/utils/query-keys";
 import { debounce } from "@/app/utils/tools";
 import { DesignCard } from "@/components/design/DesignCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
+import { useUserQuery } from "@/hooks/use-user-query";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
@@ -30,25 +33,17 @@ export default function Design() {
   const [positions, setPositions] = useState<
     Map<string, { left: number; top: number; width: number; height: number }>
   >(new Map());
-  const { data: user } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const _data = await getUserInfo();
-      const data = await _data.json();
-      return data.data;
-    },
-  });
+  const { data: user } = useUserQuery();
   const { type } = useParams();
   const { data: portfolio_works, isPending } = useQuery({
-    queryKey: ["portfolio_works", type],
+    queryKey: QueryKeys.portfolio.portfolios(type as string),
     enabled: !!user,
     queryFn: async () => {
       if (!user) return null;
-      const _data = await fetch(
+      const data = await Get(
         `/api/user/design/portfolio/default?category=${type}`
       );
-      const data = await _data.json();
-      return data.data;
+      return data;
     },
   });
   useEffect(() => {
@@ -99,7 +94,6 @@ export default function Design() {
           // },
           { threshold: 0.15 } // 露出 15% 就触发
         );
-        console.log("card", card);
         if (card) observer.observe(card); // 如果有卡片，就观察
         return observer;
       }, 300);
@@ -146,7 +140,7 @@ export default function Design() {
       { left: number; top: number; width: number; height: number }
     > = new Map();
     if (!portfolio_works) return;
-    portfolio_works.forEach((work: ProcessedPortfolioWork) => {
+    portfolio_works.list.forEach((work: ProcessedPortfolioWork) => {
       const height = cardHeightsRef.current.get(work.id) || 200;
       const shortestCol = columnHeights.indexOf(Math.min(...columnHeights));
       const left = shortestCol * (columnWidth + gap);
@@ -171,13 +165,13 @@ export default function Design() {
     });
     return () => clearTimeout(timer);
   }, [cardHeightsRef, getColumnCount, portfolio_works]);
-
+  console.log("portfolio_works", portfolio_works);
   return (
     <div onClick={() => setShowSearch(false)}>
       <div className="mb-6 flex justify-between items-center">
         <h1 className="text-3xl font-bold">
-          设计作品 <span className="underline">{portfolio_works?.length}</span>{" "}
-          个
+          设计作品{" "}
+          <span className="underline">{portfolio_works?.list?.length}</span> 个
         </h1>
         {/* 搜索框 */}
         <div className="relative">
@@ -200,18 +194,20 @@ export default function Design() {
             <Button className="absolute right-2 top-1/2 -translate-y-1/2">
               <Search />
               搜索
-              <Kbd className="ml-1 bg-gray-200 rounded">⌘K</Kbd>
+              <Kbd className="ml-1 bg-gray-200 dark:bg-gray-700 rounded">
+                ⌘K
+              </Kbd>
             </Button>
           </div>
           {showSearch && (
             <div
-              className="absolute mt-3 w-full bg-white/20 backdrop-blur-md p-4 rounded-2xl min-h-10 z-20"
+              className="absolute mt-3 w-full bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 rounded-2xl min-h-10 z-20"
               onClick={(e) => e.stopPropagation()}
             >
               <h3>作品主推</h3>
               <ul className="mt-2 flex flex-row flex-wrap gap-2">
                 <li
-                  className="px-2 bg-gray-100/80 rounded-2xl cursor-pointer"
+                  className="px-2 bg-gray-100 dark:bg-gray-800/80 rounded-2xl cursor-pointer"
                   onClick={() => {
                     setSearchValue("UI设计");
                     setShowSearch(false);
@@ -220,7 +216,7 @@ export default function Design() {
                   UI设计
                 </li>
                 <li
-                  className="px-2 bg-gray-100/80 rounded-2xl cursor-pointer"
+                  className="px-2 bg-gray-100 dark:bg-gray-800/80 rounded-2xl cursor-pointer"
                   onClick={() => {
                     setSearchValue("图标设计");
                     setShowSearch(false);
@@ -229,7 +225,7 @@ export default function Design() {
                   图标设计
                 </li>
                 <li
-                  className="px-2 bg-gray-100/80 rounded-2xl cursor-pointer"
+                  className="px-2 bg-gray-100 dark:bg-gray-800/80 rounded-2xl cursor-pointer"
                   onClick={() => {
                     setSearchValue("图标设计");
                     setShowSearch(false);
@@ -254,9 +250,11 @@ export default function Design() {
         // )}
         >
           {isPending && <div className="text-center">作品努力加载中...</div>}
-          {portfolio_works && !portfolio_works.length && <div>暂无作品</div>}
+          {portfolio_works && !portfolio_works?.list.length && (
+            <div>暂无作品</div>
+          )}
           {portfolio_works &&
-            portfolio_works.map(
+            portfolio_works.list.map(
               (work: ProcessedPortfolioWork, index: number) => {
                 const pos = positions.get(work.id);
                 return (

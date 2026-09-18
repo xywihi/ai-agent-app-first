@@ -17,7 +17,10 @@ export function SpeechButton({ text, className }: SpeechButtonProps) {
     <Button
       variant="ghost"
       size="icon"
-      className={cn(className, "cursor-pointer hover:bg-teal-400")}
+      className={cn(
+        className,
+        "cursor-pointer hover:bg-teal-400 dark:bg-teal-600"
+      )}
       onClick={() => (isSpeaking ? stop() : speak(text))}
     >
       {isSpeaking ? <VolumeX size={16} /> : <Volume2 size={16} />}

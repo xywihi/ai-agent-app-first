@@ -4,6 +4,7 @@ import { Input } from "@base-ui/react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { cn } from "@/app/utils/tools";
+import { Post } from "@/app/utils/query";
 
 export function UploadAvatarApi({
   className,
@@ -20,12 +21,11 @@ export function UploadAvatarApi({
     const formData = new FormData();
     formData.append("avatar", file);
     setUploading(true);
-    const res = await fetch("/api/user/upload-avatar", {
-      method: "POST",
+    const res = await Post("/api/user/upload-avatar", {
       body: formData,
     });
-    const json = await res.json();
-    setFileUrl(json.data.publicUrl);
+    const data = await res.json();
+    setFileUrl(data.publicUrl);
     setUploading(false);
   };
   return (

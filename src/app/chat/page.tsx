@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { createClient } from "@/lib/server/client";
 import z from "zod";
+import { QueryKeys } from "@/app/utils/query-keys";
 const Schema = z.object({
   user: z.object({
     id: z.string(),
@@ -22,7 +23,7 @@ export default function Chat() {
   //   "authUser",
   // ]);
   const { data = [], isPending } = useQuery({
-    queryKey: ["converHistories"],
+    queryKey: QueryKeys.aiChat.history,
     enabled: !userId,
     queryFn: async () => {
       try {

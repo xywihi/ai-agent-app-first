@@ -21,8 +21,6 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   startTransition,
-  Suspense,
-  use,
   useCallback,
   useEffect,
   useOptimistic,
@@ -32,6 +30,8 @@ import {
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
 import { useQueryClient } from "@tanstack/react-query";
 import { getTime } from "@/app/utils/tools";
+import { QueryKeys } from "@/app/utils/query-keys";
+import { Post } from "@/app/utils/query";
 
 interface props {
   index?: number;
@@ -94,23 +94,23 @@ export const DesignCard = ({
   }, [cardHeightsRef, card, cardRef, calcLayout]);
   const handleToLike = useCallback(
     async (id?: string): Promise<void> => {
-      const res = await fetch(`/api/user/design/portfolio/like`, {
-        method: "POST",
+      const res = await Post(`/api/user/design/portfolio/like`, {
         body: JSON.stringify({
           workId: card.id,
           id,
         }),
       });
       console.log("res", res);
-      if (res.ok) {
+      if (res) {
         queryClient.invalidateQueries({
-          queryKey: ["portfolio_works", type],
+          queryKey: QueryKeys.portfolio.portfolios(type as string),
         });
         queryClient.setQueryData(
-          ["portfolio_works", type],
-          (oldData: ProcessedPortfolioWork[]) => {
+          QueryKeys.portfolio.portfolios(type as string),
+          (oldData: { list: ProcessedPortfolioWork[] }) => {
+            console.log("oldData", oldData);
             if (!oldData) return oldData;
-            return oldData.map((item: ProcessedPortfolioWork) => {
+            const list = oldData?.list.map((item: ProcessedPortfolioWork) => {
               if (item.id === card.id) {
                 return {
                   ...item,
@@ -128,6 +128,9 @@ export const DesignCard = ({
               }
               return item;
             });
+            return {
+              list,
+            };
           }
         );
       }
@@ -136,23 +139,22 @@ export const DesignCard = ({
   );
   const handleToCollect = useCallback(
     async (id?: string) => {
-      const res = await fetch(`/api/user/design/portfolio/collect`, {
-        method: "POST",
+      const res = await Post(`/api/user/design/portfolio/collect`, {
         body: JSON.stringify({
           workId: card.id,
           id,
         }),
       });
       console.log("res", res);
-      if (res.ok) {
+      if (res) {
         queryClient.invalidateQueries({
-          queryKey: ["portfolio_works", type],
+          queryKey: QueryKeys.portfolio.portfolios(type as string),
         });
         queryClient.setQueryData(
-          ["portfolio_works", type],
-          (oldData: ProcessedPortfolioWork[]) => {
+          QueryKeys.portfolio.portfolios(type as string),
+          (oldData: { list: ProcessedPortfolioWork[] }) => {
             if (!oldData) return oldData;
-            return oldData.map((item: ProcessedPortfolioWork) => {
+            const list = oldData?.list.map((item: ProcessedPortfolioWork) => {
               if (item.id === card.id) {
                 return {
                   ...item,
@@ -170,6 +172,9 @@ export const DesignCard = ({
               }
               return item;
             });
+            return {
+              list,
+            };
           }
         );
       }
@@ -178,7 +183,7 @@ export const DesignCard = ({
   );
   return (
     <Card
-      className={cn("pt-0 bg-white shadow-md", className)}
+      className={cn("pt-0 bg-white dark:bg-gray-700 shadow-md", className)}
       ref={cardRef}
       style={{ height }}
     >
@@ -216,7 +221,7 @@ export const DesignCard = ({
         <CardAction className="flex space-x-2 justify-self-start mt-2">
           <LikeButton card={card} handleToLike={handleToLike} />
           <CollectButton card={card} handleToCollect={handleToCollect} />
-          <Button className="rounded-full cursor-pointer hover:bg-teal-400 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
+          <Button className="rounded-full cursor-pointer hover:bg-teal-400 dark:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
             <Share2 />
             <span>{card.actions.share.count}</span>
           </Button>
@@ -230,7 +235,7 @@ export const DesignCard = ({
               <div className="absolute -top-14 right-15 cursor-pointer group">
                 <Tooltip>
                   <TooltipTrigger
-                    className="w-10 h-10 flex justify-center items-center bg-white rounded-full cursor-pointer"
+                    className="w-10 h-10 flex justify-center items-center bg-white dark:bg-gray-700 rounded-full cursor-pointer"
                     onClick={() => router.push("/design/detail/" + card.id)}
                   >
                     <Maximize
@@ -246,7 +251,7 @@ export const DesignCard = ({
               <div className="absolute -top-15 right-0 cursor-pointer group">
                 <Tooltip>
                   <TooltipTrigger
-                    className="w-12 h-12 flex justify-center items-center bg-white rounded-full cursor-pointer"
+                    className="w-12 h-12 flex justify-center items-center bg-white dark:bg-gray-700 rounded-full cursor-pointer"
                     onClick={() => setShowImage((pre) => !pre)}
                   >
                     <X
@@ -261,7 +266,7 @@ export const DesignCard = ({
                 </Tooltip>
               </div>
             </div>
-            <Card className="bg-white pt-0 flex flex-row">
+            <Card className="bg-white dark:bg-gray-700 pt-0 flex flex-row">
               <div className="flex-1 max-h-[calc(100vh-200px)] overflow-auto">
                 <Image
                   width={200}
@@ -313,13 +318,13 @@ export const DesignCard = ({
                       />
                       <span>{card.actions.star.count}</span>
                     </Button>
-                    <Button className="rounded-full cursor-pointer hover:bg-teal-400 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
+                    <Button className="rounded-full cursor-pointer hover:bg-teal-400 dark:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
                       <Share2 />
                       <span>{card.actions.share.count}</span>
                     </Button>
                   </CardAction>
                 </CardContent>
-                <CardFooter className="border-t-gray-200 text-gray-500">
+                <CardFooter className="border-t-gray-200 dark:border-t-gray-800 text-gray-500">
                   更新时间：{getTime(card.updated_at)}
                 </CardFooter>
               </div>

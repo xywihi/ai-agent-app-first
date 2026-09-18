@@ -36,6 +36,8 @@ import {
 } from "@/app/utils/api/design/type";
 import { getTime } from "@/app/utils/tools";
 import { ToTop } from "@/components/ToTop";
+import { QueryKeys } from "@/app/utils/query-keys";
+import { Get, Post } from "@/app/utils/query";
 // import {VariableSizeGrid as Grid} from "react-window";
 // type User = z.infer<typeof Schema>;
 
@@ -51,23 +53,21 @@ export default function Design() {
   const router = useRouter();
   const { id } = useParams();
   const { data: card } = useQuery({
-    queryKey: ["portfolio_work_detail", id],
+    queryKey: QueryKeys.portfolio.detail(id as string),
     enabled: !!id,
     queryFn: async () => {
-      const _data = await fetch(`/api/user/design/portfolio/detail?id=${id}`);
-      const data = await _data.json();
-      return data.data;
+      const data = await Get(`/api/user/design/portfolio/detail?id=${id}`);
+      return data;
     },
   });
   const { data: recomandCards } = useQuery({
-    queryKey: ["recomand_portfolios", card],
+    queryKey: QueryKeys.portfolio.recomand(card),
     enabled: !!card?.portfolio_categories?.id,
     queryFn: async () => {
-      const _data = await fetch(
+      const data = await Get(
         `/api/user/design/portfolio/recomand?categoryId=${card?.portfolio_categories?.id}&id=${id}`
       );
-      const data = await _data.json();
-      return data.data;
+      return data;
     },
   });
   const {
@@ -78,22 +78,19 @@ export default function Design() {
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = async (data: FormValues) => {
-    console.log("data", data);
-  };
+  const onSubmit = async (data: FormValues) => {};
   const handleToLike = useCallback(
     async (likeId?: string): Promise<void> => {
-      const res = await fetch(`/api/user/design/portfolio/like`, {
-        method: "POST",
+      const res = await Post(`/api/user/design/portfolio/like`, {
         body: JSON.stringify({
           workId: id,
           id: likeId,
         }),
       });
       console.log("res", res);
-      if (res.ok) {
+      if (res) {
         queryClient.invalidateQueries({
-          queryKey: ["portfolio_work_detail", id],
+          queryKey: QueryKeys.portfolio.detail(id as string),
         });
         queryClient.setQueryData(
           ["portfolio_work_detail", id],
@@ -120,17 +117,15 @@ export default function Design() {
   );
   const handleToCollect = useCallback(
     async (collectId?: string) => {
-      const res = await fetch(`/api/user/design/portfolio/collect`, {
-        method: "POST",
+      const res = await Post(`/api/user/design/portfolio/collect`, {
         body: JSON.stringify({
           workId: id,
           id: collectId,
         }),
       });
-      console.log("res", res);
-      if (res.ok) {
+      if (res) {
         queryClient.invalidateQueries({
-          queryKey: ["portfolio_work_detail", id],
+          queryKey: QueryKeys.portfolio.detail(id as string),
         });
         queryClient.setQueryData(
           ["portfolio_work_detail", id],
@@ -155,18 +150,17 @@ export default function Design() {
     },
     [queryClient, id]
   );
-  console.log("card", card);
   return (
     card && (
       <div
         ref={containerRef}
-        className="pb-12 mb-4 relative w-full md:max-w-1/2 m-auto bg-white px-4 rounded-2xl shadow-2xl"
+        className="pb-12 mb-4 relative w-full md:max-w-1/2 m-auto bg-white dark:bg-gray-700 px-4 rounded-2xl shadow-2xl"
       >
         {/* 活动按钮 */}
-        <div className="fixed right-8 bottom-40 flex flex-col space-y-2 bg-white rounded-full py-4 px-2 shadow-xl mt-2 border border-gray-200">
+        <div className="fixed right-8 bottom-40 flex flex-col space-y-2 bg-white dark:bg-gray-700 rounded-full py-4 px-2 shadow-xl mt-2 border border-gray-200 dark:border-gray-700">
           <LikeButton card={card} handleToLike={handleToLike} />
           <CollectButton card={card} handleToCollect={handleToCollect} />
-          <Button className="rounded-full w-12 h-16 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-400 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
+          <Button className="rounded-full w-12 h-16 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-400 dark:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
             <span>{card.actions.share.count}</span>
             <Share2
               size={46}
@@ -189,7 +183,7 @@ export default function Design() {
                   </Badge>
                 ))}
               </div>
-              <p className="border-t-gray-200 text-gray-500 text-sm">
+              <p className="border-t-gray-200 dark:border-t-gray-800 text-gray-500 text-sm">
                 更新时间：{getTime(card.updated_at)}
               </p>
               <section className="flex space-x-2 my-4">
@@ -244,7 +238,7 @@ export default function Design() {
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // 加载优化
                         className="relative z-20 rounded-2xl aspect-4/3 h-fit w-full object-cover object-top select-none [-webkit-user-drag:none]"
                       />
-                      <p className="absolute top-2 left-2 z-20 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-sm text-white flex gap-1 items-center cursor-pointer">
+                      <p className="absolute top-2 left-2 z-20 bg-white dark:bg-gray-700/20 backdrop-blur-md px-3 py-1 rounded-full text-sm text-white flex gap-1 items-center cursor-pointer">
                         <ThumbsUp
                           size={16}
                           fill={
@@ -279,7 +273,7 @@ export default function Design() {
           </h2>
           <form method="post" onSubmit={handleSubmit(onSubmit)}>
             <div>
-              <div className="rounded-2xl p-6 border-6 border-gray-300 bg-gray-100 overflow-hidden">
+              <div className="rounded-2xl p-6 border-6 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 overflow-hidden">
                 <textarea
                   maxLength={500}
                   {...register("leaveMessage")}
@@ -302,7 +296,7 @@ export default function Design() {
                     {...register("phone")}
                     type="phone"
                     placeholder="请输入您的手机号"
-                    className="flex-1 block w-full h-max rounded-2xl p-4 border-6 border-gray-300 bg-gray-100 outline-none focus:outline-none"
+                    className="flex-1 block w-full h-max rounded-2xl p-4 border-6 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 outline-none focus:outline-none"
                   />
                   <span
                     className={cn(
@@ -320,7 +314,7 @@ export default function Design() {
                     {...register("email")}
                     type="email"
                     placeholder="请输入您的邮箱"
-                    className="flex-1 block w-full h-fit rounded-2xl p-4 border-6 border-gray-300 bg-gray-100 outline-none focus:outline-none"
+                    className="flex-1 block w-full h-fit rounded-2xl p-4 border-6 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 outline-none focus:outline-none"
                   />
                   <span
                     className={cn(
@@ -337,13 +331,13 @@ export default function Design() {
               <div className="flex flex-row gap-4 mt-6">
                 <Button
                   type="submit"
-                  className="w-60 h-14 rounded-2xl px-4 py-2 bg-gray-300 text-2xl font-bold mt-4 cursor-pointer"
+                  className="w-60 h-14 rounded-2xl px-4 py-2 bg-gray-300 dark:bg-gray-600 text-2xl font-bold mt-4 cursor-pointer"
                 >
                   取消留言
                 </Button>
                 <Button
                   type="submit"
-                  className="flex-1 h-14 rounded-2xl px-4 py-2 bg-teal-300 text-2xl font-bold mt-4 cursor-pointer"
+                  className="flex-1 h-14 rounded-2xl px-4 py-2 bg-teal-300 dark:bg-teal-600 text-2xl font-bold mt-4 cursor-pointer"
                 >
                   提交
                 </Button>

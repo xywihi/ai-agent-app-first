@@ -19,7 +19,7 @@ function myRemarkContainer() {
           hName: "div",
           hProperties: {
             className: [
-              `${name} bg-white rounded-2xl shadow-xl border border-gray-300 p-6`,
+              `${name} bg-white dark:bg-gray-700 rounded-2xl shadow-xl border border-gray-300 dark:border-gray-600 p-6`,
             ],
           },
         };
@@ -98,7 +98,7 @@ export const ChatMarkDown = ({
                 <div className="bg-slate-300 dark:bg-slate-900 rounded-xl p-4 my-2">
                   <p className="text-sm opacity-50">{languageType}</p>
                   <hr className="mb-4 mt-2 opacity-50" />
-                  <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded text-sm ">
+                  <code className="bg-gray-200 dark:bg-gray-700 dark:bg-gray-800 px-1 rounded text-sm ">
                     {children}
                   </code>
                 </div>
@@ -122,12 +122,14 @@ export const ChatMarkDown = ({
             );
           },
           th: ({ children }) => (
-            <th className="border bg-gray-100 p-1">{children}</th>
+            <th className="border bg-gray-100 dark:bg-gray-800 p-1">
+              {children}
+            </th>
           ),
           td: ({ children }) => <td className="border p-1">{children}</td>,
           blockquote: ({ children, ...props }) => (
             <blockquote
-              className="my-2 pl-4 border-l-4 border-sky-400 bg-sky-50 p-3 rounded-r-md text-slate-700"
+              className="my-2 pl-4 border-l-4 border-sky-400 bg-sky-50 dark:bg-sky-900 p-3 rounded-r-md text-slate-700 dark:text-slate-200"
               {...props}
             >
               {children}

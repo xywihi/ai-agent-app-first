@@ -35,6 +35,7 @@ export async function getUserProfiles(user_id: string) {
     if (error) {
       throw error;
     }
+    console.log("****------", data);
     return new Response(JSON.stringify({ error: null, data }), { status: 200 });
   } catch (error) {
     console.log("chat api error", error);

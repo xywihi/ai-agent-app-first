@@ -19,7 +19,6 @@ export const createApprovalTask = async (
     console.log("error", error);
     return;
   }
-  console.log("data", data);
   return data;
 };
 
@@ -30,7 +29,6 @@ export const checkApprovalStatus = async (requestId: string) => {
     .select("*")
     .eq("request_id", requestId)
     .single();
-  console.log("data", data);
   return data;
 };
 export const updateApprovalStatus = async (
@@ -42,7 +40,6 @@ export const updateApprovalStatus = async (
     .from("approval_tasks")
     .update({ status })
     .eq("request_id", requestId);
-  console.log("data", data);
   return data;
 };
 
@@ -59,7 +56,6 @@ export const createThread = async (threadId: string, state: unknown) => {
     console.log("error", error);
     return;
   }
-  console.log("data", data);
   return data;
 };
 
@@ -70,11 +66,9 @@ export const checkThreadStatus = async (threadId: string) => {
     .select("*")
     .eq("thread_id", threadId)
     .single();
-  console.log("data", data);
   return data;
 };
 
-// --------------------------
 export interface ConverHistoryListInterface {
   id: number;
   conversation_name: string;
@@ -95,7 +89,6 @@ export const getHistoryMessages = async (conversation_id: string | number) => {
     console.log("error", error);
     throw error;
   }
-  console.log("data", data);
   const { data: historyData, error: historyError } = await client
     .from("workflow_history")
     .select("*")
@@ -130,7 +123,6 @@ export const addHistoryMessage = async (
     console.log("error", error);
     return;
   }
-  console.log("data", data);
 };
 
 export const createWorkflow = async () => {
@@ -176,7 +168,6 @@ export const deleteWorkflowHistoryList = async (id: string | number) => {
     console.log("error", error);
     return;
   }
-  console.log("data", data);
 };
 
 //更新对话历史某项
@@ -193,5 +184,4 @@ export const updateWorkflowHistoryList = async (
     console.log("error", error);
     return;
   }
-  console.log("data", data);
 };

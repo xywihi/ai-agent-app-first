@@ -17,6 +17,8 @@ import { Suspense, useMemo } from "react";
 import { ItemContent } from "@/components/ui/item";
 import { Icon } from "@/components/Icon";
 import { useRouter } from "next/navigation";
+import { QueryKeys } from "../utils/query-keys";
+import { useUserQuery } from "@/hooks/use-user-query";
 export default function UserLayout({
   children,
 }: {
@@ -57,27 +59,21 @@ export default function UserLayout({
     ];
   }, []);
   const router = useRouter();
-  const { data: user } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const _data = await getUserInfo();
-      const data = await _data.json();
-      return data.data;
-    },
-  });
+  const { data: user } = useUserQuery();
   const { data: user_profiles } = useQuery({
-    queryKey: ["user_profiles"],
+    queryKey: QueryKeys.userCenter.profiles,
     enabled: !!user,
     queryFn: async () => {
       if (!user) return null;
-      const _data = await getUserProfiles(user?.user.id);
+      const _data = await getUserProfiles(user?.id);
       const data = await _data.json();
       return data.data;
     },
   });
+  console.log("user_profiles", user_profiles);
   return (
     <div className="flex gap-4 p-6">
-      <aside className="shrink-0 p-6 sticky top-24 flex flex-col justify-between bg-linear-to-b from-gray-200 to-white  bg-white rounded-2xl min-w-90 h-[calc(100vh-13rem)] shadow-2xl">
+      <aside className="shrink-0 p-6 sticky top-24 flex flex-col justify-between bg-linear-to-b from-gray-200 dark:from-gray-900 to-white dark:to-gray-700  bg-white dark:bg-gray-700 rounded-2xl min-w-90 h-[calc(100vh-13rem)] shadow-2xl">
         <div>
           {user && (
             <div className="flex  items-center gap-4">
@@ -93,7 +89,7 @@ export default function UserLayout({
                     <AvatarBadge className="bg-green-600 dark:bg-green-800" />
                   </Avatar>
                 </DialogTrigger>
-                <DialogContent className="bg-white/40 backdrop-blur-md flex flex-col justify-center items-center gap-4">
+                <DialogContent className="bg-white dark:bg-gray-700/40 backdrop-blur-md flex flex-col justify-center items-center gap-4">
                   <h1 className="text-2xl font-bold">修改头像</h1>
                   <UploadAvatarApi
                     className="my-4"
@@ -102,18 +98,18 @@ export default function UserLayout({
                 </DialogContent>
               </Dialog>
               <div>
-                <b>{user.user.user_metadata.username}</b>
-                <p>{user.user.user_metadata.email}</p>
+                <b>{user.user_metadata.username}</b>
+                <p>{user.user_metadata.email}</p>
               </div>
             </div>
           )}
 
-          <Separator className="h-0.5 bg-gray-400 my-8" />
+          <Separator className="h-0.5 bg-gray-400 dark:bg-gray-600 my-8" />
           <div>
             {asideFunctions.map((item, index) => (
               <div
                 key={index}
-                className="border-2 border-gray-300 rounded-xl mb-4 group bg-white drop-shadow-[0_4px_10px_#ddd] hover:drop-shadow-[0_8px_14px_#b4b4b4cc]"
+                className="border-2 border-gray-300 dark:border-gray-600 rounded-xl mb-4 group bg-white dark:bg-gray-700 drop-shadow-[0_4px_10px_#ddd] hover:drop-shadow-[0_8px_14px_#b4b4b4cc] dark:drop-shadow-[0_4px_10px_#242424] dark:hover:drop-shadow-[0_8px_14px_#434343cc]"
               >
                 <div
                   className="flex items-center  text-xl my-4 px-4  w-full justify-between transition-none hover:bg-accent hover:text-accent-foreground"

@@ -39,6 +39,8 @@ import { Icon } from "../../Icon";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { QueryKeys } from "@/app/utils/query-keys";
+import { Post } from "@/app/utils/query";
 const formSchema = z.object({
   title: z.string().min(2, {
     message: "标题至少2个字",
@@ -129,8 +131,7 @@ export const CreateCategory = ({
     isError,
   } = useMutation({
     mutationFn: async (category: FormValues) => {
-      const data = await fetch("/api/user/design/portfolio/categories", {
-        method: "POST",
+      const data = await Post("/api/user/design/portfolio/categories", {
         body: JSON.stringify({ category }),
       });
       return data;
@@ -138,7 +139,7 @@ export const CreateCategory = ({
     onSuccess: () => {
       reset();
       queryClient.invalidateQueries({
-        queryKey: ["portfolio_categories"],
+        queryKey: QueryKeys.portfolio.categories,
       });
       toast.success("创建成功", {
         position: "top-center",
@@ -149,11 +150,11 @@ export const CreateCategory = ({
   });
   return (
     <Dialog>
-      <DialogTrigger className="px-2 flex justify-between items-center w-full bg-gray-300 hover:bg-teal-400">
+      <DialogTrigger className="px-2 flex justify-between items-center w-full bg-gray-300 hover:bg-teal-400 dark:bg-teal-600">
         新增{!grade ? "一级" : "二级"}类型
         <Plus size={20} />
       </DialogTrigger>
-      <DialogContent className="bg-white">
+      <DialogContent className="bg-white dark:bg-gray-700">
         <form
           target="_blank1"
           onSubmit={(e) => {
@@ -218,7 +219,7 @@ export const CreateCategory = ({
                   </Suspense>
                 </div>
 
-                <SelectContent className="bg-white min-w-90 max-h-40 overflow-auto">
+                <SelectContent className="bg-white dark:bg-gray-700 min-w-90 max-h-40 overflow-auto">
                   <SelectGroup>
                     {iconNames.map((item) => (
                       <SelectItem key={item.name} value={item.name}>
@@ -233,11 +234,15 @@ export const CreateCategory = ({
               </Select>
             )}
           </DialogHeader>
-          <DialogFooter className="sm:justify-start border-gray-300">
+          <DialogFooter className="sm:justify-start border-gray-300 dark:border-gray-600">
             <DialogClose>
               <span>关闭</span>
             </DialogClose>
-            <Button type="submit" formTarget="_blank1" className="bg-teal-400">
+            <Button
+              type="submit"
+              formTarget="_blank1"
+              className="bg-teal-400 dark:bg-teal-600"
+            >
               保存
             </Button>
           </DialogFooter>

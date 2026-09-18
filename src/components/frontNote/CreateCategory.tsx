@@ -37,6 +37,7 @@ import {
 } from "../ui/select";
 import { Icon } from "../Icon";
 import { toast } from "sonner";
+import { QueryKeys } from "@/app/utils/query-keys";
 
 export const CreateCategory = ({
   grade,
@@ -111,7 +112,7 @@ export const CreateCategory = ({
     mutationFn: addCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["fontendNoteRootCategories"],
+        queryKey: QueryKeys.fronend.rootCategories(),
       });
       toast.success("创建成功", {
         position: "top-center",
@@ -127,11 +128,11 @@ export const CreateCategory = ({
   });
   return (
     <Dialog>
-      <DialogTrigger className="px-2 flex justify-between items-center w-full bg-gray-300 hover:bg-teal-400">
+      <DialogTrigger className="px-2 flex justify-between items-center w-full bg-gray-300 hover:bg-teal-400 dark:bg-teal-600">
         新增{!grade ? "一级" : "二级"}类型
         <Plus size={20} />
       </DialogTrigger>
-      <DialogContent className="bg-white">
+      <DialogContent className="bg-white dark:bg-gray-700">
         <DialogHeader>
           <DialogTitle>新增{!grade ? "一级" : "二级"}类型</DialogTitle>
           <Input
@@ -165,7 +166,7 @@ export const CreateCategory = ({
                 </Suspense>
               </div>
 
-              <SelectContent className="bg-white min-w-90 max-h-40 overflow-auto">
+              <SelectContent className="bg-white dark:bg-gray-700 min-w-90 max-h-40 overflow-auto">
                 <SelectGroup>
                   {iconNames.map((item) => (
                     <SelectItem key={item.name} value={item.name}>
@@ -180,13 +181,13 @@ export const CreateCategory = ({
             </Select>
           )}
         </DialogHeader>
-        <DialogFooter className="sm:justify-start border-gray-300">
+        <DialogFooter className="sm:justify-start border-gray-300 dark:border-gray-600">
           <DialogClose>
             <span>关闭</span>
           </DialogClose>
           <Button
             type="submit"
-            className="bg-teal-400"
+            className="bg-teal-400 dark:bg-teal-600"
             onClick={() => {
               handleAddCategory({
                 name: category.name,

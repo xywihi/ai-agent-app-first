@@ -1,11 +1,7 @@
 "use client";
-import { getCategoryTree } from "@/app/utils/api/font-notes/requery";
-import { CategoryTree, Note } from "@/app/utils/api/font-notes/typs";
 import { cn, getTime } from "@/app/utils/tools";
-import { EditeNoteForm } from "@/components/frontNote/EditeNoteForm";
 import { GlobalModel } from "@/components/GlobalModel";
 import { ToTop } from "@/components/ToTop";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
@@ -17,40 +13,33 @@ import {
   BookSearch,
   Calendar,
   Edit,
-  Eye,
   Star,
   ThumbsUp,
   Trash,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { EditePortfolioForm } from "./EditePortfolioForm";
-import { getPortfolioCategories } from "@/app/utils/api/design/reuqery";
-import {
-  PortfolioCategory,
-  PortfolioWork,
-  ProcessedPortfolioWork,
-} from "@/app/utils/api/design/type";
+import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
 import Image from "next/image";
+import { QueryKeys } from "@/app/utils/query-keys";
+import { Delete, Get } from "@/app/utils/query";
+import { toast } from "sonner";
 
 export default function Design() {
   const [createNew, setCreateNew] = useState(false);
-  const [portfolioWorksList, setPortfolioWorksList] = useState<
-    ProcessedPortfolioWork[]
-  >([]);
   const { data, isPending } = useQuery({
-    queryKey: ["portfolioWorks_data"],
+    queryKey: QueryKeys.portfolio.portfoliosAll,
     queryFn: async () => {
-      const _data = await fetch(`/api/user/design/portfolio`);
-      const data = await _data.json();
-      return data.data;
+      const data = await Get(`/api/user/design/portfolio`);
+      console.log("data----", data);
+      return data;
     },
   });
 
   const data_update = useMemo(() => {
     const _data: React.JSX.Element[] = [];
     if (!data) return null;
-    console.log("portfolioWorks_data", data);
     for (const key in data) {
       const items = data[key];
       if (typeof items === "object")
@@ -82,7 +71,7 @@ export default function Design() {
         <Tooltip disableHoverablePopup>
           <TooltipTrigger
             className={cn(
-              "bg-white border border-gray-400 cursor-pointer shadow-xl hover:bg-teal-400 font-bold py-2 px-4 rounded-full"
+              "bg-white dark:bg-gray-700 border border-gray-400 cursor-pointer shadow-xl hover:bg-teal-400 dark:bg-teal-600 font-bold py-2 px-4 rounded-full"
             )}
             onClick={() => setCreateNew(true)}
           >
@@ -95,7 +84,7 @@ export default function Design() {
         <ToTop />
         {createNew && (
           <GlobalModel>
-            <Card className="bg-white w-full self-center">
+            <Card className="bg-white dark:bg-gray-700 w-full self-center">
               <CardContent>
                 <EditePortfolioForm setEditable={setCreateNew} />
               </CardContent>
@@ -118,21 +107,18 @@ const PortfolioItem = memo(function PortfolioItem({
   const handleToSee = () => {
     router.push(`/design/detail/${work.id}`);
   };
-  const handleToDelete = (id: string) => {
+  const handleToDelete = async (id: string) => {
     const res = confirm("确定删除吗?");
     if (res) {
-      fetch(`/api/user/frontend/${id}`, {
-        method: "DELETE",
-      }).then((res) => {
-        if (res.status === 200) {
-          alert("删除成功");
-        }
-      });
+      const res = await Delete(`/api/user/frontend/${id}`);
+      if (res) {
+        toast.success("删除成功");
+      }
     }
   };
   return (
     <div
-      className="bg-white rounded-2xl overflow-hidden shadow-xl transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
+      className="bg-white dark:bg-gray-700 rounded-2xl overflow-hidden shadow-xl transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
       onClick={handleToSee}
     >
       <div className="pt-0 h-full flex flex-col justify-between">
@@ -148,7 +134,7 @@ const PortfolioItem = memo(function PortfolioItem({
           )}
           <div className="px-4">
             <p className="font-bold text-lg mb-2 truncate">{work.title}</p>
-            <span className="bg-gray-100 text-gray-400 rounded-xl px-2 py-1 inline-block text-xs mb-4">
+            <span className="bg-gray-100 dark:bg-gray-800 text-gray-400 rounded-xl px-2 py-1 inline-block text-xs mb-4">
               {work.portfolio_categories.title}
             </span>
             <div className="flex justify-between">
@@ -176,7 +162,7 @@ const PortfolioItem = memo(function PortfolioItem({
                 work.tags.map((item, index) => (
                   <span
                     key={index}
-                    className="bg-gray-100 text-gray-400 rounded-xl px-2 py-1 inline-block text-xs my-4"
+                    className="bg-gray-100 dark:bg-gray-800 text-gray-400 rounded-xl px-2 py-1 inline-block text-xs my-4"
                   >
                     {item}
                   </span>
@@ -184,10 +170,10 @@ const PortfolioItem = memo(function PortfolioItem({
             </div>
           </div>
         </div>
-        <div className="flex justify-between space-x-2 my-4">
+        <div className="flex justify-between space-x-2 my-4 px-2">
           <Tooltip>
             <TooltipTrigger
-              className="flex-1 rounded hover:bg-gray-100 py-2 cursor-pointer"
+              className="flex-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-600 py-2 cursor-pointer"
               onClick={handleToSee}
             >
               <div className="flex justify-center">
@@ -200,13 +186,13 @@ const PortfolioItem = memo(function PortfolioItem({
           </Tooltip>
           <Tooltip>
             <TooltipTrigger
-              className="flex-1 rounded hover:bg-gray-100 py-2 cursor-pointer"
+              className="flex-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-600 py-2 cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 setEditable(true);
               }}
             >
-              <div className="border-gray-300 flex justify-center">
+              <div className="border-gray-300 dark:border-gray-600 flex justify-center">
                 <Edit size={14} />
               </div>
             </TooltipTrigger>
@@ -216,13 +202,13 @@ const PortfolioItem = memo(function PortfolioItem({
           </Tooltip>
           <Tooltip>
             <TooltipTrigger
-              className="flex-1 rounded hover:bg-gray-100 py-2 cursor-pointer"
+              className="flex-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-600 py-2 cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 handleToDelete(work.id as string);
               }}
             >
-              <div className="border-gray-300 flex justify-center">
+              <div className="border-gray-300 dark:border-gray-600 flex justify-center">
                 <Trash size={14} />
               </div>
             </TooltipTrigger>
@@ -234,7 +220,7 @@ const PortfolioItem = memo(function PortfolioItem({
       </div>
       {editable && (
         <GlobalModel>
-          <Card className="bg-white w-full self-center">
+          <Card className="bg-white dark:bg-gray-700 w-full self-center">
             <CardContent>
               <EditePortfolioForm
                 // portfolio_data={note}

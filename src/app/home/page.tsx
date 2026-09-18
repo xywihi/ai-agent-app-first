@@ -2,10 +2,9 @@
 import { GlobalLoading } from "@/components/GlobalLoading";
 import { MovingBorder } from "@/components/MovingBorder";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/server/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { createContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import Image from "next/image";
 import z from "zod";
 import { Kbd } from "@/components/ui/kbd";
@@ -42,8 +41,10 @@ import {
 import { ProcessedPortfolioWork } from "../utils/api/design/type";
 import { cn } from "../utils/tools";
 import { Note } from "../utils/api/font-notes/typs";
-import { type User as SupabaseUser } from "@supabase/supabase-js";
-import dynamic from "next/dynamic";
+import { QueryKeys } from "../utils/query-keys";
+import { useUserQuery } from "@/hooks/use-user-query";
+import { ProjectSummary } from "@/components/ProjectSummary";
+import { Get } from "../utils/query";
 interface ConverInterface {
   currentConverId: number | string;
   currentConverName: string;
@@ -96,8 +97,7 @@ export default function Chat() {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
-  const queryClient = useQueryClient();
-  const user = queryClient.getQueryData<SupabaseUser | null>(["user_data"]);
+  const { data: user } = useUserQuery();
 
   useEffect(() => {
     if (!api) {
@@ -112,41 +112,14 @@ export default function Chat() {
       });
     });
   }, [api]);
-  // const { data, isFetching, error } = useQuery({
-  //   queryKey: ["authUser"],
-  //   queryFn: async () => {
-  //     const result = await supabase.auth.getUser();
-  //     const user = Schema.safeParse(result.data);
-  //     if (user.success) {
-  //       return user.data;
-  //     } else {
-  //       throw new Error(user.error.message);
-  //     }
-  //   },
-  //   refetchOnWindowFocus: false,
-  // });
   const { data: portfolios_data, isPending: portfolios_isPending } = useQuery({
-    queryKey: ["portfolios_data"],
-    queryFn: async () => {
-      const result = await fetch(
-        `/api/user/design/portfolio/default?category=all`
-      );
-      if (result.ok) {
-        const data = await result.json();
-        return data.data;
-      }
-    },
+    queryKey: QueryKeys.portfolio.data,
+    queryFn: () => Get(`/api/user/design/portfolio/default?category=all`),
     refetchOnWindowFocus: false,
   });
   const { data: frontnotes_data, isPending: frontnotes_isPending } = useQuery({
-    queryKey: ["frontnotes_data"],
-    queryFn: async () => {
-      const result = await fetch(`/api/user/frontend/new-notes`);
-      if (result.ok) {
-        const data = await result.json();
-        return data.data;
-      }
-    },
+    queryKey: QueryKeys.fronend.new_notes,
+    queryFn: () => Get(`/api/user/frontend/new-notes`),
     refetchOnWindowFocus: false,
   });
   const handleSendMessage = async () => {
@@ -163,30 +136,31 @@ export default function Chat() {
   if (!user) {
     return <GlobalLoading />;
   }
-  console.log("frontnotes_data", frontnotes_data);
   return (
     // <div className="flex-1 flex flex-col justify-between items-center bg-linear-to-br from-white via-slate-50 to-zinc-50">
-    <div className="flex-1 flex flex-col justify-between items-center pb-98">
-      <div className="w-full pt-20 pb-12 px-4 rounded-2xl mb-10">
+    <div className="flex-1 flex flex-col justify-between items-center pb-36">
+      <div className="w-full pt-20 pb-12 px-4 rounded-2xl">
         <div className="text-center max-w-4xl mx-auto">
-          <div className="text-slate-800 mb-8">
+          <div className="text-slate-800 dark:text-slate-100 mb-8">
             <h1 className="text-6xl font-bold">
               探索设计 · 前端 ·{" "}
-              <span className="text-blue-600">AI 全栈实践</span>
+              <span className="text-blue-600 dark:text-blue-500">
+                AI 全栈实践
+              </span>
             </h1>
             <p className="text-xl mt-8 flex gap-2 justify-center">
-              <span className="text-slate-500 border border-dashed rounded-xl px-2">
+              <span className="text-slate-500 dark:text-slate-400 border border-dashed rounded-xl px-2">
                 作品集
               </span>
-              <span className="text-slate-500 border border-dashed rounded-xl px-2">
+              <span className="text-slate-500 dark:text-slate-400 border border-dashed rounded-xl px-2">
                 技术笔记
               </span>
-              <span className="text-slate-500 border border-dashed rounded-xl px-2">
+              <span className="text-slate-500 dark:text-slate-400 border border-dashed rounded-xl px-2">
                 可交互项目演示
               </span>
             </p>
           </div>
-          <p className="text-slate-500 text-base">
+          <p className="text-slate-500 dark:text-slate-400 text-base">
             汇集UI设计作品、前端实战笔记、AI交互Demo。记录设计、编码与AI-Agent全栈开发实践，全部项目附带源码与可运行示例。
           </p>
         </div>
@@ -215,7 +189,7 @@ export default function Chat() {
             >
               <CarouselContent className="flex-1">
                 {portfolios_data &&
-                  portfolios_data.map(
+                  portfolios_data?.list.map(
                     (item: ProcessedPortfolioWork, index: number) => (
                       <CarouselItem
                         key={index}
@@ -254,17 +228,24 @@ export default function Chat() {
             <CardDescription>
               <p>
                 在这里你可以找到
-                <Kbd className="bg-gray-200 ml-1">VI设计</Kbd>、
-                <Kbd className="bg-gray-200 ml-1">UI设计</Kbd>、
-                <Kbd className="bg-gray-200 ml-1">交互设计</Kbd>、
-                <Kbd className="bg-gray-200 ml-1">网页设计</Kbd>
+                <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">VI设计</Kbd>
+                、
+                <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">UI设计</Kbd>
+                、
+                <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">
+                  交互设计
+                </Kbd>
+                、
+                <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">
+                  网页设计
+                </Kbd>
                 以及
-                <Kbd className="bg-gray-200">APP设计</Kbd>等。
+                <Kbd className="bg-gray-200 dark:bg-gray-700">APP设计</Kbd>等。
               </p>
               <p className="mt-8 text-xs text-gray-400">最后更新：2026‑09‑05</p>
             </CardDescription>
           </CardContent>
-          <CardFooter className="border-gray-200">
+          <CardFooter className="border-gray-200 dark:border-gray-700">
             <p>
               站酷链接：
               <a
@@ -293,35 +274,51 @@ export default function Chat() {
           </CardHeader>
           <CardContent className="flex-1 overflow-auto flex flex-col">
             <CardAction className="flex gap-2 mb-4 justify-self-start">
-              <Button size="sm" className="border border-gray-200 rounded-xl">
+              <Button
+                size="sm"
+                className="border border-gray-200 dark:border-gray-700 rounded-xl"
+              >
                 React学习笔记
               </Button>
-              <Button size="sm" className="border border-gray-200 rounded-xl">
+              <Button
+                size="sm"
+                className="border border-gray-200 dark:border-gray-700 rounded-xl"
+              >
                 Vue学习笔记
               </Button>
-              <Button size="sm" className="border border-gray-200 rounded-xl">
+              <Button
+                size="sm"
+                className="border border-gray-200 dark:border-gray-700 rounded-xl"
+              >
                 前端优化笔记
               </Button>
             </CardAction>
             <CardDescription>
               <p>
                 整理主流前端框架与AI全栈开发实战笔记，包含
-                <Kbd className="bg-gray-200 ml-1">React</Kbd>、
-                <Kbd className="bg-gray-200 ml-1">Vue</Kbd>、
-                <Kbd className="bg-gray-200 ml-1">Next.js</Kbd>、
-                <Kbd className="bg-gray-200 ml-1">工程化</Kbd>、
-                <Kbd className="bg-gray-200 ml-1">性能优化</Kbd>、
-                <Kbd className="bg-gray-200 ml-1">AI‑SDK应用开发</Kbd>、
-                配套可运行Demo与代码示例。
+                <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">React</Kbd>、
+                <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">Vue</Kbd>、
+                <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">Next.js</Kbd>
+                、
+                <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">工程化</Kbd>
+                、
+                <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">
+                  性能优化
+                </Kbd>
+                、
+                <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">
+                  AI‑SDK应用开发
+                </Kbd>
+                、 配套可运行Demo与代码示例。
               </p>
             </CardDescription>
             <ScrollArea className="flex-1 overflow-auto rounded-md mt-4">
               <div className="flex flex-col space-y-2">
                 {frontnotes_data &&
-                  frontnotes_data.map((item: Note, index: number) => (
+                  frontnotes_data?.list.map((item: Note, index: number) => (
                     // 解决border影响元素高度问题
                     <div key={index} className="h-11 relative group">
-                      <Item className="flex-nowrap border border-gray-200 group-hover:border-transparent">
+                      <Item className="flex-nowrap border border-gray-200 dark:border-gray-700 group-hover:border-transparent">
                         <ItemContent className="flex-1 min-w-0 flex max-w-md">
                           {/* 文本省略号会受flex、width: fit-content影响 */}
                           <ItemTitle className="block w-auto flex-1 min-w-0 truncate">
@@ -348,7 +345,7 @@ export default function Chat() {
             </ScrollArea>
             <p className="mt-8 text-xs text-gray-400">最后更新：2026‑09‑05</p>
           </CardContent>
-          <CardFooter className="border-gray-200">
+          <CardFooter className="border-gray-200 dark:border-gray-700">
             <p>
               GitHub：
               <a
@@ -377,7 +374,7 @@ export default function Chat() {
               </span>
               <Bot size={26} />
             </p>
-            <MovingBorder className="mb-4">
+            <MovingBorder>
               {user ? (
                 <p className="text-lg flex items-center flex-wrap">
                   <Bot />： Hello，
@@ -397,20 +394,20 @@ export default function Chat() {
               )}
             </MovingBorder>
             {user ? (
-              <div className="flex space-x-4">
+              <div className="flex space-x-4 mt-6">
                 {/* <input
           type="text"
-          className="p-2 bg-gray-200 rounded-lg hover:bg-teal-400 hover:text-white cursor-pointer"
+          className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-teal-400 dark:bg-teal-600 hover:text-white cursor-pointer"
         /> */}
                 <ButtonGroup className="w-full">
                   <Input
                     id="input-button-group"
                     placeholder="给AI助手发消息..."
-                    className="h-full bg-gray-100 border-none rounded-lg outline-none focus:outline-none focus-visible:ring-0"
+                    className="h-full bg-gray-100 dark:bg-gray-800 border-none rounded-lg outline-none focus:outline-none focus-visible:ring-0"
                   />
                   <Button
                     size={"lg"}
-                    className="h-12 bg-teal-400 text-white rounded-lg hover:bg-teal-400 hover:text-white"
+                    className="h-12 bg-teal-400 dark:bg-teal-600 text-white rounded-lg hover:bg-teal-400 dark:bg-teal-600 hover:text-white"
                     onClick={handleSendMessage}
                   >
                     <b>开始聊天</b>
@@ -419,22 +416,22 @@ export default function Chat() {
 
                 {/* <Button
           size={"lg"}
-          className="p-2 bg-teal-400 text-white rounded-lg hover:bg-teal-400 hover:text-white cursor-pointer"
+          className="p-2 bg-teal-400 dark:bg-teal-600 text-white rounded-lg hover:bg-teal-400 dark:bg-teal-600 hover:text-white cursor-pointer"
           onClick={() => router.push("/chat")}
         >
           开始聊天
         </Button> */}
               </div>
             ) : (
-              <div className="flex space-x-4">
+              <div className="flex space-x-4 mt-6">
                 <Button
-                  className="p-2 bg-teal-400 text-white rounded-lg hover:bg-teal-400 hover:text-white cursor-pointer"
+                  className="p-2 bg-teal-400 dark:bg-teal-600 text-white rounded-lg hover:bg-teal-400 dark:bg-teal-600 hover:text-white cursor-pointer"
                   onClick={() => router.push("/login")}
                 >
                   去登录
                 </Button>
                 <Button
-                  className="p-2 bg-gray-200 rounded-lg hover:bg-teal-400 hover:text-white cursor-pointer"
+                  className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-teal-400 dark:bg-teal-600 hover:text-white cursor-pointer"
                   onClick={() => router.push("/login/register")}
                 >
                   去注册
@@ -459,6 +456,8 @@ export default function Chat() {
           </CardContent>
         </GroundGlassCard>
       </div>
+      {/* 项目总结 */}
+      <ProjectSummary />
     </div>
   );
 }

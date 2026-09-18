@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
     return NextResponse.json(
-      { success: true, data: "成功取消收藏" },
+      { success: true, data: "成功取消喜欢" },
       { status: 200 }
     );
   }
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
   return NextResponse.json(
-    { success: true, data: "收藏成功" },
+    { success: true, data: "喜欢成功" },
     { status: 200 }
   );
 }

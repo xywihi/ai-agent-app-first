@@ -1,11 +1,10 @@
 "use client";
 import Link from "next/link";
-import { Bot, Computer, Home, PencilRuler } from "lucide-react";
+import { Home } from "lucide-react";
 import { MovingBorder } from "../MovingBorder";
 import { cn } from "@/app/utils/tools";
 import { usePathname } from "next/navigation";
 import { Icon } from "../Icon";
-import { useQuery } from "@tanstack/react-query";
 
 const paths: {
   name: string;
@@ -39,14 +38,6 @@ const paths: {
   },
 ];
 export const HeaderNav = () => {
-  useQuery({
-    queryKey: ["user_data"],
-    queryFn: async () => {
-      const _data = await fetch("/api/user");
-      const data = await _data.json();
-      return data.data.user;
-    },
-  });
   const pathname = usePathname();
   return (
     <ul className="flex flex-row items-center space-x-14">
@@ -65,7 +56,7 @@ export const HeaderNav = () => {
               "group-hover:block hidden absolute -top-0.5 left-1/2 -translate-x-1/2",
               pathname.startsWith(item.path) && "block"
             )}
-            innerClassName="bg-white px-4 py-0"
+            innerClassName="bg-white dark:bg-gray-700 px-4 py-0"
           >
             <div className="flex items-center gap-1 flex-nowrap text-nowrap z-10 relative invisible">
               <Home size={16} />

@@ -39,6 +39,8 @@ import { toast } from "sonner";
 import { useEffect } from "react";
 import { Spinner } from "../ui/spinner";
 import { id } from "zod/v4/locales";
+import { QueryKeys } from "@/app/utils/query-keys";
+import { NotebookPen } from "lucide-react";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -118,8 +120,6 @@ export const EditeNoteForm = ({
   });
   // 提交编辑笔记表单
   const onSubmit = async (data: FormData, noteId: string | null) => {
-    debugger;
-    console.log("data", data);
     const newNote = {
       title: data.title,
       category_id: data.root.id,
@@ -162,7 +162,7 @@ export const EditeNoteForm = ({
       setEditable(false);
       // 更新(刷新)笔记列表请求
       queryClient.refetchQueries({
-        queryKey: ["fontendNoteRootCategories"],
+        queryKey: QueryKeys.fronend.rootCategories(),
       });
       toast.success("创建成功", {
         position: "top-center",
@@ -179,10 +179,11 @@ export const EditeNoteForm = ({
     >
       <FieldGroup>
         <FieldSet>
-          <FieldLegend className="border-gray-300 text-2xl font-bold">
+          <FieldLegend className="flex gap-2 items-center mb-4 border-gray-300 dark:border-gray-600 text-2xl font-bold">
+            <NotebookPen />
             {note_data ? "编辑" : "创建新的"}笔记
           </FieldLegend>
-          <FieldDescription>笔记内容需要使用Markdown格式。</FieldDescription>
+          <hr className="border-gray-300" />
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="note-title" className="text-xl">
@@ -202,7 +203,7 @@ export const EditeNoteForm = ({
             <div className="flex gap-4">
               <Field>
                 <FieldLabel htmlFor="note-framework" className="text-xl">
-                  一级类型{(root_category as CategoryTree)?.root?.length}
+                  一级类型
                 </FieldLabel>
                 <Combobox
                   items={root_category && (root_category as CategoryTree)?.root}
@@ -232,7 +233,7 @@ export const EditeNoteForm = ({
                   <FieldError className="text-red-500">
                     {errors.root?.message}
                   </FieldError>
-                  <ComboboxContent className="bg-white">
+                  <ComboboxContent className="bg-white dark:bg-gray-700">
                     <ComboboxEmpty>新增一级类型</ComboboxEmpty>
                     <ComboboxList>
                       {/* <ComboboxItem>一级类型</ComboboxItem> */}
@@ -289,6 +290,9 @@ export const EditeNoteForm = ({
                   />
                 </div>
               </div>
+              <FieldDescription className="text-gray-400">
+                笔记内容需要使用Markdown格式。
+              </FieldDescription>
               <FieldError className="text-red-500">
                 {errors.content?.message}
               </FieldError>
@@ -296,7 +300,7 @@ export const EditeNoteForm = ({
           </FieldGroup>
         </FieldSet>
       </FieldGroup>
-      <CardFooter className="border-gray-300 mt-4 justify-between items-center gap-2">
+      <CardFooter className="border-gray-300 dark:border-gray-600 mt-4 justify-between items-center gap-2">
         <div>
           <Button
             className="cursor-pointer text-gray-400"
@@ -341,7 +345,7 @@ const RootCategoryWatcher = ({
   });
   console.log("root_second", root_second);
   const { data: second_category = [], isPending: rooting } = useQuery({
-    queryKey: ["fontendNoteRootCategories", root_second[0]?.id],
+    queryKey: QueryKeys.fronend.rootCategories(root_second[0]?.id as string),
     // enabled: !userId,
     queryFn: async () => {
       try {
@@ -372,7 +376,7 @@ const RootCategoryWatcher = ({
           <FieldError className="text-red-500">
             {errors.root?.message}
           </FieldError>
-          <ComboboxContent className="bg-white">
+          <ComboboxContent className="bg-white dark:bg-gray-700">
             <ComboboxEmpty>没有该类别</ComboboxEmpty>
             <ComboboxList>
               {(item) => (

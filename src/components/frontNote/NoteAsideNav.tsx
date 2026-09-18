@@ -62,15 +62,23 @@ export const NoteAsideNav = ({ note_id }: { note_id: string }) => {
             return (
               <Tooltip key={item.id}>
                 <div className="group/tooltip">
-                  <TooltipTrigger className="w-10 h-6 flex justify-center items-center bg-white rounded-full cursor-pointer">
+                  <TooltipTrigger className="w-10 h-6 flex justify-center items-center rounded-full cursor-pointer">
                     <div
-                      className={cn("w-2 h-2 rounded-full bg-gray-300", {
-                        "bg-teal-400 w-3 h-3": activeId === item.id,
-                      })}
+                      className={cn(
+                        "w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600",
+                        {
+                          "bg-teal-400 dark:bg-teal-600 w-3 h-3":
+                            activeId === item.id,
+                        }
+                      )}
                       onClick={() => handleClick(item.id)}
                     ></div>
                   </TooltipTrigger>
-                  <TooltipContent sideOffset={2} side="left">
+                  <TooltipContent
+                    sideOffset={2}
+                    side="left"
+                    className="dark:bg-gray-700"
+                  >
                     <Link
                       href={`#${item.id}`}
                       key={item.id}

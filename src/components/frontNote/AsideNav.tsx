@@ -26,6 +26,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getCategoryTree } from "@/app/utils/api/font-notes/requery";
 import { EditeNoteForm } from "./EditeNoteForm";
+import { QueryKeys } from "@/app/utils/query-keys";
 
 type FileTreeItem =
   | { name: string; id?: string | undefined; parent_id?: string | null }
@@ -47,7 +48,7 @@ export const AsideNav = () => {
   const seconde_id = useSearchParams().get("seconde_id");
 
   const { data: root_category = {}, isPending: rooting } = useQuery({
-    queryKey: ["fontendNoteRootCategories"],
+    queryKey: QueryKeys.fronend.rootCategories(),
     // enabled: !category_id,
     queryFn: async () => {
       try {
@@ -146,7 +147,7 @@ export const AsideNav = () => {
       >
         <FileIcon />
         <span
-          className={cn("hover:underline", {
+          className={cn("hover:underline truncate", {
             "underline text-teal-500 font-bold": note_id === fileItem.id,
           })}
         >
@@ -171,9 +172,9 @@ export const AsideNav = () => {
             >
               <div
                 className={cn(
-                  "flex flex-row items-center gap-2 rounded-r-2xl bg-white shadow-2xl group-hover:bg-amber-200",
+                  "flex flex-row items-center gap-2 rounded-r-2xl bg-white dark:bg-gray-700 shadow-2xl group-hover:bg-amber-200 dark:group-hover:bg-amber-700",
                   {
-                    "bg-amber-200": root?.id === item.id,
+                    "bg-amber-200 dark:bg-amber-700": root?.id === item.id,
                   }
                 )}
               >
@@ -211,13 +212,13 @@ export const AsideNav = () => {
             </Button>
           ))}
         </div>
-        <div className="w-full h-full overflow-auto bg-white absolute shadow-2xl rounded-2xl top-0 left-0 z-10 flex flex-col">
+        <div className="w-full h-full overflow-auto bg-white dark:bg-gray-700 absolute shadow-2xl rounded-2xl top-0 left-0 z-10 flex flex-col">
           {rooting && (
             <div className="h-full w-full flex flex-col justify-center items-center">
               笔记目录加载中...
             </div>
           )}
-          <h1 className="text-2xl font-bold p-6 bg-white sticky top-0">
+          <h1 className="text-2xl font-bold p-6 bg-white dark:bg-gray-700 sticky top-0">
             {root?.name}
           </h1>
           {/* 二级菜单导航 */}
@@ -227,23 +228,23 @@ export const AsideNav = () => {
                 renderItem(item, index)
               )}
           </div>
-          <div className="bg-white w-full sticky bottom-0 flex flex-col gap-4">
+          <div className="bg-white dark:bg-gray-700 w-full sticky bottom-0 flex flex-col gap-4">
             <div className="p-6">
               <Button
                 size="lg"
-                className="bg-teal-400 w-full py-4 h-12 text-white text-md font-bold cursor-pointer hover:bg-teal-500 hover:shadow-2xl hover:transform hover:-translate-y-1"
+                className="bg-teal-400 dark:bg-teal-600 w-full py-4 h-12 text-white text-md font-bold cursor-pointer hover:bg-teal-500 hover:shadow-2xl hover:transform hover:-translate-y-1"
                 onClick={() => setEditable(true)}
               >
                 <CreativeCommons size={20} />
                 新建笔记
               </Button>
             </div>
-            <CardFooter className="border-t-gray-200 text-gray-500 p-6">
+            <CardFooter className="border-t-gray-200 dark:border-t-gray-800 text-gray-500 p-6">
               更新时间：2026-09-01
             </CardFooter>
             {editable && (
               <GlobalModel>
-                <Card className="bg-white w-full self-center">
+                <Card className="bg-white dark:bg-gray-700 w-full self-center">
                   <CardContent>
                     <EditeNoteForm
                       root_category={root_category as CategoryTree}
@@ -275,7 +276,7 @@ const CollapsibleItem = ({
       open={defaultOpen || isOpen}
       onOpenChange={(open) => setIsOpen(open)}
       key={fileItem.id}
-      className="border-2 border-gray-300 rounded-xl mb-4 group bg-white drop-shadow-[0_4px_10px_#ddd] hover:drop-shadow-[0_8px_14px_#b4b4b4cc]"
+      className="border-2 border-gray-300 dark:border-gray-600 rounded-xl mb-4 group bg-white dark:bg-gray-700 drop-shadow-[0_4px_10px_#ddd] hover:drop-shadow-[0_8px_14px_#b4b4b4cc] dark:drop-shadow-[0_4px_10px_#242424] dark:hover:drop-shadow-[0_8px_14px_#434343cc]"
     >
       <CollapsibleTrigger className="w-full">
         <div className="flex items-center  text-xl my-4 px-4  w-full justify-between transition-none hover:bg-accent hover:text-accent-foreground">

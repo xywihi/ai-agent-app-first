@@ -11,6 +11,7 @@ import { CircleX } from "lucide-react";
 import { Spinner } from "../ui/spinner";
 import { createClient } from "@/lib/server/client";
 import z from "zod";
+import { QueryKeys } from "@/app/utils/query-keys";
 interface PropsInterface {
   data: ConverHistoryListInterface[];
   isLoading?: boolean;
@@ -43,7 +44,7 @@ export const ConverHistoryList = ({ data, isLoading }: PropsInterface) => {
     onSuccess: (data_id) => {
       router.push(`/chat/${data_id}`);
       queryClient.invalidateQueries({
-        queryKey: ["converHistories"],
+        queryKey: QueryKeys.aiChat.history,
       });
     },
   });
@@ -55,7 +56,7 @@ export const ConverHistoryList = ({ data, isLoading }: PropsInterface) => {
     mutationFn: (id: string) => deleteConverHistoryList(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["converHistories"],
+        queryKey: QueryKeys.aiChat.history,
       });
       if (data[0]) {
         router.push(`/chat/${data[0].id}`);
@@ -70,7 +71,7 @@ export const ConverHistoryList = ({ data, isLoading }: PropsInterface) => {
       <div className="flex flex-row justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">会话历史</h1>
         <button
-          className="border rounded-2xl px-2 py-1 text-xs cursor-pointer hover:text-white hover:bg-teal-400"
+          className="border rounded-2xl px-2 py-1 text-xs cursor-pointer hover:text-white hover:bg-teal-400 dark:bg-teal-600"
           onClick={() => mutateCreate()}
         >
           {isLoadingCreate ? <Spinner /> : "新建对话+"}
@@ -88,8 +89,9 @@ export const ConverHistoryList = ({ data, isLoading }: PropsInterface) => {
           <li
             key={item.id}
             className={cn(
-              "flex flex-row justify-between items-center mb-2 px-3 py-2 rounded-xl cursor-pointer hover:bg-gray-200 hover:dark:bg-gray-800",
-              item.id.toString() === params.id && "bg-gray-200 dark:bg-gray-800"
+              "flex flex-row justify-between items-center mb-2 px-3 py-2 rounded-xl cursor-pointer hover:bg-gray-200 dark:bg-gray-700 hover:dark:bg-gray-800",
+              item.id.toString() === params.id &&
+                "bg-gray-200 dark:bg-gray-700 dark:bg-gray-800"
             )}
             onClick={() => {
               router.push(`/chat/${item.id}`);

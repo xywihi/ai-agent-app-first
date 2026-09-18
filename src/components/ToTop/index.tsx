@@ -7,7 +7,7 @@ export const ToTop = () => {
   return (
     <Tooltip disableHoverablePopup>
       <TooltipTrigger
-        className="bg-white border border-gray-400 cursor-pointer shadow-xl hover:bg-teal-400 font-bold py-2 px-4 rounded-full"
+        className="bg-white dark:bg-gray-700 border border-gray-400 cursor-pointer shadow-xl hover:bg-teal-400 dark:bg-teal-600 font-bold py-2 px-4 rounded-full"
         onClick={() => {
           window.scrollTo({
             top: 0,

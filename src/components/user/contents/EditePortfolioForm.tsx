@@ -34,6 +34,8 @@ import { UpdateImages } from "@/components/design/UpdateImages";
 import { toast } from "sonner";
 import { createClient } from "@/lib/server/client";
 import { useCallback } from "react";
+import { QueryKeys } from "@/app/utils/query-keys";
+import { Post } from "@/app/utils/query";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -65,12 +67,10 @@ export const EditePortfolioForm = ({
   const {
     register,
     handleSubmit,
-    control,
     getValues,
     setValue,
     reset,
-    resetField,
-    watch,
+    // watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -83,7 +83,7 @@ export const EditePortfolioForm = ({
     },
   });
   const { data: portfolio_categories, error } = useQuery({
-    queryKey: ["portfolio_categories"],
+    queryKey: QueryKeys.portfolio.categories,
     queryFn: async () => {
       const _data = await getPortfolioCategories();
       const data = await _data.json();
@@ -109,7 +109,6 @@ export const EditePortfolioForm = ({
   }, []);
   // 提交编辑笔记表单
   const onSubmit = async (data: FormData, workId: string | null) => {
-    console.log("data", data);
     try {
       const _portfolio_data = {
         work: {
@@ -120,12 +119,10 @@ export const EditePortfolioForm = ({
           is_published: true,
         },
       };
-      const result_new_portfolio = await fetch(`/api/user/design/portfolio`, {
-        method: "POST",
+      const result_new_portfolio = await Post(`/api/user/design/portfolio`, {
         body: JSON.stringify(_portfolio_data),
       });
-      const { data: current_portfolio } = await result_new_portfolio.json();
-      if (result_new_portfolio.status !== 200) {
+      if (result_new_portfolio.error) {
         toast.error("创建失败", {
           position: "top-center",
           style: { backgroundColor: "white" },
@@ -151,14 +148,13 @@ export const EditePortfolioForm = ({
           imageUrls.push(urlData.publicUrl);
         }
         const _images_data = {
-          work_id: current_portfolio.id,
+          work_id: result_new_portfolio.id,
           image_urls: imageUrls,
         };
-        const result_new_images = await fetch(`/api/user/design/images`, {
-          method: "POST",
+        const result_new_images = await Post(`/api/user/design/images`, {
           body: JSON.stringify(_images_data),
         });
-        if (result_new_images.status !== 200) {
+        if (result_new_images.error) {
           toast.error("创建失败", {
             position: "top-center",
             style: { backgroundColor: "white" },
@@ -168,7 +164,7 @@ export const EditePortfolioForm = ({
       }
       // 更新(刷新)笔记列表请求
       queryClient.invalidateQueries({
-        queryKey: ["portfolioWorks_data"],
+        queryKey: QueryKeys.portfolio.portfoliosAll,
       });
       toast.success("创建成功", {
         position: "top-center",
@@ -195,7 +191,7 @@ export const EditePortfolioForm = ({
     >
       <FieldGroup>
         <FieldSet>
-          <FieldLegend className="border-gray-300 text-2xl font-bold">
+          <FieldLegend className="border-gray-300 dark:border-gray-600 text-2xl font-bold">
             {portfolio_data ? "编辑" : "创建新的"}作品
           </FieldLegend>
           <FieldGroup>
@@ -232,7 +228,7 @@ export const EditePortfolioForm = ({
                   <FieldError className="text-red-500">
                     {errors.category_id?.message}
                   </FieldError>
-                  <ComboboxContent className="bg-white">
+                  <ComboboxContent className="bg-white dark:bg-gray-700">
                     <ComboboxEmpty>新增作品类型</ComboboxEmpty>
                     <ComboboxList>
                       {/* <ComboboxItem>一级类型</ComboboxItem> */}
@@ -300,7 +296,7 @@ export const EditePortfolioForm = ({
           </FieldGroup>
         </FieldSet>
       </FieldGroup>
-      <CardFooter className="border-gray-300 mt-4 justify-between items-center gap-2">
+      <CardFooter className="border-gray-300 dark:border-gray-600 mt-4 justify-between items-center gap-2">
         <div>
           <Button
             className="cursor-pointer text-gray-400"

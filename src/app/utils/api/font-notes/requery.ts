@@ -52,7 +52,7 @@ export async function getNoteSecondCategories(
     .select("*")
     .eq("parent_id", currentRootId)
     .order("sort_order", { ascending: true });
-  console.log("data", data);
+
   return data;
 }
 export async function getCategoryTree() {

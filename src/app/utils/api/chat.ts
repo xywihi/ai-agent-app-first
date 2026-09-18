@@ -22,7 +22,6 @@ export const getHistoryMessages = async (conversation_id: string | number) => {
     console.log("error", error);
     throw error;
   }
-  console.log("data", data);
   const { data: historyData, error: historyError } = await client
     .from("conversation_history")
     .select("*")
@@ -57,7 +56,6 @@ export const addHistoryMessage = async (
     console.log("error", error);
     return;
   }
-  console.log("data", data);
 };
 
 export const createConver = async (user_id: string) => {
@@ -117,7 +115,6 @@ export const deleteConverHistoryList = async (id: string | number) => {
     console.log("error", error);
     return;
   }
-  console.log("data", data);
 };
 
 //更新对话历史某项
@@ -134,5 +131,4 @@ export const updateConverHistoryList = async (
     console.log("error", error);
     return;
   }
-  console.log("data", data);
 };

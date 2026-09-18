@@ -24,7 +24,7 @@ export const CreateTags = ({
           {currentTags.map((tag, index) => (
             <div
               key={index}
-              className="border border-gray-300 rounded-lg px-2 py-1 flex gap-2 items-center"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 flex gap-2 items-center"
             >
               <div>{tag}</div>
               <div
@@ -48,7 +48,7 @@ export const CreateTags = ({
           className="h-10 max-w-40"
         />
         <div
-          className="border border-gray-300 rounded-lg"
+          className="border border-gray-300 dark:border-gray-600 rounded-lg"
           onClick={() => {
             const currentTag = inputRef.current?.value;
             setCurrentTags((pre) => {

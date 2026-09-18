@@ -24,7 +24,11 @@ export async function POST(req: Request) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-    return NextResponse.json({ success: true, data: _data }, { status: 200 });
+    return NextResponse.json(
+      { success: true, data: "成功取消收藏" },
+      { status: 200 }
+    );
+    // return NextResponse.json({ success: true, data: _data }, { status: 200 });
   }
   const { data, error } = await supabase
     .from("portfolio_work_collects")
@@ -34,5 +38,8 @@ export async function POST(req: Request) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ success: true, data }, { status: 200 });
+  return NextResponse.json(
+    { success: true, data: "成功收藏" },
+    { status: 200 }
+  );
 }

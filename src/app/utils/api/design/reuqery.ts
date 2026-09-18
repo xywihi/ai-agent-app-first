@@ -14,7 +14,6 @@ export async function getPortfolioCategories() {
     .select("*")
     .eq("user_id", userId)
     .order("sort_order", { ascending: true });
-  console.log("data", data);
   if (error) {
     throw error;
   }

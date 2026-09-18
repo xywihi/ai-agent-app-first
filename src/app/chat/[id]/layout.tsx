@@ -1,9 +1,9 @@
 "use client";
 import { ConverListSchema, getConverHistoryList } from "@/app/utils/api/chat";
+import { QueryKeys } from "@/app/utils/query-keys";
 import { ConverHistoryList } from "@/components/ConverHistoryList";
 import { createClient } from "@/lib/server/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useParams, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import z from "zod";
 
@@ -23,7 +23,7 @@ export default function HomeLayout({
 }) {
   const [showConverHistory, setShowConverHistory] = useState(false);
   const { data = [], isPending } = useQuery({
-    queryKey: ["converHistories"],
+    queryKey: QueryKeys.aiChat.history,
     queryFn: async () => {
       try {
         const data = await createClient().auth.getUser();
@@ -57,7 +57,7 @@ export default function HomeLayout({
   };
   return (
     <div className="flex flex-row">
-      <div className="flex-1 max-w-3xl mx-4 fixed top-4 dark:bg-gray-800 rounded-2xl z-10 border bg-white py-2 px-4 block lg:hidden">
+      <div className="flex-1 max-w-3xl mx-4 fixed top-4 dark:bg-gray-800 rounded-2xl z-10 border bg-white dark:bg-gray-700 py-2 px-4 block lg:hidden">
         <button className="px-2" onClick={handleShowConverHistory}>
           会话记录
         </button>

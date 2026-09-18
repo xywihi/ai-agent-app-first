@@ -137,12 +137,12 @@ export const ConverBox = ({ initialMessages, api }: PropsType) => {
                         )}
                       >
                         <CopyButton
-                          className="rounded-lg p-2 bg-gray-200"
+                          className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700"
                           text={text}
                         />
                         <SpeechButton
                           text={text}
-                          className="rounded-lg p-2 bg-gray-200"
+                          className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700"
                         />
                       </div>
                     </div>
@@ -156,13 +156,13 @@ export const ConverBox = ({ initialMessages, api }: PropsType) => {
                       return (
                         <div key={`${message.id}-${i}`}>
                           <div className="border rounded-2xl p-2 ">
-                            <p className="text-sm p-2 rounded-2xl text-gray-400 bg-gray-200">
+                            <p className="text-sm p-2 rounded-2xl text-gray-400 bg-gray-200 dark:bg-gray-700">
                               {part.errorText}
                             </p>
                           </div>
                           <div className="flex row gap-1.5 my-2">
                             <CopyButton text={part.errorText} />
-                            <button className="rounded-lg p-2 bg-gray-200">
+                            <button className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700">
                               <AudioLines size={16} />
                             </button>
                           </div>
@@ -174,7 +174,7 @@ export const ConverBox = ({ initialMessages, api }: PropsType) => {
                     return (
                       <p
                         key={`${message.id}-${i}`}
-                        className="text-sm p-2 rounded-2xl text-gray-400 bg-gray-200"
+                        className="text-sm p-2 rounded-2xl text-gray-400 bg-gray-200 dark:bg-gray-700"
                       >
                         工具调用执行中...
                       </p>
@@ -190,10 +190,10 @@ export const ConverBox = ({ initialMessages, api }: PropsType) => {
                         />
                         <div className="flex row gap-1.5 my-2">
                           <CopyButton
-                            className="rounded-lg p-2 bg-gray-200"
+                            className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700"
                             text={`${location}的温度为${temperature}摄氏度`}
                           />
-                          <button className="rounded-lg p-2 bg-gray-200">
+                          <button className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700">
                             <AudioLines size={16} />
                           </button>
                         </div>
@@ -211,11 +211,11 @@ export const ConverBox = ({ initialMessages, api }: PropsType) => {
                       </div>
                       <div className="flex row gap-1.5 my-2">
                         <CopyButton
-                          className="rounded-lg p-2 bg-gray-200"
+                          className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700"
                           text={JSON.stringify(part, null, 2)}
                         />
 
-                        <button className="rounded-lg p-2 bg-gray-200">
+                        <button className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700">
                           <AudioLines size={16} />
                         </button>
                       </div>
@@ -232,10 +232,10 @@ export const ConverBox = ({ initialMessages, api }: PropsType) => {
                       </div>
                       <div className="flex row gap-1.5 my-2">
                         <CopyButton
-                          className="rounded-lg p-2 bg-gray-200"
+                          className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700"
                           text={tool_dateTimeTool_text}
                         />
-                        <button className="rounded-lg p-2 bg-gray-200">
+                        <button className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700">
                           <AudioLines size={16} />
                         </button>
                       </div>
@@ -254,10 +254,10 @@ export const ConverBox = ({ initialMessages, api }: PropsType) => {
                         )}
                       </div>
                       {/* <div className="flex row gap-1.5 my-2">
-                        <button className="rounded-lg p-2 bg-gray-200">
+                        <button className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700">
                           <CopyButton text={part.output as QuestionData} />
                         </button>
-                        <button className="rounded-lg p-2 bg-gray-200">
+                        <button className="rounded-lg p-2 bg-gray-200 dark:bg-gray-700">
                           <AudioLines size={16} />
                         </button>
                       </div> */}

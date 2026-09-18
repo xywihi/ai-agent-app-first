@@ -26,7 +26,6 @@ export default function LoginPage() {
     mode: "onTouched",
   });
   const onSubmit = async (data: FormValues) => {
-    console.log("data", data);
     const {
       error,
       data: { user },
@@ -53,7 +52,7 @@ export default function LoginPage() {
   };
   return (
     <div className="flex flex-col h-[calc(100vh-4.5rem)] flex-1 justify-center items-center">
-      <div className="bg-gray-100 p-8 rounded-xl shadow-gray-100 shadow-lg">
+      <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-xl shadow-gray-100 shadow-lg">
         <form
           className="flex flex-col items-center space-y-4 w-lg"
           action=""
@@ -99,7 +98,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-lg px-4 py-2 w-full bg-teal-400 disabled:bg-gray-400 text-center text-white text-xl cursor-pointer"
+              className="rounded-lg px-4 py-2 w-full bg-teal-400 dark:bg-teal-600 disabled:bg-gray-400 text-center text-white text-xl cursor-pointer"
             >
               {isSubmitting ? "登录中..." : "登录"}
             </button>

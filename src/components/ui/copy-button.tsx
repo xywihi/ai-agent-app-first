@@ -25,7 +25,10 @@ export function CopyButton({ text, className }: CopyButtonProps) {
 
   return (
     <Button
-      className={cn(className, "cursor-pointer hover:bg-teal-400")}
+      className={cn(
+        className,
+        "cursor-pointer hover:bg-teal-400 dark:bg-teal-600"
+      )}
       onClick={handleCopy}
     >
       {copied ? <CopyCheck size={16} /> : <Copy size={16} />}

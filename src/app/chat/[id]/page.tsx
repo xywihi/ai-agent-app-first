@@ -6,10 +6,11 @@ import {
   getConverHistoryList,
 } from "@/app/utils/api/chat";
 import { useParams, notFound } from "next/navigation";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import z from "zod";
 import { useState } from "react";
 import { createClient } from "@/lib/server/client";
+import { QueryKeys } from "@/app/utils/query-keys";
 const Schema = z.object({
   user: z.object({
     id: z.string(),
@@ -19,7 +20,6 @@ const Schema = z.object({
     }),
   }),
 });
-type ConverListType = z.infer<typeof ConverListSchema>;
 const ChatPage = () => {
   const params = useParams();
   const [userId, setUserId] = useState<string | null>(null);
@@ -27,7 +27,7 @@ const ChatPage = () => {
   //   "converHistories",
   // ]) as [];
   const { data: converList = [], isPending } = useQuery({
-    queryKey: ["converHistories"],
+    queryKey: QueryKeys.aiChat.history,
     enabled: !userId,
     queryFn: async () => {
       try {
@@ -62,7 +62,7 @@ const ChatPage = () => {
     isFetching,
     error,
   } = useQuery({
-    queryKey: ["historyMessages", params.id],
+    queryKey: QueryKeys.aiChat.message(params.id as string),
     queryFn: async () => {
       console.log("converList", converList);
       if (
@@ -86,7 +86,7 @@ const ChatPage = () => {
     <div className="flex flex-col flex-1 max-w-4xl mx-auto">
       {isFetching && currentItem.conversation_name !== "新建对话" ? (
         <div className="p-4 pt-18 lg:pt-0 pb-12 space-y-4 mb-4">
-          <span className="bg-gray-100 dark:bg-gray-800 rounded-lg px-2 py-1 text-sm">
+          <span className="bg-gray-100 dark:bg-gray-800 dark:bg-gray-800 rounded-lg px-2 py-1 text-sm">
             会话历史加载中...
           </span>
         </div>
