@@ -183,7 +183,10 @@ export const DesignCard = ({
   );
   return (
     <Card
-      className={cn("pt-0 bg-white dark:bg-gray-700 shadow-md", className)}
+      className={cn(
+        "pt-0 bg-white dark:bg-gray-700 shadow-md pb-2 xl:pb-4",
+        className
+      )}
       ref={cardRef}
       style={{ height }}
     >
@@ -202,26 +205,30 @@ export const DesignCard = ({
         }}
       />
       <CardContent>
-        <CardTitle className="text-xl mb-4 line-clamp-1">
+        <CardTitle className="text-md xl:text-xl line-clamp-1">
           {card.title}
         </CardTitle>
         <CardDescription
           vocab="https://schema.org"
-          className="flex space-x-2 mb-4"
+          className="flex space-x-2 mt-2 xl:mt-4"
         >
           {card.tags.map((badge) => (
-            <Badge key={badge} variant="outline" className="opacity-50">
+            <Badge
+              key={badge}
+              variant="outline"
+              className="opacity-50 text-xs xl:text-sm"
+            >
               {badge}
             </Badge>
           ))}
         </CardDescription>
-        <section className="flex space-x-2">
+        <section className="space-x-2 mt-2 xl:mt-4 hidden xl:flex">
           <p className="text-gray-500 line-clamp-2">{card.description}</p>
         </section>
-        <CardAction className="flex space-x-2 justify-self-start mt-2">
+        <CardAction className="w-full flex space-x-2 justify-around mt-2">
           <LikeButton card={card} handleToLike={handleToLike} />
           <CollectButton card={card} handleToCollect={handleToCollect} />
-          <Button className="rounded-full cursor-pointer hover:bg-teal-400 dark:hover:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
+          <Button className="hidden xl:flex rounded-full cursor-pointer hover:bg-teal-400 dark:hover:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
             <Share2 />
             <span>{card.actions.share.count}</span>
           </Button>
@@ -301,24 +308,13 @@ export const DesignCard = ({
                   <section className="flex space-x-2">
                     <p className="text-gray-500">{card.description}</p>
                   </section>
-                  <CardAction className="flex space-x-2 justify-self-start mt-2">
-                    <Button className="rounded-full cursor-pointer hover:bg-amber-300 dark:hover:bg-amber-600 hover:drop-shadow-[0_4px_12px_#f59e0bcc]">
-                      <ThumbsUp
-                        fill={
-                          card.actions.like.active ? "#f59e0b" : "transparent"
-                        }
-                      />
-                      <span>{card.actions.like.count}</span>
-                    </Button>
-                    <Button className="rounded-full cursor-pointer hover:bg-rose-300 dark:hover:bg-rose-600 hover:drop-shadow-[0_4px_12px_#f43f5ecc]">
-                      <Star
-                        fill={
-                          card.actions.star.active ? "#f43f5e" : "transparent"
-                        }
-                      />
-                      <span>{card.actions.star.count}</span>
-                    </Button>
-                    <Button className="rounded-full cursor-pointer hover:bg-teal-400 dark:hover:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
+                  <CardAction className="w-full flex space-x-2 justify-start mt-4">
+                    <LikeButton card={card} handleToLike={handleToLike} />
+                    <CollectButton
+                      card={card}
+                      handleToCollect={handleToCollect}
+                    />
+                    <Button className="shrink-0 flex-nowrap flex rounded-full cursor-pointer hover:bg-teal-400 dark:hover:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
                       <Share2 />
                       <span>{card.actions.share.count}</span>
                     </Button>

@@ -7,7 +7,6 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -15,9 +14,9 @@ import {
 } from "@/components/ui/sheet";
 import React, { Suspense, useEffect, useMemo } from "react";
 import LogoutButton from "../LogoutButton";
+import { Menu } from "lucide-react";
 import { UserCenter } from "../UserCenter";
 import { SearchAll } from "../SearchAll";
-import { Menu } from "lucide-react";
 
 type Path = {
   name: string;
@@ -100,9 +99,18 @@ export function MobileSheetNav() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="xl:hidden">
-        <Menu size={24} />
-      </SheetTrigger>
+      <div className="flex xl:hidden flex-row justify-between items-center">
+        <SheetTrigger className="xl:hidden">
+          <Menu size={24} />
+        </SheetTrigger>
+        <div className="flex flex-row justify-between items-center gap-2">
+          {/* 个人中心 */}
+          <UserCenter />
+          {/* 搜索全站 */}
+          <SearchAll />
+        </div>
+      </div>
+
       <SheetContent
         side="left"
         lang="zh"
@@ -114,12 +122,6 @@ export function MobileSheetNav() {
           <SheetTitle>导航菜单</SheetTitle>
           <SheetClose>关闭</SheetClose>
         </SheetHeader>
-        <div className="flex flex-row justify-between items-center gap-2 mt-4">
-          {/* 个人中心 */}
-          <UserCenter />
-          {/* 搜索全站 */}
-          <SearchAll />
-        </div>
 
         <NavMenuList paths={paths} pathname={pathname} />
         <SheetFooter className="p-0">

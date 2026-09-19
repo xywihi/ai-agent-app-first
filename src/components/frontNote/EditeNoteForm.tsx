@@ -281,7 +281,7 @@ export const EditeNoteForm = ({
                   className="h-80 flex-1"
                   {...register("content")}
                 />
-                <div className="flex-1 border border-gray-400 rounded-xl max-h-80 overflow-auto">
+                <div className="flex-1 border border-gray-400 rounded-xl max-h-80 overflow-auto hidden xl:block">
                   <ChatMarkDown
                     content={currentContent
                       ?.replaceAll("\\n", "\n")

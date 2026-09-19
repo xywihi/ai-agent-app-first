@@ -192,9 +192,9 @@ export default function Design() {
             <Button className="absolute right-2 top-1/2 -translate-y-1/2">
               <Search />
               搜索
-              <Kbd className="ml-1 bg-gray-200 dark:bg-gray-700 rounded">
+              {/* <Kbd className="ml-1 bg-gray-200 dark:bg-gray-700 rounded">
                 ⌘K
-              </Kbd>
+              </Kbd> */}
             </Button>
           </div>
           {showSearch && (

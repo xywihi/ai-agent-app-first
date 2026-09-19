@@ -13,16 +13,14 @@ import {
 } from "@/components/ui/avatar";
 import { type User } from "@/app/api/admin/list-users/type";
 import { QueryKeys } from "../utils/query-keys";
-import {
-  PortfolioWork,
-  ProcessedPortfolioWork,
-} from "../utils/api/design/type";
+import { ProcessedPortfolioWork } from "../utils/api/design/type";
 import Image from "next/image";
 import { Get } from "../utils/query";
 import { getUserProfiles } from "../utils/api/user/requery";
+import { Button } from "@/components/ui/button";
 export default function User() {
   const router = useRouter();
-  const { data: user } = useQuery({
+  const { data: user, isPending: user_loading } = useQuery({
     queryKey: QueryKeys.userCenter.data,
     queryFn: async () => {
       const _data = await Get(`/api/user`);
@@ -31,7 +29,7 @@ export default function User() {
     },
     staleTime: 0,
   });
-  const { data: user_profiles } = useQuery({
+  const { data: user_profiles, isPending: user_profiles_loading } = useQuery({
     queryKey: QueryKeys.userCenter.profiles,
     queryFn: async () => {
       const _data = await getUserProfiles();
@@ -79,67 +77,87 @@ export default function User() {
       {/* 用户信息 */}
       <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
         <div>
-          <h1 className="text-2xl font-bold">个人资料</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold">个人资料</h1>
+            <Button
+              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200"
+              onClick={() => router.push("/user/profile")}
+            >
+              查看详情
+            </Button>
+          </div>
           <hr className="my-4 border-gray-200 dark:border-gray-700" />
           <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
-            {users_loading && (
+            {user_loading || user_profiles_loading ? (
               <p className="text-gray-400 text-center h-full flex flex-col justify-center">
                 加载中...
               </p>
-            )}
-            <div>
+            ) : (
               <div>
-                <p className="text-gray-400">头像</p>
-                <p className="py-2 mb-2">
-                  {user_profiles?.avatar_url && (
-                    <Image
-                      src={user_profiles?.avatar_url}
-                      width={50}
-                      height={50}
-                      alt="avatar"
-                      className="rounded-full"
-                    />
-                  )}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-400">昵称</p>
-                <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
-                  {user?.user_metadata.username}
-                </p>
-              </div>
-              <div className="mt-4">
-                <p className="text-gray-400">邮箱</p>
-                <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
-                  {user?.email}
-                </p>
-              </div>
+                <div>
+                  <p className="text-gray-400">头像</p>
+                  <p className="py-2 mb-2">
+                    {user_profiles?.avatar_url && (
+                      <Image
+                        src={user_profiles?.avatar_url}
+                        width={50}
+                        height={50}
+                        alt="avatar"
+                        className="rounded-full"
+                      />
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-400">昵称</p>
+                  <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
+                    {user?.user_metadata.username}
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <p className="text-gray-400">邮箱</p>
+                  <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
+                    {user?.email}
+                  </p>
+                </div>
 
-              <div className="mt-4">
-                <p className="text-gray-400">用户权限</p>
-                <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
-                  {user?.email === "anli_ang@yeah.net" ? "管理员" : "普通用户"}
-                </p>
+                <div className="mt-4">
+                  <p className="text-gray-400">用户权限</p>
+                  <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
+                    {user?.email === "anli_ang@yeah.net"
+                      ? "管理员"
+                      : "普通用户"}
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <p className="text-gray-400">创建时间</p>
+                  <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
+                    {getDateTime(user?.created_at)}
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <p className="text-gray-400">简介</p>
+                  <p className="text-sm border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
+                    {user_profiles?.bio || "暂无简介"}
+                  </p>
+                </div>
               </div>
-              <div className="mt-4">
-                <p className="text-gray-400">创建时间</p>
-                <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
-                  {getDateTime(user?.created_at)}
-                </p>
-              </div>
-              <div className="mt-4">
-                <p className="text-gray-400">简介</p>
-                <p className="text-sm border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
-                  {user_profiles?.bio || "暂无简介"}
-                </p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
       {/* UI 作品集 */}
       <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl">
-        <h1 className="text-2xl font-bold">UI 作品集</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">UI 作品集</h1>
+          <Button
+            className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 block xl:hidden"
+            onClick={() => router.push("/user/ui")}
+          >
+            查看详情
+          </Button>
+        </div>
+
         <hr className="my-4 border-gray-200 dark:border-gray-700" />
         <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
           {portfolioss_data &&
@@ -149,12 +167,11 @@ export default function User() {
                 暂无笔记
               </p>
             )}
-          {portfolios_loading && (
+          {portfolios_loading ? (
             <p className="text-gray-400 text-center h-full flex flex-col justify-center">
               加载中...
             </p>
-          )}
-          {portfolioss_data &&
+          ) : (
             portfolioss_data.list?.map((item: ProcessedPortfolioWork) => {
               return (
                 <div
@@ -189,7 +206,8 @@ export default function User() {
                   </div>
                 </div>
               );
-            })}
+            })
+          )}
         </div>
       </div>
       {/* 前端笔记 */}
@@ -197,15 +215,21 @@ export default function User() {
         <div>
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">前端笔记</h1>
-            <div className="flex gap-4">
-              <div className="flex gap-2 items-center">
-                <NotebookText size={14} />
-                <span>{notes_data?.noteTotal ?? 0}</span>
-              </div>
-              <div className="flex gap-2 items-center">
-                <Eye size={14} />
-                <span>{notes_data?.totalView ?? 0}</span>
-              </div>
+            <Button
+              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 block xl:hidden"
+              onClick={() => router.push("/user/frontend")}
+            >
+              查看详情
+            </Button>
+          </div>
+          <div className="gap-4 hidden xl:flex">
+            <div className="flex gap-2 items-center">
+              <NotebookText size={14} />
+              <span>{notes_data?.noteTotal ?? 0}</span>
+            </div>
+            <div className="flex gap-2 items-center">
+              <Eye size={14} />
+              <span>{notes_data?.totalView ?? 0}</span>
             </div>
           </div>
           <hr className="my-4 border-gray-200 dark:border-gray-700" />
@@ -215,12 +239,11 @@ export default function User() {
                 暂无笔记
               </p>
             )}
-            {notes_loading && (
+            {notes_loading ? (
               <p className="text-gray-400 text-center h-full flex flex-col justify-center">
                 加载中...
               </p>
-            )}
-            {notes_data &&
+            ) : (
               notes_data.list?.map((item: Note) => {
                 return (
                   <div
@@ -245,7 +268,8 @@ export default function User() {
                     </div>
                   </div>
                 );
-              })}
+              })
+            )}
           </div>
         </div>
       </div>
@@ -254,19 +278,24 @@ export default function User() {
         <div>
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">用户统计</h1>
-            <div className="flex gap-2 items-center">
+            <Button
+              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 block xl:hidden"
+              onClick={() => router.push("/user/ui")}
+            >
+              查看详情
+            </Button>
+            <div className="gap-2 items-center hidden xl:flex">
               <Users size={14} />
               <span>{users?.totalCount ?? 0}</span>
             </div>
           </div>
           <hr className="my-4 border-gray-200 dark:border-gray-700" />
           <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
-            {users_loading && (
+            {users_loading ? (
               <p className="text-gray-400 text-center h-full flex flex-col justify-center">
                 加载中...
               </p>
-            )}
-            {users &&
+            ) : (
               users.users?.map((item: User) => {
                 return (
                   <div
@@ -305,7 +334,8 @@ export default function User() {
                     </p>
                   </div>
                 );
-              })}
+              })
+            )}
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@ import {
   recordNoteVisit,
 } from "@/app/utils/api/font-notes/requery";
 import { CategoryTree } from "@/app/utils/api/font-notes/typs";
-import { Edit, Notebook } from "lucide-react";
+import { CalendarRange, Edit, Eye, Notebook } from "lucide-react";
 import { GlobalModel } from "@/components/GlobalModel";
 import { Card, CardContent } from "@/components/ui/card";
 import { EditeNoteForm } from "@/components/frontNote/EditeNoteForm";
@@ -101,12 +101,22 @@ export default function Page({ children }: { children: React.ReactNode }) {
         </div>
       )}
       <NoteAsideNav note_id={note_id as string} />
-      <section>
+      <section className="pb-28 xl:p-0">
         <div className="prose prose-slate max-w-none">
           <div className={cn("gap-4 hidden", { flex: updateTime })}>
-            <p className="text-gray-400 my-4">更新时间：{updateTime}</p>
-            <p className="text-gray-400 my-4">
-              笔记阅览次数：{note_data?.view_count}
+            <p className="text-gray-400 my-4 flex items-center">
+              <span className="xl:inline-block hidden">更新时间：</span>
+              <span className="inline-block xl:hidden mr-2">
+                <CalendarRange size={14} />
+              </span>
+              {updateTime}
+            </p>
+            <p className="text-gray-400 my-4 flex items-center">
+              <span className="xl:inline-block hidden">笔记阅览次数：</span>
+              <span className="inline-block xl:hidden mr-2">
+                <Eye size={14} />
+              </span>
+              {note_data?.view_count}
             </p>
           </div>
           <ChatMarkDown

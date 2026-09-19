@@ -157,9 +157,13 @@ export const SearchAll = () => {
                 )}
               </div>
             )}
-            {!data?.portfolios?.length && !data?.notes?.length && (
-              <CommandEmpty className="text-gray-400">无相关结果</CommandEmpty>
-            )}
+            {!data?.portfolios?.length &&
+              !data?.notes?.length &&
+              !isPending && (
+                <CommandEmpty className="text-gray-400">
+                  无相关结果
+                </CommandEmpty>
+              )}
           </div>
         </Command>
       </CommandDialog>

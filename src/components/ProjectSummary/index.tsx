@@ -57,7 +57,7 @@ export const ProjectSummary = () => {
     };
   }, []);
   return (
-    <div className="px-14 py-6 flex flex-col gap-4 justify-around items-center w-full md:w-[calc(150%+4rem)] 2xl:max-w-[calc(75%+4rem)]">
+    <div className="px-6 xl:px-14 py-6 flex flex-col gap-4 justify-around items-center w-full md:w-[calc(150%+4rem)] 2xl:max-w-[calc(75%+4rem)]">
       {/* <div className="w-full mt-20 mb-8 px-14 py-6 min-w-md flex gap-4 justify-around items-center flex-wrap">
         {features.map((item, _index) => (
           <div key={_index}>
@@ -77,7 +77,7 @@ export const ProjectSummary = () => {
           <div
             key={__index}
             className={cn(
-              "absolute px-14 py-6 bg-teal-300 dark:bg-teal-600 scale-0.95 -z-1 w-fit rounded-2xl transform transition-transform duration-1000 ease-out",
+              "absolute px-6 xl:px-14 py-6 bg-teal-300 dark:bg-teal-600 scale-0.95 -z-1 w-fit rounded-2xl transform transition-transform duration-1000 ease-out",
               {
                 "animate-card-change z-99 shadow-xl opacity-100":
                   index === __index,

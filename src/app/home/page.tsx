@@ -103,14 +103,23 @@ export default function Chat() {
     if (!api) {
       return;
     }
-    queueMicrotask(() => {
-      setCount(api.scrollSnapList().length);
+    const getApi = async () => {
+      const snapList = api.scrollSnapList();
+      setCount(snapList.length);
       setCurrent(api.selectedScrollSnap() + 1);
 
       api.on("select", () => {
         setCurrent(api.selectedScrollSnap() + 1);
       });
-    });
+    };
+    const timer = setTimeout(() => {
+      getApi();
+    }, 100);
+    getApi();
+    return () => clearTimeout(timer);
+    // queueMicrotask(() => {
+
+    // });
   }, [api]);
   const { data: portfolios_data, isPending: portfolios_isPending } = useQuery({
     queryKey: QueryKeys.portfolio.data,
@@ -138,7 +147,7 @@ export default function Chat() {
   }
   return (
     // <div className="flex-1 flex flex-col justify-between items-center bg-linear-to-br from-white via-slate-50 to-zinc-50">
-    <div className="flex-1 flex flex-col justify-between items-center pb-36">
+    <div className="flex-1 flex flex-col justify-between items-center pb-46">
       <div className="w-full pt-20 pb-12 px-4 rounded-2xl">
         <div className="text-center max-w-4xl mx-auto">
           <div className="text-slate-800 dark:text-slate-100 mb-8">
@@ -148,7 +157,7 @@ export default function Chat() {
                 AI 全栈实践
               </span>
             </h1>
-            <p className="text-xl mt-8 flex gap-2 justify-center">
+            <p className="text-xl mt-8 flex flex-col sm:flex-row gap-2 justify-center">
               <span className="text-slate-500 dark:text-slate-400 border border-dashed rounded-xl px-2">
                 作品集
               </span>
@@ -170,13 +179,13 @@ export default function Chat() {
         <GroundGlassCard
           className={cn("w-[calc(100%-2rem)] 2xl:max-w-1/4 max-w-lg")}
           cardClassName={cn(
-            "pt-0 max-h-110 opacity-0 transition-opacity duration-300 ease-out",
+            "pt-0 xl:max-h-110 opacity-0 transition-opacity duration-300 ease-out",
             {
               "opacity-100": portfolios_data,
             }
           )}
         >
-          <div className="relative max-h-[20vh] min-h-[210px] flex">
+          <div className="relative xl:max-h-[20vh] min-h-52.5 flex">
             <Carousel
               className="w-full flex-1 overflow-auto flex"
               plugins={[autoplayPlugin]}
@@ -246,10 +255,10 @@ export default function Chat() {
             </CardDescription>
           </CardContent>
           <CardFooter className="border-gray-200 dark:border-gray-700">
-            <p>
-              站酷链接：
+            <p className="w-full flex gap-2">
+              <span className="shrink-0">站酷链接：</span>
               <a
-                className="text-teal-400 underline decoration-1 decoration-teal-400 italic"
+                className="text-teal-400 flex-1 text-wrap truncate underline decoration-1 decoration-teal-400 italic"
                 href="https://www.zcool.com.cn/u/ZNjEyODMzODA="
               >
                 https://www.zcool.com.cn/u/ZNjEyODMzODA=
@@ -260,7 +269,7 @@ export default function Chat() {
         <GroundGlassCard
           className={cn("w-[calc(100%-2rem)] 2xl:max-w-1/4 max-w-lg")}
           cardClassName={cn(
-            "flex flex-col max-h-110 opacity-0 transition-all duration-300 ease-out",
+            "flex flex-col xl:max-h-110 opacity-0 transition-all duration-300 ease-out",
             {
               "opacity-100": frontnotes_data,
             }
@@ -273,7 +282,7 @@ export default function Chat() {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 overflow-auto flex flex-col">
-            <CardAction className="flex gap-2 mb-4 justify-self-start">
+            <CardAction className="flex flex-wrap gap-2 mb-4 justify-self-start">
               <Button
                 size="sm"
                 className="border border-gray-200 dark:border-gray-700 rounded-xl"
@@ -360,7 +369,7 @@ export default function Chat() {
         <GroundGlassCard
           className={cn("w-[calc(100%-2rem)] 2xl:max-w-1/4 max-w-lg")}
           cardClassName={cn(
-            "flex flex-col max-h-110 transition-all duration-300 ease-out delay-500"
+            "flex flex-col xl:max-h-110 transition-all duration-300 ease-out delay-500"
           )}
         >
           <CardContent className="flex-1 p-8">

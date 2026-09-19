@@ -12,10 +12,10 @@ export const UserCenter = () => {
   return (
     user?.id && (
       <div
-        className="w-full xl:w-fit p-3 xl:p-1 xl:px-3 flex gap-2 items-center border border-gray-200 dark:border-gray-700 rounded-lg group hover:text-teal-400 cursor-pointer"
+        className="w-full xl:w-fit py-2 px-3 xl:py-1 xl:px-3 flex gap-2 items-center border border-gray-200 dark:border-gray-700 rounded-lg group hover:text-teal-400 cursor-pointer"
         onClick={() => router.push("/user")}
       >
-        <User size={18} />{" "}
+        <User size={16} />{" "}
         <span className="text-nowrap">{user.user_metadata.username}</span>
       </div>
     )

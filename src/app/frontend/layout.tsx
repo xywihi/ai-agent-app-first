@@ -14,7 +14,7 @@ export default async function FrontendLayout({
         </Suspense>
       </div>
 
-      <div className="flex-1 px-4 xl:px-40">{children}</div>
+      <div className="flex-1 px-0 xl:px-40">{children}</div>
     </div>
   );
 }
