@@ -19,8 +19,20 @@
   }
 }
 *{
-  /* -webkit-user-select: none;
-    user-select: none; */
+  -webkit-user-select: none;
+    user-select: none;
+}
+
+/* 只有该元素处于网页全屏模式才生效 */
+#global_anln {
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto; /* 关键：允许容器内部滚动 */
+  box-sizing: border-box;
+}
+
+#article-wrapper{
+  word-break:break-all;
 }
 body {
   background: var(--background);

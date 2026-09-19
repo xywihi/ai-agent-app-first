@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import React, { Suspense, useEffect, useMemo } from "react";
 import LogoutButton from "../LogoutButton";
-import { Menu } from "lucide-react";
+import { Fullscreen, Menu } from "lucide-react";
 import { UserCenter } from "../UserCenter";
 import { SearchAll } from "../SearchAll";
 
@@ -87,6 +87,7 @@ export function MobileSheetNav() {
       },
     ];
   }, []);
+
   const handleOpenOrClose = () => {
     setOpen(false);
   };
@@ -96,14 +97,29 @@ export function MobileSheetNav() {
     }, 0);
     return () => clearTimeout(timer);
   }, [pathname]);
-
+  const hadleFullScreen = () => {
+    const body = document.getElementById("global_anln");
+    if (!body) return;
+    body.requestFullscreen();
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  };
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <div className="flex xl:hidden flex-row justify-between items-center">
-        <SheetTrigger className="xl:hidden">
+      <div className="flex 2xl:hidden flex-row justify-between items-center">
+        <SheetTrigger className="2xl:hidden">
           <Menu size={24} />
         </SheetTrigger>
         <div className="flex flex-row justify-between items-center gap-2">
+          <div
+            className={cn(
+              "w-fit p-3 h-fit 2xl:p-2 shrink-0 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-lg group hover:text-teal-400 cursor-pointer transition-all"
+            )}
+            onClick={hadleFullScreen}
+          >
+            <Fullscreen size={16} />
+          </div>
           {/* 个人中心 */}
           <UserCenter />
           {/* 搜索全站 */}
@@ -122,7 +138,6 @@ export function MobileSheetNav() {
           <SheetTitle>导航菜单</SheetTitle>
           <SheetClose>关闭</SheetClose>
         </SheetHeader>
-
         <NavMenuList paths={paths} pathname={pathname} />
         <SheetFooter className="p-0">
           {/* 退出登录 */}

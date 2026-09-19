@@ -107,7 +107,7 @@ export const EditePortfolioForm = ({
   const getFilePath = useCallback((userId: string, fileName: string) => {
     return `${userId}/${Date.now()}-${fileName}`;
   }, []);
-  // 提交编辑笔记表单
+  // 提交编辑作品表单
   const onSubmit = async (data: FormData, workId: string | null) => {
     try {
       const _portfolio_data = {
@@ -162,7 +162,7 @@ export const EditePortfolioForm = ({
           return;
         }
       }
-      // 更新(刷新)笔记列表请求
+      // 更新(刷新)作品列表请求
       queryClient.invalidateQueries({
         queryKey: QueryKeys.portfolio.portfoliosAll,
       });

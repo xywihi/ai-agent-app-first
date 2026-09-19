@@ -48,8 +48,8 @@ export default function Design() {
   });
   useEffect(() => {
     // 右键拦截
-    // const onContext = (e: MouseEvent) => e.preventDefault();
-    // document.addEventListener("contextmenu", onContext);
+    const onContext = (e: MouseEvent) => e.preventDefault();
+    document.addEventListener("contextmenu", onContext);
 
     // 快捷键拦截
     // const onKey = (e: KeyboardEvent) => {
@@ -128,7 +128,7 @@ export default function Design() {
     // 用测量到的高度计算布局
     const columnCount = getColumnCount();
     const columnHeights = new Array(columnCount).fill(0);
-    const gap = 16;
+    const gap = 10;
     const containerWidth = containerRef.current
       ? containerRef.current?.offsetWidth
       : 0;
@@ -145,7 +145,7 @@ export default function Design() {
       const left = shortestCol * (columnWidth + gap);
       const top = columnHeights[shortestCol];
       newPositions.set(work.id, { left, top, width: columnWidth, height });
-      columnHeights[shortestCol] += height + gap + 16;
+      columnHeights[shortestCol] += height + gap + 14;
     });
 
     const timer = setTimeout(() => {
@@ -247,7 +247,11 @@ export default function Design() {
         //   visibleIndexes.has(index) && "opacity-100 translate-y-0 delay-0"
         // )}
         >
-          {isPending && <div className="text-center">作品努力加载中...</div>}
+          {isPending && (
+            <div className="text-center xl:text-xl text-gray-400">
+              作品努力加载中...
+            </div>
+          )}
           {portfolio_works && !portfolio_works?.list.length && (
             <div>暂无作品</div>
           )}

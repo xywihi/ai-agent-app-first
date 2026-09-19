@@ -32,7 +32,6 @@ export default function Design() {
     queryKey: QueryKeys.portfolio.portfoliosAll,
     queryFn: async () => {
       const data = await Get(`/api/user/design/portfolio`);
-      console.log("data----", data);
       return data;
     },
   });
@@ -61,7 +60,7 @@ export default function Design() {
   return (
     <div>
       {isPending ? (
-        <div className="flex-1 text-center h-[calc(100vh-10rem)] flex flex-col justify-center items-center text-xl">
+        <div className="flex-1 text-center h-[calc(100vh-10rem)] flex flex-col justify-center items-center xl:text-xl text-gray-400">
           作品正在努力加载中...
         </div>
       ) : (

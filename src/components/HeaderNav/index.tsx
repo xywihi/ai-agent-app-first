@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Home } from "lucide-react";
+import { Fullscreen, Home } from "lucide-react";
 import { MovingBorder } from "../MovingBorder";
 import { cn } from "@/app/utils/tools";
 import { usePathname } from "next/navigation";
@@ -18,7 +18,7 @@ import { UserCenter } from "../UserCenter";
 import { SearchAll } from "../SearchAll";
 import PerformanceClock from "../PerformanceClock";
 import LogoutButton from "../LogoutButton";
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import React from "react";
 
 // const paths: {
@@ -58,6 +58,16 @@ type Path = {
   icon: Parameters<typeof Icon>[0]["name"];
 };
 export const HeaderNav = () => {
+  useEffect(() => {}, []);
+  const hadleFullScreen = () => {
+    const body = document.getElementById("global_anln");
+    if (!body) return;
+    body.requestFullscreen();
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+      console.log("处于全屏", document.fullscreenElement);
+    }
+  };
   const pathname = usePathname();
   const paths: {
     name: string;
@@ -93,8 +103,8 @@ export const HeaderNav = () => {
     ];
   }, []);
   return (
-    <div className="flex-row justify-between items-center hidden xl:flex">
-      <div className="w-2xs hidden xl:block">
+    <div className="flex-row justify-between items-center hidden 2xl:flex">
+      <div className="w-2xs hidden 2xl:block">
         {/* 面包屑导航 */}
         <Breadcrumbs />
       </div>
@@ -131,6 +141,15 @@ export const HeaderNav = () => {
         </ul>
       </nav>
       <div className="w-2xs flex flex-row justify-end items-center space-x-2">
+        <div
+          className={cn(
+            "w-fit p-3 h-fit xl:p-2 shrink-0 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-lg group hover:text-teal-400 cursor-pointer transition-all"
+          )}
+          onClick={hadleFullScreen}
+        >
+          <Fullscreen size={16} />
+        </div>
+
         {/* 个人中心 */}
         <UserCenter />
         {/* 搜索全站 */}

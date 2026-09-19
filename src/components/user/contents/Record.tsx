@@ -21,7 +21,7 @@ export const Record = () => {
     <div>
       <p className="text-sm text-gray-400 mb-4">*仅显示最近7天的浏览记录</p>
       {isPending && (
-        <div className="flex-1 text-center h-[calc(100vh-10rem)] flex flex-col justify-center items-center text-xl">
+        <div className="flex-1 text-center h-[calc(100vh-10rem)] flex flex-col justify-center items-center  xl:text-xl text-gray-400">
           正在努力加载中...
         </div>
       )}

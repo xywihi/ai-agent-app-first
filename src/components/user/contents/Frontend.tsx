@@ -50,7 +50,7 @@ export default function Frontend() {
   return (
     <div>
       {isPending ? (
-        <div className="flex-1 text-center h-[calc(100vh-10rem)] flex flex-col justify-center items-center text-xl">
+        <div className="flex-1 text-center h-[calc(100vh-10rem)] flex flex-col justify-center items-center xl:text-xl text-gray-400">
           笔记正在努力加载中...
         </div>
       ) : (

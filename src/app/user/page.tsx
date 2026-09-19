@@ -39,7 +39,7 @@ export default function User() {
   });
   // QueryKeys.userCenter.profiles
   const { data: portfolioss_data, isPending: portfolios_loading } = useQuery({
-    queryKey: QueryKeys.portfolio.portfoliosAll,
+    queryKey: QueryKeys.portfolio.portfolios("all"),
     queryFn: async () => {
       const data = await Get(`/api/user/design/portfolio/default?category=all`);
       return data;
