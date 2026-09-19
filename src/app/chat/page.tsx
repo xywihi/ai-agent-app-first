@@ -50,7 +50,7 @@ export default function Chat() {
     return <GlobalLoading />;
   }
   return (
-    <div className="flex flex-row h-full flex-1 justify-center items-center p-4 pt-18 md:pt-12 pb-12 space-y-4 mb-4 relative">
+    <div className="lg:flex flex-row h-full flex-1 justify-center items-center p-4 pt-18 md:pt-12 pb-12 space-y-4 mb-4 relative">
       <ConverHistoryList data={data} isLoading={isPending} />
     </div>
   );

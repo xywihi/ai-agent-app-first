@@ -27,7 +27,7 @@ export default function DesignLayout({
     enabled: !!user,
     queryFn: async () => {
       if (!user) return null;
-      const _data = await getUserProfiles(user?.id);
+      const _data = await getUserProfiles();
       const data = await _data.json();
       return data.data;
     },
@@ -44,7 +44,7 @@ export default function DesignLayout({
 
   return (
     <div className="flex justify-start items-start p-4">
-      <div className="w-1/4 h-screen shrink-0 sticky top-22">
+      <div className="w-1/4 h-screen shrink-0 sticky top-22 hidden xl:block">
         <div className="min-h-[calc(100%-10rem)] bg-gray-100 dark:bg-gray-800  rounded-2xl shadow-2xl py-8 px-6 m-4 flex flex-col justify-between">
           <div>
             <div className="w-[calc(100%+1.5rem)] mb-4 flex felx-row flex-nowrap items-center gap-6 shadow-md bg-white dark:bg-gray-700 p-4 py-8 rounded-l-2xl">

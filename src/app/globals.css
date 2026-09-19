@@ -19,8 +19,8 @@
   }
 }
 *{
-  -webkit-user-select: none;
-    user-select: none;
+  /* -webkit-user-select: none;
+    user-select: none; */
 }
 body {
   background: var(--background);
@@ -108,17 +108,14 @@ body {
   @keyframes card-change {
     0% {
       transform: translateY(0px) scale(0.95);
-      background-color:white;
       z-index: 0;
     }
     50% {
       transform: translateY(-80px) scale(0.95);
-      background-color:#46edd5;
       z-index: 0;
     }
     100% {
       transform: translateY(-20px) scale(1);
-      background-color:#46edd5;
       z-index: 99;
     }
   }

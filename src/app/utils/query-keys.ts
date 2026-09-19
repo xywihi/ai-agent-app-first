@@ -9,6 +9,7 @@ export const QueryKeys = {
     signUp: ["sign_up"] as const,
     profiles: ["profiles"] as const,
     users: ["list_users"] as const,
+    records: ["records"] as const,
   },
   // 前端笔记
   fronend: {

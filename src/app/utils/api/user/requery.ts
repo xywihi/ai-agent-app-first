@@ -25,12 +25,16 @@ export async function getUserInfo() {
 }
 
 // 获取用户profiles信息
-export async function getUserProfiles(user_id: string) {
+export async function getUserProfiles() {
   try {
+    const user = await createClient().auth.getUser();
+    if (!user.data.user?.id) {
+      throw new Error("user_id is required");
+    }
     const { data, error } = await client
       .from("profiles")
       .select("*")
-      .eq("id", user_id)
+      .eq("id", user.data.user?.id)
       .single();
     if (error) {
       throw error;

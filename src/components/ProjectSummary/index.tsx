@@ -57,7 +57,7 @@ export const ProjectSummary = () => {
     };
   }, []);
   return (
-    <div className="px-14 py-6 flex flex-col gap-4 justify-around items-center  w-[calc(150%+4rem)] 2xl:max-w-[calc(75%+4rem)]">
+    <div className="px-14 py-6 flex flex-col gap-4 justify-around items-center w-full md:w-[calc(150%+4rem)] 2xl:max-w-[calc(75%+4rem)]">
       {/* <div className="w-full mt-20 mb-8 px-14 py-6 min-w-md flex gap-4 justify-around items-center flex-wrap">
         {features.map((item, _index) => (
           <div key={_index}>
@@ -72,26 +72,27 @@ export const ProjectSummary = () => {
           </div>
         ))}
       </div> */}
-      <div className="mt-20 relative w-full flex justify-center">
+      <div className="mt-20 relative w-full flex justify-center isolate">
         {features.map((item, __index) => (
           <div
             key={__index}
             className={cn(
-              "absolute px-14 py-6 bg-white scale-0.95 -z-1 w-fit rounded-2xl transform transition-all duration-1000 ease-out",
+              "absolute px-14 py-6 bg-teal-300 dark:bg-teal-600 scale-0.95 -z-1 w-fit rounded-2xl transform transition-transform duration-1000 ease-out",
               {
-                "animate-card-change z-99 shadow-xl": index === __index,
+                "animate-card-change z-99 shadow-xl opacity-100":
+                  index === __index,
               },
               {
-                "-z-1": index !== __index,
+                "-z-1 opacity-0": index !== __index,
               }
             )}
           >
-            <div>{item.description}</div>
+            <div className="text-center">{item.description}</div>
           </div>
         ))}
-        <div className="absolute top-0 mt-4 w-full h-px bg-linear-to-r from-transparent via-gray-200 to-transparent z-10"></div>
-        <div className="mt-4 w-full h-10 bg-linear-to-b from-gray-200/50 to-white z-10"></div>
-        <div className="absolute left-0 mt-4 w-full h-60 bg-white z-1"></div>
+        {/* <div className="absolute top-0 mt-4 w-full h-px bg-linear-to-r from-[#050505] via-gray-200 to-[#050505] z-10"></div> */}
+        {/* <div className="mt-4 w-full h-10 dark:h-4 bg-linear-to-b from-gray-200/50 to-white dark:from-[#181818] dark:to-[#181818] z-10"></div> */}
+        {/* <div className="absolute left-0 mt-4 w-full h-60 bg-white dark:bg-[#050505] z-1"></div> */}
         {/* <div className="mt-4 w-full h-60 bg-amber-400 z-10"></div> */}
       </div>
     </div>

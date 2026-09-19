@@ -23,7 +23,7 @@ export const Breadcrumbs = () => {
           </BreadcrumbLink>
         </BreadcrumbItem>
 
-        {paths.map((item, index) => {
+        {paths.slice(0, 2).map((item, index) => {
           return (
             <Fragment key={index}>
               <BreadcrumbSeparator />

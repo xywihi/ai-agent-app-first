@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.log("chat api error", error);
     await reportErrorLog({
-      errorType: "api_update_note_error",
+      errorType: "api_delete_note_error",
       error,
     });
     return new Response(JSON.stringify({ error: "服务异常", data: null }), {

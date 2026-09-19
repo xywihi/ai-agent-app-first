@@ -11,6 +11,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { HeaderNav } from "@/components/HeaderNav";
 import { SearchAll } from "@/components/SearchAll";
 import { UserCenter } from "@/components/UserCenter";
+import { MobileSheetNav } from "@/components/MobileSheetNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -76,28 +77,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <QueryProviders>
             <TooltipProvider>
               <>
-                <header className="fixed z-90 top-0 w-full flex flex-row justify-between items-center p-4 max-h-24 bg-white dark:bg-gray-700/40 border-b border-white/40 dark:border-black/40 backdrop-blur-md shadow-xl shadow-[#d3d5d848] dark:shadow-[#2e2f2f48]">
-                  <div className="w-2xs hidden lg:block">
-                    {/* 面包屑导航 */}
-                    <Breadcrumbs />
-                  </div>
-                  <nav>
-                    {/* 顶部导航 */}
-                    <HeaderNav />
-                  </nav>
-                  <div className="w-2xs flex flex-row justify-end items-center space-x-2">
-                    {/* 个人中心 */}
-                    <UserCenter />
-                    {/* 搜索全站 */}
-                    <SearchAll />
-                    {/* <ThemeToggle />
-                  <LanguageToggle /> */}
-                    {/* 性能时钟 */}
-                    <PerformanceClock />
-                    {/* 退出登录 */}
-                    {<LogoutButton />}
-                  </div>
+                <header className="fixed z-90 top-0 w-full p-4 max-h-24 bg-white dark:bg-gray-700/40 border-b border-white/40 dark:border-black/40 backdrop-blur-md shadow-xl shadow-[#d3d5d848] dark:shadow-[#2e2f2f48]">
+                  <MobileSheetNav />
+                  <HeaderNav />
                 </header>
+
                 <main className="w-full mt-18">
                   <div id="global-loading"></div>
                   {children}

@@ -1,8 +1,8 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { Note } from "../utils/api/font-notes/typs";
-import { Calendar, Eye, ThumbsUp } from "lucide-react";
-import { getTime } from "../utils/tools";
+import { Calendar, Eye, NotebookText, ThumbsUp, Users } from "lucide-react";
+import { getDateTime, getTime } from "../utils/tools";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/server/client";
 import {
@@ -19,8 +19,27 @@ import {
 } from "../utils/api/design/type";
 import Image from "next/image";
 import { Get } from "../utils/query";
+import { getUserProfiles } from "../utils/api/user/requery";
 export default function User() {
   const router = useRouter();
+  const { data: user } = useQuery({
+    queryKey: QueryKeys.userCenter.data,
+    queryFn: async () => {
+      const _data = await Get(`/api/user`);
+      const data = await _data.json();
+      return data.data;
+    },
+    staleTime: 0,
+  });
+  const { data: user_profiles } = useQuery({
+    queryKey: QueryKeys.userCenter.profiles,
+    queryFn: async () => {
+      const _data = await getUserProfiles();
+      const data = await _data.json();
+      return data.data;
+    },
+  });
+  // QueryKeys.userCenter.profiles
   const { data: portfolioss_data, isPending: portfolios_loading } = useQuery({
     queryKey: QueryKeys.portfolio.portfoliosAll,
     queryFn: async () => {
@@ -54,13 +73,75 @@ export default function User() {
       return data;
     },
   });
-  console.log("users", notes_data);
+  console.log("users", users);
   return (
-    <div className="h-full grid grid-cols-4 gap-4">
+    <div className="h-full grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4  gap-4">
+      {/* 用户信息 */}
+      <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">个人资料</h1>
+          <hr className="my-4 border-gray-200 dark:border-gray-700" />
+          <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
+            {users_loading && (
+              <p className="text-gray-400 text-center h-full flex flex-col justify-center">
+                加载中...
+              </p>
+            )}
+            <div>
+              <div>
+                <p className="text-gray-400">头像</p>
+                <p className="py-2 mb-2">
+                  {user_profiles?.avatar_url && (
+                    <Image
+                      src={user_profiles?.avatar_url}
+                      width={50}
+                      height={50}
+                      alt="avatar"
+                      className="rounded-full"
+                    />
+                  )}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400">昵称</p>
+                <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
+                  {user?.user_metadata.username}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p className="text-gray-400">邮箱</p>
+                <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
+                  {user?.email}
+                </p>
+              </div>
+
+              <div className="mt-4">
+                <p className="text-gray-400">用户权限</p>
+                <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
+                  {user?.email === "anli_ang@yeah.net" ? "管理员" : "普通用户"}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p className="text-gray-400">创建时间</p>
+                <p className="text-xl border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
+                  {getDateTime(user?.created_at)}
+                </p>
+              </div>
+              <div className="mt-4">
+                <p className="text-gray-400">简介</p>
+                <p className="text-sm border border-gray-200 dark:border-gray-700 rounded-xl px-2 py-2 mt-2">
+                  {user_profiles?.bio || "暂无简介"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* UI 作品集 */}
       <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl">
         <h1 className="text-2xl font-bold">UI 作品集</h1>
         <hr className="my-4 border-gray-200 dark:border-gray-700" />
-        <div className="overflow-y-scroll pb-4 h-[calc(100vh-24rem)]">
+        <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
           {portfolioss_data &&
             !portfolioss_data.list?.length &&
             !portfolios_loading && (
@@ -111,11 +192,24 @@ export default function User() {
             })}
         </div>
       </div>
+      {/* 前端笔记 */}
       <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
         <div>
-          <h1 className="text-2xl font-bold">前端笔记</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold">前端笔记</h1>
+            <div className="flex gap-4">
+              <div className="flex gap-2 items-center">
+                <NotebookText size={14} />
+                <span>{notes_data?.noteTotal ?? 0}</span>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Eye size={14} />
+                <span>{notes_data?.totalView ?? 0}</span>
+              </div>
+            </div>
+          </div>
           <hr className="my-4 border-gray-200 dark:border-gray-700" />
-          <div className="overflow-y-scroll pb-4 h-[calc(100vh-24rem)]">
+          <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
             {notes_data && !notes_data.list?.length && !notes_loading && (
               <p className="text-gray-400 text-center h-full flex flex-col justify-center">
                 暂无笔记
@@ -154,23 +248,19 @@ export default function User() {
               })}
           </div>
         </div>
-        <div className="text-gray-400 flex justify-evenly items-center gap-4">
-          <div className="flex flex-col items-center">
-            <h1 className="text-4xl font-bold">{notes_data?.noteTotal ?? 0}</h1>
-            <span>总数</span>
-          </div>
-          <div className="w-px h-4 bg-gray-300" />
-          <div className="flex flex-col items-center">
-            <h1 className="text-4xl font-bold">{notes_data?.totalView ?? 0}</h1>
-            <span>总浏览</span>
-          </div>
-        </div>
       </div>
+      {/* 用户统计 */}
       <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
         <div>
-          <h1 className="text-2xl font-bold">用户统计</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold">用户统计</h1>
+            <div className="flex gap-2 items-center">
+              <Users size={14} />
+              <span>{users?.totalCount ?? 0}</span>
+            </div>
+          </div>
           <hr className="my-4 border-gray-200 dark:border-gray-700" />
-          <div className="overflow-y-scroll pb-4 h-[calc(100vh-24rem)]">
+          <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
             {users_loading && (
               <p className="text-gray-400 text-center h-full flex flex-col justify-center">
                 加载中...
@@ -216,12 +306,6 @@ export default function User() {
                   </div>
                 );
               })}
-          </div>
-        </div>
-        <div className="text-gray-400 flex justify-evenly items-center gap-4">
-          <div className="flex flex-col items-center">
-            <h1 className="text-4xl font-bold">{users?.totalCount ?? 0}</h1>
-            <span>总数</span>
           </div>
         </div>
       </div>

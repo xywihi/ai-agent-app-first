@@ -1,13 +1,13 @@
 import { reportErrorLog } from "@/lib/reportError";
-import { createServer } from "@/lib/server/server";
+import { createClient } from "@/lib/server/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     // const { searchParams } = new URL(req.url);
     // const noteId = searchParams.get("noteId");
-    const supabase = await createServer();
-    const { data, count } = await supabase
+    const client = createClient();
+    const { data, count, error } = await client
       .from("frontend_notes")
       .select("id,title,view_count,updated_at,category_id,sub_category_id", {
         count: "exact",
@@ -20,8 +20,13 @@ export async function GET(req: NextRequest) {
         -  head:false ：返回命中的完整记录数据，同时附带 count */
         head: false,
       })
-      .order("updated_at", { ascending: false })
+      .order("view_count", { ascending: false })
+      .eq("is_published", true)
       .limit(8);
+    if (error) {
+      // console.log("error", error);
+      throw error;
+    }
     if (!data) return;
     const noteTotal = count ?? 0;
     const totalView =
@@ -33,8 +38,9 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error: unknown) {
+    console.log("chat api error", error);
     await reportErrorLog({
-      errorType: "api_get_new_notes_error",
+      errorType: "api_public_note_error",
       error,
     });
     return new Response(JSON.stringify({ error: "服务异常", data: null }), {

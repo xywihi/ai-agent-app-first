@@ -168,13 +168,13 @@ export default function Design() {
   console.log("portfolio_works", portfolio_works);
   return (
     <div onClick={() => setShowSearch(false)}>
-      <div className="mb-6 flex justify-between items-center">
+      <div className="mb-6 flex flex-col xl:flex-row gap-4 justify-between items-center">
         <h1 className="text-3xl font-bold">
           设计作品{" "}
           <span className="underline">{portfolio_works?.list?.length}</span> 个
         </h1>
         {/* 搜索框 */}
-        <div className="relative">
+        <div className="relative w-[calc(100%-1.5rem)] xl:w-auto">
           <div className="relative">
             <Input
               value={searchValue}

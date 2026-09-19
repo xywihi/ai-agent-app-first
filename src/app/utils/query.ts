@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { toast } from "sonner";
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -8,11 +9,13 @@ export const Get = async (url: string, headers?: HeadersInit) => {
   const result = await fetch(url, {
     headers: headers,
   });
+  console.log("result", result);
+
   if (result.ok) {
     const data = await result.json();
     return data.data;
   }
-  throw new Error("获取失败");
+  throw Response.json({ error: result.statusText }, { status: result.status });
 };
 
 export const Post = async (
@@ -42,6 +45,7 @@ export const Delete = async (url: string, headers?: HeadersInit) => {
     method: "DELETE",
     headers,
   });
+
   if (result.ok) {
     const data = await result.json();
     return data.data;

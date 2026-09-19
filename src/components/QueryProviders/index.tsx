@@ -12,6 +12,19 @@ export default function QueryProviders({
       queries: {
         staleTime: 60 * 1000, // 默认 1 分钟视为新鲜
         refetchOnWindowFocus: false, // 窗口聚焦时不自动刷新（按需）
+        retry: (failureCount, err: unknown) => {
+          if (typeof err === "object" && err !== null && "status" in err) {
+            if (
+              err?.status &&
+              Number(err.status) >= 400 &&
+              Number(err.status) < 500
+            ) {
+              return false;
+            }
+          }
+
+          return failureCount < 2;
+        },
       },
     },
   });

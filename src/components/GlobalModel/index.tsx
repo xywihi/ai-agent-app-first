@@ -32,7 +32,7 @@ export const GlobalModel = ({
           className="fixed inset-0 flex items-center justify-center z-100 bg-gray-600/80"
           onClick={handleShowModel}
         >
-          <div className="w-3/5 flex flex-col" onClick={handleClick}>
+          <div className="w-4/5 xl:w-3/5 flex flex-col" onClick={handleClick}>
             {children}
           </div>
         </div>,

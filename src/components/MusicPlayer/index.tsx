@@ -12,7 +12,7 @@
 import useAudio from "@/hooks/use-audio";
 import { cn } from "@/lib/utils";
 import { GroundGlassCard } from "../GroundGlassCard";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Item, ItemActions, ItemContent, ItemTitle } from "../ui/item";
 type Audio = {
@@ -28,7 +28,9 @@ export const MusicPlayer = ({
   audios?: Audio[];
 }) => {
   const [index, setIndex] = useState(0);
+  const [openList, setOpenList] = useState(false);
   const indexRef = useRef(0);
+  const musicPlayerRef = useRef<HTMLDivElement>(null);
   const { play, stop, playing, progress, duration } = useAudio(
     audios[index].src,
     () => {
@@ -57,9 +59,36 @@ export const MusicPlayer = ({
       seconds < 10 ? `0${seconds}` : seconds
     }`;
   }, [progress, duration]);
+  useEffect(() => {
+    // 全局点击回调
+    const handleGlobalClick = (e: MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      // 如果点击目标在音乐播放器之内,则不关闭音乐播放器
+      if (musicPlayerRef.current?.contains(e.target as Node)) {
+        if (!openList) setOpenList(true);
+        console.log("被点击了");
+        return;
+      }
+
+      if (openList) setOpenList(false);
+      // 如果点击目标在音乐播放器之外,则关闭音乐播放器
+    };
+    document.addEventListener("mousedown", handleGlobalClick);
+    return () => {
+      document.removeEventListener("mousedown", handleGlobalClick);
+    };
+  }, [openList]);
   return (
-    <div className={cn("group", className)}>
-      <div className="pl-5 flex relative invisible flex-col space-y-2 mb-2 h-0 overflow-auto group-hover:visible group-hover:h-60 transition-all duration-650 delay-200 group-hover:delay-200 ease-in-out">
+    <div className={cn("group", className)} ref={musicPlayerRef}>
+      <div
+        className={cn(
+          "pl-5 flex relative invisible flex-col space-y-2 mb-2 h-0 overflow-auto group-hover:visible group-hover:h-60 transition-all duration-650 delay-200 group-hover:delay-200 ease-in-out",
+          {
+            "visible h-60": openList,
+          }
+        )}
+      >
         {audios.map((item, _index) => (
           <Item
             key={item.id}
@@ -70,7 +99,8 @@ export const MusicPlayer = ({
               } delay-${200 + index * 100} duration-${1650 + index * 50} ${
                 index === _index &&
                 "-translate-x-5 border-2 animate-[bg-change_2s_ease-in-out_infinite]"
-              }`
+              }`,
+              { "opacity-100 translate-y-0 delay-200": openList }
             )}
           >
             <ItemContent className="flex-1 min-w-0 flex max-w-md">
@@ -80,7 +110,11 @@ export const MusicPlayer = ({
               </ItemTitle>
               {/* <ItemDescription>{item}</ItemDescription> */}
             </ItemContent>
-            <ItemActions className="group-hover:block hidden shrink-0">
+            <ItemActions
+              className={cn("group-hover:block hidden shrink-0", {
+                block: openList,
+              })}
+            >
               {_index === index ? (
                 <span>⏸</span>
               ) : (

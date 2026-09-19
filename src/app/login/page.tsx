@@ -51,10 +51,10 @@ export default function LoginPage() {
     }
   };
   return (
-    <div className="flex flex-col h-[calc(100vh-4.5rem)] flex-1 justify-center items-center">
+    <div className="flex flex-col h-[calc(100vh-10rem)] flex-1 justify-center items-center">
       <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-xl shadow-gray-100 shadow-lg">
         <form
-          className="flex flex-col items-center space-y-4 w-lg"
+          className="flex flex-col items-center space-y-4 xl:w-lg"
           action=""
           onSubmit={handleSubmit(onSubmit)}
           method="post"

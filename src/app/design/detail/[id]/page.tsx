@@ -1,21 +1,11 @@
 "use client";
 import { DesignCard } from "@/components/design/DesignCard";
 import { cn } from "@/lib/utils";
-import {
-  startTransition,
-  use,
-  useCallback,
-  useEffect,
-  useMemo,
-  useOptimistic,
-  useRef,
-  useState,
-} from "react";
+import { startTransition, useCallback, useOptimistic, useRef } from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Eye,
   MessageSquareText,
   PencilRuler,
   Share2,
@@ -27,10 +17,9 @@ import { Input } from "@base-ui/react";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  PortfolioWork,
   PortfolioWorkImage,
   ProcessedPortfolioWork,
 } from "@/app/utils/api/design/type";
@@ -38,6 +27,7 @@ import { getTime } from "@/app/utils/tools";
 import { ToTop } from "@/components/ToTop";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { Get, Post } from "@/app/utils/query";
+import { recordPortfolioVisit } from "@/app/utils/api/design/reuqery";
 // import {VariableSizeGrid as Grid} from "react-window";
 // type User = z.infer<typeof Schema>;
 
@@ -52,6 +42,23 @@ export default function Design() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { id } = useParams();
+  // 处理用户浏览设计记录
+  useQuery({
+    queryKey: QueryKeys.fronend.visit,
+    // enabled: !userId,
+    queryFn: async () => {
+      try {
+        if (!id) return null;
+        const data = await recordPortfolioVisit(id as string);
+        return data;
+      } catch (error) {
+        console.log("error", error);
+        return null;
+      }
+    },
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
   const { data: card } = useQuery({
     queryKey: QueryKeys.portfolio.detail(id as string),
     enabled: !!id,
@@ -154,19 +161,25 @@ export default function Design() {
     card && (
       <div
         ref={containerRef}
-        className="pb-12 mb-4 relative w-full md:max-w-1/2 m-auto bg-white dark:bg-gray-700 px-4 rounded-2xl shadow-2xl"
+        className="pb-12 mb-4 relative w-full lg:max-w-1/2 m-auto bg-white dark:bg-gray-700 px-4 rounded-2xl shadow-2xl"
       >
         {/* 活动按钮 */}
-        <div className="fixed right-8 bottom-40 flex flex-col space-y-2 bg-white dark:bg-gray-700 rounded-full py-4 px-2 shadow-xl mt-2 border border-gray-200 dark:border-gray-700">
-          <LikeButton card={card} handleToLike={handleToLike} />
-          <CollectButton card={card} handleToCollect={handleToCollect} />
-          <Button className="rounded-full w-12 h-16 flex flex-col justify-center items-center cursor-pointer hover:bg-teal-400 dark:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
-            <span>{card.actions.share.count}</span>
-            <Share2
-              size={46}
-              fill={card.actions.share.active ? "#14b8a6" : "transparent"}
-            />
-          </Button>
+        <div className="fixed right-26 bottom-25 z-10  lg:right-8 lg:bottom-40 flex lg:flex-col space-y-2 bg-white dark:bg-gray-700 rounded-full py-2 lg:py-4 px-2 shadow-xl mt-2 border border-gray-200 dark:border-gray-700">
+          <div className="px-2 lg:p-0 m-0 lg:mb-2">
+            <LikeButton card={card} handleToLike={handleToLike} />
+          </div>
+          <div className="px-2 lg:p-0 m-0 lg:mb-2">
+            <CollectButton card={card} handleToCollect={handleToCollect} />
+          </div>
+          <div className="px-2 lg:p-0 m-0">
+            <Button className="rounded-full w-12 lg:h-16 flex flex-row-reverse lg:flex-col justify-center items-center cursor-pointer hover:bg-teal-400 dark:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
+              <span>{card.actions.share.count}</span>
+              <Share2
+                size={46}
+                fill={card.actions.share.active ? "#14b8a6" : "transparent"}
+              />
+            </Button>
+          </div>
         </div>
         {/* 返回顶部 */}
         <div className="fixed bottom-26 right-9 z-50 flex items-center gap-4">
@@ -268,8 +281,13 @@ export default function Design() {
         <section className="mt-12">
           <h2 className="text-2xl font-bold my-6 flex items-center gap-2">
             <MessageSquareText size={24} />
-            留下足迹 ·{" "}
-            <span className="text-teal-400">在此给作者写下您的留言</span>
+            <span>
+              留下足迹
+              <span className="text-teal-400 hidden lg:inline-block">
+                {" "}
+                · 在此给作者写下您的留言
+              </span>
+            </span>
           </h2>
           <form method="post" onSubmit={handleSubmit(onSubmit)}>
             <div>
@@ -376,7 +394,7 @@ const LikeButton = ({
   );
   return (
     <Button
-      className="rounded-full w-12 h-16 flex flex-col justify-center items-center cursor-pointer hover:bg-amber-300 hover:drop-shadow-[0_4px_12px_#f59e0bcc]"
+      className="rounded-full w-12 lg:h-16 flex flex-row-reverse lg:flex-col justify-center items-center cursor-pointer hover:bg-amber-300 hover:drop-shadow-[0_4px_12px_#f59e0bcc]"
       onClick={() => {
         startTransition(async () => {
           setOptLiked("toggle");
@@ -419,7 +437,7 @@ const CollectButton = ({
   );
   return (
     <Button
-      className="rounded-full w-12 h-16 flex flex-col justify-center items-center cursor-pointer hover:bg-rose-300 hover:drop-shadow-[0_4px_12px_#f43f5ecc]"
+      className="rounded-full w-12 lg:h-16 flex flex-row-reverse lg:flex-col justify-center items-center cursor-pointer hover:bg-rose-300 hover:drop-shadow-[0_4px_12px_#f43f5ecc]"
       onClick={() => {
         startTransition(async () => {
           setOptCollected("toggle");

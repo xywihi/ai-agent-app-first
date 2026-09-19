@@ -46,7 +46,7 @@ export default function Design() {
         _data.push(
           <div key={key}>
             <p className="font-bold text-4xl text-gray-400 mb-4">{key}</p>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
               {items &&
                 items?.map((_item: ProcessedPortfolioWork) => (
                   <PortfolioItem key={_item.id} work={_item} />

@@ -97,7 +97,7 @@ export default function Chat() {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
-  const { data: user } = useUserQuery();
+  const { data: user, error, isPending } = useUserQuery();
 
   useEffect(() => {
     if (!api) {
@@ -119,7 +119,7 @@ export default function Chat() {
   });
   const { data: frontnotes_data, isPending: frontnotes_isPending } = useQuery({
     queryKey: QueryKeys.fronend.new_notes,
-    queryFn: () => Get(`/api/user/frontend/new-notes`),
+    queryFn: () => Get(`/api/home/public-notes`),
     refetchOnWindowFocus: false,
   });
   const handleSendMessage = async () => {
@@ -133,7 +133,7 @@ export default function Chat() {
     // const data = await response.json();
     // return data;
   };
-  if (!user) {
+  if (isPending) {
     return <GlobalLoading />;
   }
   return (
@@ -168,7 +168,7 @@ export default function Chat() {
 
       <div className="flex-1 flex flex-col 2xl:flex-row justify-center items-center gap-8">
         <GroundGlassCard
-          className={cn("w-1/2 2xl:max-w-1/4 min-w-md")}
+          className={cn("w-[calc(100%-2rem)] 2xl:max-w-1/4 max-w-lg")}
           cardClassName={cn(
             "pt-0 max-h-110 opacity-0 transition-opacity duration-300 ease-out",
             {
@@ -258,7 +258,7 @@ export default function Chat() {
           </CardFooter>
         </GroundGlassCard>
         <GroundGlassCard
-          className={cn("w-1/2 2xl:max-w-1/4 min-w-md")}
+          className={cn("w-[calc(100%-2rem)] 2xl:max-w-1/4 max-w-lg")}
           cardClassName={cn(
             "flex flex-col max-h-110 opacity-0 transition-all duration-300 ease-out",
             {
@@ -313,7 +313,7 @@ export default function Chat() {
               </p>
             </CardDescription>
             <ScrollArea className="flex-1 overflow-auto rounded-md mt-4">
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col space-y-2 min-h-33">
                 {frontnotes_data &&
                   frontnotes_data?.list.map((item: Note, index: number) => (
                     // 解决border影响元素高度问题
@@ -358,12 +358,9 @@ export default function Chat() {
           </CardFooter>
         </GroundGlassCard>
         <GroundGlassCard
-          className={cn("w-1/2 2xl:max-w-1/4 min-w-md")}
+          className={cn("w-[calc(100%-2rem)] 2xl:max-w-1/4 max-w-lg")}
           cardClassName={cn(
-            "flex flex-col max-h-110 opacity-0 transition-all duration-300 ease-out delay-500",
-            {
-              "opacity-100": user,
-            }
+            "flex flex-col max-h-110 transition-all duration-300 ease-out delay-500"
           )}
         >
           <CardContent className="flex-1 p-8">

@@ -195,7 +195,7 @@ export const DesignCard = ({
         fetchPriority="high" // 预加载
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         src={card.portfolio_work_images[0].image_url + "?width=800&quality=75"}
-        className="relative z-20 w-full h-auto max-h-140 object-cover object-top select-none [-webkit-user-drag:none]"
+        className="relative z-20 w-full h-auto max-h-60 xl:max-h-140 object-cover object-top select-none [-webkit-user-drag:none]"
         // className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40 select-none [-webkit-user-drag:none]"
         onClick={() => {
           setShowImage(true);
@@ -221,7 +221,7 @@ export const DesignCard = ({
         <CardAction className="flex space-x-2 justify-self-start mt-2">
           <LikeButton card={card} handleToLike={handleToLike} />
           <CollectButton card={card} handleToCollect={handleToCollect} />
-          <Button className="rounded-full cursor-pointer hover:bg-teal-400 dark:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
+          <Button className="rounded-full cursor-pointer hover:bg-teal-400 dark:hover:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
             <Share2 />
             <span>{card.actions.share.count}</span>
           </Button>
@@ -266,7 +266,7 @@ export const DesignCard = ({
                 </Tooltip>
               </div>
             </div>
-            <Card className="bg-white dark:bg-gray-700 pt-0 flex flex-row">
+            <Card className="bg-white dark:bg-gray-700 pt-0 flex flex-col xl:flex-row">
               <div className="flex-1 max-h-[calc(100vh-200px)] overflow-auto">
                 <Image
                   width={200}
@@ -278,7 +278,7 @@ export const DesignCard = ({
                 />
               </div>
 
-              <div className="flex-1 max-w-90 pt-4 flex flex-col justify-between">
+              <div className="flex-1 xl:w-full xl:max-w-90 pt-4 flex flex-col justify-between">
                 {/* <CardHeader className="py-4"></CardHeader> */}
                 <CardContent className="py-4">
                   <CardTitle className="text-4xl mb-4 font-bold">
@@ -302,7 +302,7 @@ export const DesignCard = ({
                     <p className="text-gray-500">{card.description}</p>
                   </section>
                   <CardAction className="flex space-x-2 justify-self-start mt-2">
-                    <Button className="rounded-full cursor-pointer hover:bg-amber-300 hover:drop-shadow-[0_4px_12px_#f59e0bcc]">
+                    <Button className="rounded-full cursor-pointer hover:bg-amber-300 dark:hover:bg-amber-600 hover:drop-shadow-[0_4px_12px_#f59e0bcc]">
                       <ThumbsUp
                         fill={
                           card.actions.like.active ? "#f59e0b" : "transparent"
@@ -310,7 +310,7 @@ export const DesignCard = ({
                       />
                       <span>{card.actions.like.count}</span>
                     </Button>
-                    <Button className="rounded-full cursor-pointer hover:bg-rose-300 hover:drop-shadow-[0_4px_12px_#f43f5ecc]">
+                    <Button className="rounded-full cursor-pointer hover:bg-rose-300 dark:hover:bg-rose-600 hover:drop-shadow-[0_4px_12px_#f43f5ecc]">
                       <Star
                         fill={
                           card.actions.star.active ? "#f43f5e" : "transparent"
@@ -318,7 +318,7 @@ export const DesignCard = ({
                       />
                       <span>{card.actions.star.count}</span>
                     </Button>
-                    <Button className="rounded-full cursor-pointer hover:bg-teal-400 dark:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
+                    <Button className="rounded-full cursor-pointer hover:bg-teal-400 dark:hover:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
                       <Share2 />
                       <span>{card.actions.share.count}</span>
                     </Button>
@@ -362,7 +362,7 @@ const LikeButton = ({
   );
   return (
     <Button
-      className="rounded-full cursor-pointer hover:bg-amber-300 hover:drop-shadow-[0_4px_12px_#f59e0bcc]"
+      className="rounded-full cursor-pointer hover:bg-amber-300 dark:hover:bg-amber-600 hover:drop-shadow-[0_4px_12px_#f59e0bcc]"
       onClick={() => {
         startTransition(async () => {
           setOptLiked("toggle");
@@ -405,7 +405,7 @@ const CollectButton = ({
   );
   return (
     <Button
-      className="rounded-full cursor-pointer hover:bg-rose-300 hover:drop-shadow-[0_4px_12px_#f43f5ecc]"
+      className="rounded-full cursor-pointer hover:bg-rose-300 dark:hover:bg-rose-600 hover:drop-shadow-[0_4px_12px_#f43f5ecc]"
       onClick={() => {
         startTransition(async () => {
           setOptCollected("toggle");

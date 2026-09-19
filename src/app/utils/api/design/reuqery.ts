@@ -2,6 +2,62 @@ import { createClient } from "@/lib/server/client";
 // 获取公共值
 const client = createClient();
 
+// 记录设计访问
+export async function recordPortfolioVisit(portfolioId: string) {
+  try {
+    const {
+      data: { user },
+    } = await client.auth.getUser();
+    const userId = user?.id;
+    console.log("user", user);
+    // 游客：每次访问直接记录，不做去重
+    if (!userId) {
+      await client
+        .from("portfolio_visits")
+        .insert([{ portfolio_id: portfolioId }]);
+      return [];
+    }
+
+    // 登录用户：查询今日是否已有访问记录
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const { data, error } = await client
+      .from("portfolio_visits")
+      .select("id")
+      .eq("portfolio_id", portfolioId)
+      .eq("user_id", userId)
+      .gte("visited_at", todayStart.toISOString())
+      .limit(1);
+    if (error) {
+      console.log("error", error);
+      throw new Error(error.message);
+    }
+    // 今天没有访问记录，才插入
+    if (data && data.length === 0) {
+      await client
+        .from("portfolio_visits")
+        .insert([{ portfolio_id: portfolioId, user_id: userId }]);
+    } else {
+      console.log("今日已有访问记录", data[0].id, new Date().toISOString());
+      //更新访问时间
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const { error } = await client
+        .from("portfolio_visits")
+        .update({ visited_at: new Date().toISOString() })
+        .eq("id", data[0].id);
+      if (error) {
+        console.log("error", error);
+        throw new Error(error.message);
+      }
+    }
+    return [];
+  } catch (error) {
+    console.log("error", error);
+    return null;
+  }
+}
+
 // 获取作品集类型
 export async function getPortfolioCategories() {
   const user = await client.auth.getUser();

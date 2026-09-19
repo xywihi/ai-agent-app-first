@@ -37,6 +37,12 @@ export async function recordNoteVisit(noteId: string) {
     return [];
   } else {
     console.log("今日已有访问记录");
+    //更新访问时间
+    await client
+      .from("frontend_note_visits")
+      .update({ visited_at: new Date().toISOString() })
+      .eq("note_id", noteId)
+      .eq("user_id", userId);
     return [];
   }
 }

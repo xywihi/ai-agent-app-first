@@ -67,7 +67,7 @@ export const ConverHistoryList = ({ data, isLoading }: PropsInterface) => {
     },
   });
   return (
-    <div className="p-4 py-6 mb-4 border rounded-2xl h-full flex-1 max-w-2xl">
+    <div className="p-4 py-6 mb-4 border rounded-2xl h-full flex-1 max-w-5xl">
       <div className="flex flex-row justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">会话历史</h1>
         <button

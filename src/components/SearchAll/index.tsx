@@ -52,10 +52,10 @@ export const SearchAll = () => {
     refetchOnWindowFocus: false,
   });
   return (
-    <div className="flex flex-col gap-4">
+    <div className="">
       <Button
         className={cn(
-          "w-12 p-2 backdrop-blur-md border-gray-200 dark:border-gray-700 rounded-lg group hover:w-20 hover:text-teal-400 cursor-pointer transition-all"
+          "w-12 p-3 h-fit xl:p-2 shrink-0 backdrop-blur-md border-gray-200 dark:border-gray-700 rounded-lg group hover:w-20 hover:text-teal-400 cursor-pointer transition-all"
         )}
         onClick={() => setOpen(true)}
       >

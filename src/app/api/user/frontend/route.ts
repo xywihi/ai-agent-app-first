@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ data }, { status: 200 });
   } catch (error: unknown) {
     await reportErrorLog({
-      errorType: "api_update_note_error",
+      errorType: "api_get_note_error",
       error,
     });
     return new Response(JSON.stringify({ error: "服务异常", data: null }), {
