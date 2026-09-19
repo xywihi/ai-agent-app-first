@@ -9,8 +9,6 @@ export const Get = async (url: string, headers?: HeadersInit) => {
   const result = await fetch(url, {
     headers: headers,
   });
-  console.log("result", result);
-
   if (result.ok) {
     const data = await result.json();
     return data.data;

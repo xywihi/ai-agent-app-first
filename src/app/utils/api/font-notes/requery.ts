@@ -11,7 +11,6 @@ export async function recordNoteVisit(noteId: string) {
     data: { user },
   } = await client.auth.getUser();
   const userId = user?.id;
-  console.log("user", user);
   // 游客：每次访问直接记录，不做去重
   if (!userId) {
     await client.from("frontend_note_visits").insert([{ note_id: noteId }]);

@@ -9,7 +9,6 @@ export async function recordPortfolioVisit(portfolioId: string) {
       data: { user },
     } = await client.auth.getUser();
     const userId = user?.id;
-    console.log("user", user);
     // 游客：每次访问直接记录，不做去重
     if (!userId) {
       await client
@@ -38,7 +37,6 @@ export async function recordPortfolioVisit(portfolioId: string) {
         .from("portfolio_visits")
         .insert([{ portfolio_id: portfolioId, user_id: userId }]);
     } else {
-      console.log("今日已有访问记录", data[0].id, new Date().toISOString());
       //更新访问时间
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);

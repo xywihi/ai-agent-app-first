@@ -135,7 +135,6 @@ export const AsideNav = () => {
         className="w-full my-2 text-md justify-start gap-2 text-foreground"
         onClick={() => {
           // setCurrentNote(fileItem.name);
-          console.log("fileItem", fileItem);
           // if (!category_id) return;
           const searchParams = new URLSearchParams();
           searchParams.set("category_id", root?.id || "");

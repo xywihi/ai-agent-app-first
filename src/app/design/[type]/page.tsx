@@ -65,7 +65,6 @@ export default function Design() {
     const timer = setTimeout(() => {
       // 分别监听每张卡片
       observers = cardRefs.current.map((card, index) => {
-        console.log("index", index);
         observer = new IntersectionObserver(
           (entries) => {
             const count = entries.filter(
@@ -165,7 +164,6 @@ export default function Design() {
     });
     return () => clearTimeout(timer);
   }, [cardHeightsRef, getColumnCount, portfolio_works]);
-  console.log("portfolio_works", portfolio_works);
   return (
     <div onClick={() => setShowSearch(false)}>
       <div className="mb-6 flex flex-col xl:flex-row gap-4 justify-between items-center">

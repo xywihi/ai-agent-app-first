@@ -92,7 +92,6 @@ export const HeaderNav = () => {
       },
     ];
   }, []);
-  console.log("pathname", pathname);
   return (
     <div className="flex-row justify-between items-center hidden xl:flex">
       <div className="w-2xs hidden xl:block">

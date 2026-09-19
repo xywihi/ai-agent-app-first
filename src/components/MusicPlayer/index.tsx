@@ -62,8 +62,6 @@ export const MusicPlayer = ({
   useEffect(() => {
     // 全局点击回调
     const handleGlobalClick = (e: MouseEvent) => {
-      e.stopPropagation();
-      e.preventDefault();
       // 如果点击目标在音乐播放器之内,则不关闭音乐播放器
       if (musicPlayerRef.current?.contains(e.target as Node)) {
         if (!openList) setOpenList(true);
@@ -71,10 +69,17 @@ export const MusicPlayer = ({
         return;
       }
 
-      if (openList) setOpenList(false);
+      if (openList) {
+        setOpenList(false);
+        // 捕获阶段阻止事件继续往下走到页面其他元素
+        e.stopImmediatePropagation();
+      }
       // 如果点击目标在音乐播放器之外,则关闭音乐播放器
     };
-    document.addEventListener("mousedown", handleGlobalClick);
+    document.addEventListener("mousedown", handleGlobalClick, {
+      // passive: true,
+      capture: true,
+    }); //开启捕获模式capture：true，事件最先走到此回调；passive:true，不阻止默认行为。
     return () => {
       document.removeEventListener("mousedown", handleGlobalClick);
     };
