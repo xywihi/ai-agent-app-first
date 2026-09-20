@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 type ReportLogOpt = {
   conversationId?: string | number;
   errorType: string; // 错误类型
@@ -15,7 +15,7 @@ export const reportErrorLog = async ({
 }: ReportLogOpt) => {
   try {
     const err = error as Error;
-    const client = createClient();
+
     await client.from("frontend_error_logs").insert({
       conversationId,
       error_type: errorType,

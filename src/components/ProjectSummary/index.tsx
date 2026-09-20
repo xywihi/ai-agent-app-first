@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@/app/utils/tools";
 import { useEffect, useRef, useState } from "react";
 const features = [

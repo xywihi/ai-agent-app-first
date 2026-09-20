@@ -1,6 +1,6 @@
 "use client";
 
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
@@ -14,7 +14,7 @@ export default function LogoutButton() {
   const router = useRouter();
   const handleSignOut = async () => {
     try {
-      await createClient().auth.signOut();
+      await client.auth.signOut();
       queryclient.removeQueries({
         queryKey: QueryKeys.userCenter.data,
       });

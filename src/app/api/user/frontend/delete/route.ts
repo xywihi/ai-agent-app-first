@@ -1,11 +1,13 @@
 // 删除笔记
 import { reportErrorLog } from "@/lib/reportError";
-import { createServer } from "@/lib/server/server";
+import server from "@/lib/server/server";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const supabase = await createServer();
+    const _cookie = await cookies();
+    const supabase = await server(_cookie);
     const { id } = await req.json();
     const { data } = await supabase
       .from("frontend_notes")

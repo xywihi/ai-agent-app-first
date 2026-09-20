@@ -18,14 +18,14 @@
     --foreground: #ededed;
   }
 }
-*{
+/* *{
   -webkit-user-select: none;
     user-select: none;
-}
+} */
 
 /* 只有该元素处于网页全屏模式才生效 */
 #global_anln {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   overflow-y: auto; /* 关键：允许容器内部滚动 */
   box-sizing: border-box;

@@ -1,4 +1,5 @@
-import { createServer } from "@/lib/server/server";
+import server from "@/lib/server/server";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 // 获取浏览记录
@@ -6,7 +7,8 @@ export async function GET(req: Request) {
   // 计算7天前时间
   const oneWeekAgo = new Date();
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-  const supabase = await createServer();
+  const _cookie = await cookies();
+  const supabase = await server(_cookie);
   const { data: portfolio_visits_data, error: portfolio_error } = await supabase
     .from("portfolio_visits")
     .select(

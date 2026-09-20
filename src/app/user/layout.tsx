@@ -1,76 +1,58 @@
-"use client";
-import { useQuery } from "@tanstack/react-query";
 import {
   Avatar,
   AvatarBadge,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { getUserInfo, getUserProfiles } from "@/app/utils/api/user/requery";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@base-ui/react";
-import { cn } from "@/lib/utils";
-import { ChevronRight, LogOut } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { UploadAvatarApi } from "@/components/user/UploadAvatar";
-import { Suspense, useMemo } from "react";
-import { ItemContent } from "@/components/ui/item";
+import { Suspense } from "react";
 import { Icon } from "@/components/Icon";
-import { useRouter } from "next/navigation";
-import { QueryKeys } from "../utils/query-keys";
-import { useUserQuery } from "@/hooks/use-user-query";
-export default function UserLayout({
+import { getUserInfo, getUserProfiles } from "@/lib/data/user";
+import Link from "next/link";
+export default async function UserLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const asideFunctions = useMemo(() => {
-    return [
-      {
-        name: "UI作品集",
-        icon: "user",
-        path: "/user/ui",
-        children: null,
-      },
-      {
-        name: "前端笔记",
-        icon: "code",
-        path: "/user/frontend",
-        children: null,
-      },
-      {
-        name: "浏览记录",
-        icon: "eye",
-        path: "/user/record",
-        children: null,
-      },
-      {
-        name: "个人资料",
-        icon: "book-text",
-        path: "/user/profile",
-        children: null,
-      },
-      {
-        name: "用户统计",
-        icon: "chart-no-axes-combined",
-        path: "/user/statistic",
-        children: null,
-      },
-    ];
-  }, []);
-  const router = useRouter();
-  const { data: user } = useUserQuery();
-  const { data: user_profiles } = useQuery({
-    queryKey: QueryKeys.userCenter.profiles,
-    enabled: !!user,
-    queryFn: async () => {
-      if (!user) return null;
-      const _data = await getUserProfiles();
-      const data = await _data.json();
-      return data.data;
+  const asideFunctions = [
+    {
+      name: "UI作品集",
+      icon: "user",
+      path: "/user/ui",
+      children: null,
     },
-  });
-
+    {
+      name: "前端笔记",
+      icon: "code",
+      path: "/user/frontend",
+      children: null,
+    },
+    {
+      name: "浏览记录",
+      icon: "eye",
+      path: "/user/record",
+      children: null,
+    },
+    {
+      name: "个人资料",
+      icon: "book-text",
+      path: "/user/profile",
+      children: null,
+    },
+    {
+      name: "用户统计",
+      icon: "chart-no-axes-combined",
+      path: "/user/statistic",
+      children: null,
+    },
+  ];
+  const [user, user_profiles] = await Promise.all([
+    getUserInfo(),
+    getUserProfiles(),
+  ]);
   return (
     <div className="lg:flex gap-4 p-6">
       <aside className="hidden lg:flex shrink-0 p-6 sticky top-24  flex-col justify-between bg-linear-to-b from-gray-200 dark:from-gray-900 to-white dark:to-gray-700  bg-white dark:bg-gray-700 rounded-2xl min-w-90 h-[calc(100vh-13rem)] shadow-2xl">
@@ -111,9 +93,9 @@ export default function UserLayout({
                 key={index}
                 className="border-2 border-gray-300 dark:border-gray-600 rounded-xl mb-4 group bg-white dark:bg-gray-700 drop-shadow-[0_4px_10px_#ddd] hover:drop-shadow-[0_8px_14px_#b4b4b4cc] dark:drop-shadow-[0_4px_10px_#242424] dark:hover:drop-shadow-[0_8px_14px_#434343cc]"
               >
-                <div
+                <Link
+                  href={item.path}
                   className="flex items-center  text-xl my-4 px-4  w-full justify-between transition-none hover:bg-accent hover:text-accent-foreground"
-                  onClick={() => router.push(item.path)}
                 >
                   <div className="flex items-center gap-2 font-bold">
                     <Suspense>
@@ -123,11 +105,13 @@ export default function UserLayout({
                     </Suspense>
                     <span>{item.name}</span>
                   </div>
-                  <ChevronRight
-                    size={20}
-                    className="transition-transform group-data-open:rotate-90 shrink-0"
-                  />
-                </div>
+                  <Suspense>
+                    <ChevronRight
+                      size={20}
+                      className="transition-transform group-data-open:rotate-90 shrink-0"
+                    />
+                  </Suspense>
+                </Link>
               </div>
             ))}
           </div>

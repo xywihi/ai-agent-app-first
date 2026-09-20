@@ -1,12 +1,14 @@
 import { reportErrorLog } from "@/lib/reportError";
-import { createServer } from "@/lib/server/server";
+import server from "@/lib/server/server";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     // const { searchParams } = new URL(req.url);
     // const noteId = searchParams.get("noteId");
-    const supabase = await createServer();
+    const _cookie = await cookies();
+    const supabase = await server(_cookie);
     const { data: _data } = await supabase
       .from("frontend_notes")
       .select(`*, note_categories(name)`)

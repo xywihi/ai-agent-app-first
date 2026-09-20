@@ -1,13 +1,11 @@
 "use client";
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
-import { getUserInfo } from "@/app/utils/api/user/requery";
 import { Get } from "@/app/utils/query";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { debounce } from "@/app/utils/tools";
 import { DesignCard } from "@/components/design/DesignCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Kbd } from "@/components/ui/kbd";
 import { useUserQuery } from "@/hooks/use-user-query";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -18,17 +16,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const debounceFn = debounce((fn) => {
   if (typeof fn !== "function") return;
   // 在此处做你的搜索逻辑
-  fn("9999999");
+  // fn("9999999");
 }, 500);
 export default function Design() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visibleIndexes, setVisibleIndexes] = useState(new Set());
-  const [visibleCount, setVisibleCount] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
   const cardHeightsRef = useRef<Map<string, number>>(new Map());
   const cardRefs = useRef<HTMLDivElement[]>([]);
   const [showSearch, setShowSearch] = useState(false);
-  const [shouldAnimate, setShouldAnimate] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [positions, setPositions] = useState<
     Map<string, { left: number; top: number; width: number; height: number }>
@@ -47,18 +43,7 @@ export default function Design() {
     },
   });
   useEffect(() => {
-    // 右键拦截
-    const onContext = (e: MouseEvent) => e.preventDefault();
-    document.addEventListener("contextmenu", onContext);
-
-    // 快捷键拦截
-    // const onKey = (e: KeyboardEvent) => {
-    //   if (e.key === "F12") e.preventDefault();
-    //   if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "i")
-    //     e.preventDefault();
-    //   if ((e.metaKey || e.ctrlKey) && e.key === "s") e.preventDefault();
-    // };
-    // document.addEventListener("keydown", onKey);
+    // 懒加载
     if (!containerRef.current) return;
     let observers: IntersectionObserver[] = [];
     let observer: IntersectionObserver;
@@ -67,30 +52,18 @@ export default function Design() {
       observers = cardRefs.current.map((card, index) => {
         observer = new IntersectionObserver(
           (entries) => {
-            const count = entries.filter(
-              (entry) => entry.isIntersecting
-            ).length; // 剩余的卡片露出来了
             if (entries[0].isIntersecting) {
               // 这张卡片露出来了，加入 Set
               setVisibleIndexes((prev) => {
                 const _visibleIndexes = new Set(prev).add(index);
                 return _visibleIndexes;
               });
-              setShouldAnimate(true);
               if (card) {
                 observer.unobserve(card); // 只触发一次，取消该卡片的观察
               }
               // observer.disconnect(); // 会取消所有的观察
             }
-            setVisibleCount(count);
           },
-          // ([entry]) => {
-          //   if (entry.isIntersecting) {
-          //     // 这张卡片露出来了，加入 Set
-          //     setVisibleIndexes((prev) => new Set(prev).add(index));
-          //     observer.disconnect(); // 只触发一次
-          //   }
-          // },
           { threshold: 0.15 } // 露出 15% 就触发
         );
         if (card) observer.observe(card); // 如果有卡片，就观察
@@ -103,8 +76,6 @@ export default function Design() {
       observers.forEach((obs) => obs.disconnect());
       clearTimeout(timer);
       observer?.disconnect();
-      // document.removeEventListener("contextmenu", onContext);
-      // document.removeEventListener("keydown", onKey);
     };
   }, [portfolio_works]);
   const doDebounce = useCallback(
@@ -241,12 +212,7 @@ export default function Design() {
         className="pb-12 mb-4 relative"
         style={{ height: containerHeight || "2000px" }}
       >
-        <div
-        // className={cn(
-        //   "flex w-full gap-4 opacity-0 transform translate-y-40 duration-200 ease-bezier[0.22,1,0,0.36,1] delay-0",
-        //   visibleIndexes.has(index) && "opacity-100 translate-y-0 delay-0"
-        // )}
-        >
+        <div>
           {isPending && (
             <div className="text-center xl:text-xl text-gray-400">
               作品努力加载中...

@@ -1,6 +1,5 @@
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 // 获取公共值
-const client = createClient();
 
 // 记录设计访问
 export async function recordPortfolioVisit(portfolioId: string) {

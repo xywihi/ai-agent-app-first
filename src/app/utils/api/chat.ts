@@ -1,7 +1,6 @@
 import { UIDataTypes, UIMessagePart, UITools } from "ai";
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import z from "zod";
-import { th } from "zod/v4/locales";
 export interface ConverHistoryListInterface {
   id: number;
   conversation_name: string;
@@ -11,7 +10,7 @@ export const getHistoryMessages = async (conversation_id: string | number) => {
   if (!conversation_id) {
     return;
   }
-  const client = createClient();
+
   //查询conversation_id为2的数据
   const { data, error } = await client
     .from("conversation_history_list")
@@ -48,7 +47,6 @@ export const addHistoryMessage = async (
   content: UIMessagePart<UIDataTypes, UITools>[],
   message_id: string
 ) => {
-  const client = createClient();
   const { data, error } = await client
     .from("conversation_history")
     .insert({ conversation_id: conversationId, role, content, message_id });
@@ -59,7 +57,6 @@ export const addHistoryMessage = async (
 };
 
 export const createConver = async (user_id: string) => {
-  const client = createClient();
   const { error } = await client
     .from("conversation_history_list")
     .insert({ conversation_name: "新建对话", user_id });
@@ -86,7 +83,6 @@ export const ConverListSchema = z.array(
   })
 );
 export const getConverHistoryList = async (user_id: string) => {
-  const client = createClient();
   const { data, error } = await client
     .from("conversation_history_list")
     .select("*")
@@ -106,7 +102,6 @@ export const getConverHistoryList = async (user_id: string) => {
 };
 
 export const deleteConverHistoryList = async (id: string | number) => {
-  const client = createClient();
   const { data, error } = await client
     .from("conversation_history_list")
     .delete()
@@ -122,7 +117,6 @@ export const updateConverHistoryList = async (
   id: string,
   conversation_name: string
 ) => {
-  const client = createClient();
   const { data, error } = await client
     .from("conversation_history_list")
     .update({ conversation_name: conversation_name, updated_at: new Date() })

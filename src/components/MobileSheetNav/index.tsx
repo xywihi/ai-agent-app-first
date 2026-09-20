@@ -14,9 +14,10 @@ import {
 } from "@/components/ui/sheet";
 import React, { Suspense, useEffect, useMemo } from "react";
 import LogoutButton from "../LogoutButton";
-import { Fullscreen, Menu } from "lucide-react";
 import { UserCenter } from "../UserCenter";
 import { SearchAll } from "../SearchAll";
+import FullScreen from "../HeaderNav/components/FullScreen";
+import { Menu } from "lucide-react";
 
 type Path = {
   name: string;
@@ -97,14 +98,6 @@ export function MobileSheetNav() {
     }, 0);
     return () => clearTimeout(timer);
   }, [pathname]);
-  const hadleFullScreen = () => {
-    const body = document.getElementById("global_anln");
-    if (!body) return;
-    body.requestFullscreen();
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    }
-  };
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <div className="flex 2xl:hidden flex-row justify-between items-center">
@@ -112,14 +105,8 @@ export function MobileSheetNav() {
           <Menu size={24} />
         </SheetTrigger>
         <div className="flex flex-row justify-between items-center gap-2">
-          <div
-            className={cn(
-              "w-fit p-3 h-fit 2xl:p-2 shrink-0 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-lg group hover:text-teal-400 cursor-pointer transition-all"
-            )}
-            onClick={hadleFullScreen}
-          >
-            <Fullscreen size={16} />
-          </div>
+          {/* 全屏 */}
+          <FullScreen />
           {/* 个人中心 */}
           <UserCenter />
           {/* 搜索全站 */}

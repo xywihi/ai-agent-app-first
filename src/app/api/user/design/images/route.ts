@@ -1,8 +1,10 @@
-import { createServer } from "@/lib/server/server";
+import server from "@/lib/server/server";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const supabase = await createServer();
+  const _cookie = await cookies();
+  const supabase = await server(_cookie);
 
   const { work_id, image_urls } = await req.json();
 
@@ -41,7 +43,8 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-  const supabase = await createServer();
+  const _cookie = await cookies();
+  const supabase = await server(_cookie);
   const { data, error } = await supabase
     .from("portfolio_work_images")
     .select("*")

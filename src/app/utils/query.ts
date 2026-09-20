@@ -1,13 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
-import { toast } from "sonner";
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 export const Get = async (url: string, headers?: HeadersInit) => {
-  const result = await fetch(url, {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ?? "https//ai-agent-app-first.vercel.app";
+  const result = await fetch(baseUrl + url, {
     headers: headers,
+    next: {
+      revalidate: 300,
+    },
   });
   if (result.ok) {
     const data = await result.json();

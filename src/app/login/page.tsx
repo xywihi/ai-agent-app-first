@@ -2,9 +2,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { createClient } from "@/lib/server/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import client from "@/lib/server";
 const formSchema = z.object({
   username: z.string().min(2, "用户名至少2个字"),
   password: z.string(),
@@ -29,7 +29,7 @@ export default function LoginPage() {
     const {
       error,
       data: { user },
-    } = await createClient().auth.signInWithPassword({
+    } = await client.auth.signInWithPassword({
       email: data.username,
       password: data.password,
     });

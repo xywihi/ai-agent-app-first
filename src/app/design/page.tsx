@@ -1,11 +1,6 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+// "use client";
+import { redirect } from "next/navigation";
 
-export default function Page({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  useEffect(() => {
-    router.replace("/design/all");
-  }, []);
-  return <div>{children}</div>;
+export default function Page() {
+  redirect("/design/all");
 }

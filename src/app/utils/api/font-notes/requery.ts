@@ -1,9 +1,8 @@
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import { CategoryItem, CategoryTree, Note, Root } from "./typs";
 import { reportErrorLog } from "@/lib/reportError";
 
 // 获取公共值
-const client = createClient();
 
 // 记录笔记访问
 export async function recordNoteVisit(noteId: string) {
@@ -184,11 +183,13 @@ export async function updateNote(note: Note) {
 }
 // 查询笔记
 export async function getNote(noteId: string) {
+  console.log("noteId----", noteId);
   const { data } = await client
     .from("frontend_notes")
     .select("*")
     .eq("id", noteId)
     .single();
+  console.log("note_data", data);
   return data;
 }
 

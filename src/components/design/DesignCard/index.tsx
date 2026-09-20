@@ -56,6 +56,14 @@ export const DesignCard = ({
   const { type } = useParams();
   const queryClient = useQueryClient();
   useEffect(() => {
+    // 右键拦截
+    const onContext = (e: MouseEvent) => e.preventDefault();
+    document.addEventListener("contextmenu", onContext);
+    return () => {
+      document.removeEventListener("contextmenu", onContext);
+    };
+  }, []);
+  useEffect(() => {
     if (!cardRef.current) return;
     // 先渲染所有卡片（但透明不可见），测量高度后重新计算布局
     // const height = !cardRef.current
@@ -197,7 +205,7 @@ export const DesignCard = ({
         loading="eager"
         fetchPriority="high" // 预加载
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        src={card.portfolio_work_images[0].image_url + "?width=800&quality=75"}
+        src={card.portfolio_work_images[0].image_url}
         className="relative z-20 w-full h-auto max-h-60 xl:max-h-140 object-cover object-top select-none [-webkit-user-drag:none]"
         // className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40 select-none [-webkit-user-drag:none]"
         onClick={() => {

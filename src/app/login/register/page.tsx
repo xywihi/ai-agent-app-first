@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRef, useState } from "react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import { useRouter } from "next/navigation";
 const formSchema = z
   .object({
@@ -60,7 +60,7 @@ export default function RegisterPage() {
       alert("请先完成验证");
       return;
     }
-    const { error } = await createClient().auth.signUp({
+    const { error } = await client.auth.signUp({
       email: data.email,
       password: data.password,
       options: {

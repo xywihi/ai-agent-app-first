@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import { reportErrorLog } from "@/lib/reportError";
 
 // 获取公共值
-const client = createClient();
+
 // 模糊搜索
 function escapeLikePattern(str: string) {
   return str.replace(/([%_])/g, "\\$1");

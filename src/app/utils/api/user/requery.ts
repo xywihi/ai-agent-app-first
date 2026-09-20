@@ -1,8 +1,7 @@
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import { reportErrorLog } from "@/lib/reportError";
 
 // 获取公共值
-const client = createClient();
 
 // 获取用户信息
 export async function getUserInfo() {
@@ -27,7 +26,7 @@ export async function getUserInfo() {
 // 获取用户profiles信息
 export async function getUserProfiles() {
   try {
-    const user = await createClient().auth.getUser();
+    const user = await client.auth.getUser();
     if (!user.data.user?.id) {
       throw new Error("user_id is required");
     }

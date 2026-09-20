@@ -2,7 +2,7 @@
 import { ConverListSchema, getConverHistoryList } from "@/app/utils/api/chat";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { ConverHistoryList } from "@/components/ConverHistoryList";
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import z from "zod";
@@ -26,7 +26,7 @@ export default function HomeLayout({
     queryKey: QueryKeys.aiChat.history,
     queryFn: async () => {
       try {
-        const data = await createClient().auth.getUser();
+        const data = await client.auth.getUser();
         const user = Schema.safeParse(data.data);
         if (user.success) {
           const result_converList = await getConverHistoryList(

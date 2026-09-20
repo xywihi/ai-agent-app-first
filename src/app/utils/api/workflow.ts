@@ -1,5 +1,5 @@
 import { UIDataTypes, UIMessagePart, UITools } from "ai";
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 export interface ConverHistoryListInterface {
   id: number;
   conversation_name: string;
@@ -11,7 +11,6 @@ export const createApprovalTask = async (
   amount: number,
   reason: string
 ) => {
-  const client = createClient();
   const { data, error } = await client
     .from("approval_tasks")
     .insert({ request_id: requestId, approver, amount, reason });
@@ -23,7 +22,6 @@ export const createApprovalTask = async (
 };
 
 export const checkApprovalStatus = async (requestId: string) => {
-  const client = createClient();
   const data = await client
     .from("approval_tasks")
     .select("*")
@@ -35,7 +33,6 @@ export const updateApprovalStatus = async (
   requestId: string,
   status: string
 ) => {
-  const client = createClient();
   const data = await client
     .from("approval_tasks")
     .update({ status })
@@ -44,7 +41,6 @@ export const updateApprovalStatus = async (
 };
 
 export const createThread = async (threadId: string, state: unknown) => {
-  const client = createClient();
   const { data, error } = await client
     .from("agent_threads")
     .upsert(
@@ -60,7 +56,6 @@ export const createThread = async (threadId: string, state: unknown) => {
 };
 
 export const checkThreadStatus = async (threadId: string) => {
-  const client = createClient();
   const data = await client
     .from("agent_threads")
     .select("*")
@@ -78,7 +73,7 @@ export const getHistoryMessages = async (conversation_id: string | number) => {
   if (!conversation_id) {
     return;
   }
-  const client = createClient();
+
   //查询conversation_id为2的数据
   const { data, error } = await client
     .from("workflow_history_list")
@@ -115,7 +110,6 @@ export const addHistoryMessage = async (
   content: UIMessagePart<UIDataTypes, UITools>[],
   message_id: string
 ) => {
-  const client = createClient();
   const { data, error } = await client
     .from("workflow_history")
     .insert({ conversation_id: conversationId, role, content, message_id });
@@ -126,7 +120,6 @@ export const addHistoryMessage = async (
 };
 
 export const createWorkflow = async () => {
-  const client = createClient();
   const { error } = await client
     .from("workflow_history_list")
     .insert({ conversation_name: "新建对话" });
@@ -146,7 +139,6 @@ export const createWorkflow = async () => {
 };
 
 export const getWorkflowHistoryList = async () => {
-  const client = createClient();
   const { data, error } = await client
     .from("workflow_history_list")
     .select("*");
@@ -159,7 +151,6 @@ export const getWorkflowHistoryList = async () => {
 };
 
 export const deleteWorkflowHistoryList = async (id: string | number) => {
-  const client = createClient();
   const { data, error } = await client
     .from("workflow_history_list")
     .delete()
@@ -175,7 +166,6 @@ export const updateWorkflowHistoryList = async (
   id: string,
   conversation_name: string
 ) => {
-  const client = createClient();
   const { data, error } = await client
     .from("workflow_history_list")
     .update({ conversation_name: conversation_name, updated_at: new Date() })

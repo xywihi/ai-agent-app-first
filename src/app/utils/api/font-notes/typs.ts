@@ -6,10 +6,10 @@ export interface Note {
   title: string; // 标题
   category_id: string; // 分类
   sub_category_id: string; // 子分类
-  sort_order: number; // 排序
-  content: string; // 内容
+  sort_order?: number; // 排序
+  content?: string; // 内容
   summary?: string; // 摘要
-  is_published: boolean; // 是否发布
+  is_published?: boolean; // 是否发布
   view_count?: number; // 阅读量
   created_at?: string; // 创建时间
   updated_at?: string; // 更新时间

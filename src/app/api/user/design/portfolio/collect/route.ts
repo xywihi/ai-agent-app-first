@@ -1,9 +1,11 @@
-import { createServer } from "@/lib/server/server";
+import server from "@/lib/server/server";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 // 喜欢该作品
 export async function POST(req: Request) {
-  const supabase = await createServer();
+  const _cookie = await cookies();
+  const supabase = await server(_cookie);
   const { workId, id } = await req.json();
   const { data: _user_data } = await supabase.auth.getUser();
   if (!_user_data.user)

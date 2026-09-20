@@ -1,9 +1,11 @@
-import { createServer } from "@/lib/server/server";
+import server from "@/lib/server/server";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await createServer();
+    const _cookie = await cookies();
+    const supabase = await server(_cookie);
     const {
       data: { user },
       error: authError,

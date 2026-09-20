@@ -9,7 +9,7 @@ import { cn } from "@/app/utils/tools";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CircleX } from "lucide-react";
 import { Spinner } from "../ui/spinner";
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import z from "zod";
 import { QueryKeys } from "@/app/utils/query-keys";
 interface PropsInterface {
@@ -32,7 +32,7 @@ export const ConverHistoryList = ({ data, isLoading }: PropsInterface) => {
 
   const { mutate: mutateCreate, isPending: isLoadingCreate } = useMutation({
     mutationFn: async () => {
-      const data_user = await createClient().auth.getUser();
+      const data_user = await client.auth.getUser();
       const user = Schema.safeParse(data_user.data);
       if (user.success) {
         const data_create = await createConver(user?.data?.user.id);

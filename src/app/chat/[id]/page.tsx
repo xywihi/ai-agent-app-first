@@ -9,7 +9,7 @@ import { useParams, notFound } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import z from "zod";
 import { useState } from "react";
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import { QueryKeys } from "@/app/utils/query-keys";
 const Schema = z.object({
   user: z.object({
@@ -31,7 +31,7 @@ const ChatPage = () => {
     enabled: !userId,
     queryFn: async () => {
       try {
-        const data = await createClient().auth.getUser();
+        const data = await client.auth.getUser();
         const user = Schema.safeParse(data.data);
         if (user.success) {
           setUserId(user.data.user.id);

@@ -157,7 +157,7 @@ export const AsideNav = () => {
   };
   return (
     ((root_category as CategoryTree)?.root || rooting) && (
-      <aside className="w-1/5 h-[calc(100vh-10rem)] sticky top-22 min-w-80  bg-black rounded-2xl p-4 group/root">
+      <aside className="w-1/5 h-[calc(100vh-10rem)] bg-black rounded-2xl p-4 group/root">
         <div className="absolute top-20 -right-39 flex flex-col items-end space-y-4">
           {/* 一级菜单导航 */}
           {(root_category as CategoryTree)?.root?.map((item, index) => (

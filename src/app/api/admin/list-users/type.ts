@@ -1,10 +1,10 @@
 export type User = {
   id: string;
-  email: string;
-  last_sign_in_at: string | null;
+  email: string | undefined;
+  last_sign_in_at: string | undefined;
   created_at: string;
   avatar_url: string | undefined;
-  display_name: string | null;
+  display_name: string | undefined;
   is_online: boolean;
-  authority: "user" | "admin";
+  authority: string;
 };

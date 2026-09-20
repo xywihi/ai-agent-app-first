@@ -1,49 +1,18 @@
+import { getFrontNotes } from "@/lib/data/notes";
 import { reportErrorLog } from "@/lib/reportError";
-import { createClient } from "@/lib/server/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    // const { searchParams } = new URL(req.url);
-    // const noteId = searchParams.get("noteId");
-    const client = createClient();
-    const { data, count, error } = await client
-      .from("frontend_notes")
-      .select("id,title,view_count,updated_at,category_id,sub_category_id", {
-        count: "exact",
-        /*  1.  exact ：精确计数，扫描全部匹配行，数据量大时会慢；适合你的笔记场景（个人笔记数量不多）
-        2.  planned ：使用查询计划估算行数，速度快，数值有误差
-        3.  estimated ：使用数据库统计信息估算，速度最快，误差更大
-        当你设置  count  参数时，查询结果会多出  .count  属性存放统计数字。 */
-
-        /* -  head:true ：数据库只做统计，不把 select 命中的记录返回给前端， data = null ，网络传输极小
-        -  head:false ：返回命中的完整记录数据，同时附带 count */
-        head: false,
-      })
-      .order("view_count", { ascending: false })
-      .eq("is_published", true)
-      .limit(8);
-    if (error) {
-      // console.log("error", error);
-      throw error;
-    }
-    if (!data) return;
-    const noteTotal = count ?? 0;
-    const totalView =
-      data.reduce((acc, item) => {
-        return acc + (item.view_count ?? 0);
-      }, 0) || 0;
-    return NextResponse.json(
-      { data: { list: data, noteTotal, totalView } },
-      { status: 200 }
-    );
+    const data = await getFrontNotes();
+    return NextResponse.json(data, { status: 200 });
   } catch (error: unknown) {
     console.log("chat api error", error);
     await reportErrorLog({
       errorType: "api_public_note_error",
       error,
     });
-    return new Response(JSON.stringify({ error: "服务异常", data: null }), {
+    return new Response(JSON.stringify({ error: "服务异常" }), {
       status: 500,
     });
   }

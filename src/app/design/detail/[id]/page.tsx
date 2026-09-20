@@ -1,7 +1,12 @@
 "use client";
-import { DesignCard } from "@/components/design/DesignCard";
 import { cn } from "@/lib/utils";
-import { startTransition, useCallback, useOptimistic, useRef } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useOptimistic,
+  useRef,
+} from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,6 +47,14 @@ export default function Design() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { id } = useParams();
+  useEffect(() => {
+    // 右键拦截
+    const onContext = (e: MouseEvent) => e.preventDefault();
+    document.addEventListener("contextmenu", onContext);
+    return () => {
+      document.removeEventListener("contextmenu", onContext);
+    };
+  }, []);
   // 处理用户浏览设计记录
   useQuery({
     queryKey: QueryKeys.fronend.visit,

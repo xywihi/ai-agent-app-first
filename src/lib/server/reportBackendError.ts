@@ -5,7 +5,7 @@ const supabaseServer = createClient(
 );
 
 type BackendLogOpt = {
-  conversationId: string | number;
+  conversationId?: string | number;
   requestId?: string;
   path: string;
   errorType: string;

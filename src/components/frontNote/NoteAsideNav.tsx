@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { ScrollArea } from "../ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";

@@ -4,7 +4,7 @@ import { getConverHistoryList } from "../utils/api/chat";
 import { ConverHistoryList } from "@/components/ConverHistoryList";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import z from "zod";
 import { QueryKeys } from "@/app/utils/query-keys";
 const Schema = z.object({
@@ -27,7 +27,7 @@ export default function Chat() {
     enabled: !userId,
     queryFn: async () => {
       try {
-        const data = await createClient().auth.getUser();
+        const data = await client.auth.getUser();
         const user = Schema.safeParse(data.data);
         if (user.success) {
           setUserId(user.data.user.id);

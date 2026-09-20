@@ -1,88 +1,25 @@
-"use client";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { ChatMarkDown } from "@/components/ChatMarkDown";
-import { ToTop } from "@/components/ToTop";
-import { cn } from "@/app/utils/tools";
-import { useQuery } from "@tanstack/react-query";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  getCategoryTree,
-  getNote,
-  recordNoteVisit,
-} from "@/app/utils/api/font-notes/requery";
-import { CategoryTree } from "@/app/utils/api/font-notes/typs";
-import { CalendarRange, Edit, Eye, Notebook } from "lucide-react";
-import { GlobalModel } from "@/components/GlobalModel";
-import { Card, CardContent } from "@/components/ui/card";
-import { EditeNoteForm } from "@/components/frontNote/EditeNoteForm";
-import { useTime } from "@/hooks/use-time";
+import { cn, getDateTime } from "@/app/utils/tools";
+import { CalendarRange, Eye, Notebook } from "lucide-react";
 import { NoteAsideNav } from "@/components/frontNote/NoteAsideNav";
-import { QueryKeys } from "../utils/query-keys";
-export default function Page({ children }: { children: React.ReactNode }) {
-  const [editable, setEditable] = useState(false);
-  const note_id = useSearchParams().get("note_id");
-  const [updateTime, setUpdateTime] = useTime();
+import { CreateNote } from "./components/CreateNote/inde";
+import { getCategoryTree } from "@/lib/data/notes/categories";
+import { getNote } from "@/lib/data/notes/detail";
+import { recordNoteVisit } from "@/lib/data/notes/visit";
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ note_id?: string }>;
+}) {
+  const { note_id } = await searchParams;
+  const [root_category, note_data] = await Promise.all([
+    getCategoryTree(),
+    getNote(note_id as string),
+    note_id && recordNoteVisit(note_id as string),
+  ]);
 
-  // 处理用户浏览笔记记录
-  const { data: data2 = [] } = useQuery({
-    queryKey: QueryKeys.fronend.visit,
-    // enabled: !userId,
-    queryFn: async () => {
-      try {
-        if (!note_id) return null;
-        const data = await recordNoteVisit(note_id as string);
-        return data;
-      } catch (error) {
-        console.log("error", error);
-        return null;
-      }
-    },
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-  });
-  const { data: root_category = {}, isPending: rooting } = useQuery({
-    queryKey: QueryKeys.fronend.rootCategories(),
-    // enabled: !!category_id,
-    queryFn: async () => {
-      try {
-        const data: CategoryTree = await getCategoryTree();
-        return data;
-      } catch (error) {
-        console.log("error", error);
-        return {};
-      }
-    },
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-  });
-  // 获取笔记请求
-  const { data: note_data, isPending } = useQuery({
-    queryKey: QueryKeys.fronend.note(note_id as string),
-    // enabled: !!note_id,
-    queryFn: async () => {
-      try {
-        if (!note_id) return null;
-        const data = await getNote(note_id as string);
-        return data;
-      } catch (error) {
-        console.log("error", error);
-        return null;
-      }
-    },
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-  });
-
-  useEffect(() => {
-    // 更新笔记更新时间
-    if (!note_data) return;
-    setUpdateTime(note_data.updated_at);
-  }, [setUpdateTime, note_data]);
+  const isPending = note_data === undefined;
+  const updateTime = getDateTime(note_data?.updated_at || 0);
 
   return (
     <div className="flex-1 flex flex-col min-h-screen gap-4">
@@ -127,38 +64,7 @@ export default function Page({ children }: { children: React.ReactNode }) {
           />
         </div>
       </section>
-      <div className="fixed bottom-28 right-8 z-50 flex items-center gap-4">
-        <Tooltip disableHoverablePopup>
-          <TooltipTrigger
-            className={cn(
-              "bg-white dark:bg-gray-700 border border-gray-400 cursor-pointer shadow-xl hover:bg-teal-400 dark:bg-teal-600 font-bold py-2 px-4 rounded-full",
-              {
-                hidden: !note_id,
-              }
-            )}
-            onClick={() => setEditable(true)}
-          >
-            <Edit size={24} />
-          </TooltipTrigger>
-          <TooltipContent sideOffset={2} side="left">
-            编辑该笔记
-          </TooltipContent>
-        </Tooltip>
-        <ToTop />
-        {editable && (
-          <GlobalModel>
-            <Card className="bg-white dark:bg-gray-700 w-full self-center">
-              <CardContent>
-                <EditeNoteForm
-                  root_category={root_category as CategoryTree}
-                  setEditable={setEditable}
-                  note_data={note_data}
-                />
-              </CardContent>
-            </Card>
-          </GlobalModel>
-        )}
-      </div>
+      <CreateNote rootCategory={root_category} id={note_id} data={note_data} />
     </div>
   );
 }

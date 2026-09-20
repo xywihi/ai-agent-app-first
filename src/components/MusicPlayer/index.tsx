@@ -1,13 +1,3 @@
-// export const MusicPlayer = () => {
-//   return (
-//     <div>
-//       <div className="bg-[#f1f3f4] rounded-xl">
-//         <audio src="" controls className="h-8 rounded-xl bg-amber-200"></audio>
-//       </div>
-//     </div>
-//   );
-// };
-
 "use client";
 import useAudio from "@/hooks/use-audio";
 import { cn } from "@/lib/utils";
@@ -15,18 +5,44 @@ import { GroundGlassCard } from "../GroundGlassCard";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Item, ItemActions, ItemContent, ItemTitle } from "../ui/item";
-type Audio = {
-  src: string;
-  name: string;
-  id: number;
-};
-export const MusicPlayer = ({
-  className,
-  audios = [],
-}: {
-  className?: string;
-  audios?: Audio[];
-}) => {
+const audios = [
+  {
+    name: "Alarm Clock",
+    src: "/audio/alarmClock.wav",
+    id: 0,
+  },
+  {
+    name: "好久不见",
+    src: "/audio/haojiubujian.mp3",
+    id: 1,
+  },
+  {
+    name: "红梅花儿开",
+    src: "/audio/hongmeihuaerkai.mp3",
+    id: 2,
+  },
+  {
+    name: "New",
+    src: "/audio/new.mp3",
+    id: 3,
+  },
+  {
+    name: "宁愿",
+    src: "/audio/ningyuan.mp3",
+    id: 4,
+  },
+  {
+    name: "Shine",
+    src: "/audio/shine.mp3",
+    id: 5,
+  },
+  {
+    name: "Starts",
+    src: "/audio/starts.mp3",
+    id: 6,
+  },
+];
+export const MusicPlayer = ({ className }: { className?: string }) => {
   const [index, setIndex] = useState(0);
   const [openList, setOpenList] = useState(false);
   const indexRef = useRef(0);
@@ -46,7 +62,6 @@ export const MusicPlayer = ({
     if (!duration) return "00:00";
     const minutes = Math.floor(duration / 60);
     const seconds = Math.floor(duration % 60);
-    console.log("(duration % 60000) / 1000", Math.floor(duration % 60000));
     return `${minutes < 10 ? `0${minutes}` : minutes}:${
       seconds < 10 ? `0${seconds}` : seconds
     }`;

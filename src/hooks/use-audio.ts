@@ -71,7 +71,7 @@ export default function useAudio(src: string, onSongend?: () => void) {
   useEffect(() => {
     audioRef.current = new Audio();
     audioRef.current.src = src;
-    audioRef.current.preload = "auto";
+    audioRef.current.preload = "metadata"; // 预加载
     // 将state同步到audio实例
     audioRef.current.loop = loop;
     // 监听进度

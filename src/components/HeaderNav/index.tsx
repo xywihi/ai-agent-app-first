@@ -1,107 +1,52 @@
-"use client";
+// "use client";
 import Link from "next/link";
-import { Fullscreen, Home } from "lucide-react";
-import { MovingBorder } from "../MovingBorder";
-import { cn } from "@/app/utils/tools";
-import { usePathname } from "next/navigation";
 import { Icon } from "../Icon";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { UserCenter } from "../UserCenter";
 import { SearchAll } from "../SearchAll";
 import PerformanceClock from "../PerformanceClock";
 import LogoutButton from "../LogoutButton";
-import { Suspense, useEffect, useMemo } from "react";
+import { Suspense } from "react";
 import React from "react";
+import FullScreen from "./components/FullScreen";
 
-// const paths: {
-//   name: string;
-//   path: string;
-//   icon: Parameters<typeof Icon>[0]["name"];
-// }[] = [
-//   {
-//     name: "首页",
-//     path: "/home",
-//     icon: "home",
-//   },
-//   {
-//     name: "UI作品集",
-//     path: "/design",
-//     icon: "pencil-ruler",
-//   },
-//   {
-//     name: "前端笔记",
-//     path: "/frontend",
-//     icon: "computer",
-//   },
-//   {
-//     name: "AI-Chat",
-//     path: "/chat",
-//     icon: "bot",
-//   },
-//   {
-//     name: "AI-Agent",
-//     path: "/ai-agent",
-//     icon: "computer",
-//   },
-// ];
 type Path = {
   name: string;
   path: string;
   icon: Parameters<typeof Icon>[0]["name"];
 };
 export const HeaderNav = () => {
-  useEffect(() => {}, []);
-  const hadleFullScreen = () => {
-    const body = document.getElementById("global_anln");
-    if (!body) return;
-    body.requestFullscreen();
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-      console.log("处于全屏", document.fullscreenElement);
-    }
-  };
-  const pathname = usePathname();
   const paths: {
     name: string;
     path: string;
     icon: Parameters<typeof Icon>[0]["name"];
-  }[] = useMemo(() => {
-    return [
-      {
-        name: "首页",
-        path: "/home",
-        icon: "home",
-      },
-      {
-        name: "UI作品集",
-        path: "/design",
-        icon: "pencil-ruler",
-      },
-      {
-        name: "前端笔记",
-        path: "/frontend",
-        icon: "computer",
-      },
-      {
-        name: "AI-Chat",
-        path: "/chat",
-        icon: "bot",
-      },
-      {
-        name: "AI-Agent",
-        path: "/ai-agent",
-        icon: "computer",
-      },
-    ];
-  }, []);
+  }[] = [
+    {
+      name: "首页",
+      path: "/home",
+      icon: "home",
+    },
+    {
+      name: "UI作品集",
+      path: "/design",
+      icon: "pencil-ruler",
+    },
+    {
+      name: "前端笔记",
+      path: "/frontend",
+      icon: "computer",
+    },
+    {
+      name: "AI-Chat",
+      path: "/chat",
+      icon: "bot",
+    },
+    {
+      name: "AI-Agent",
+      path: "/ai-agent",
+      icon: "computer",
+    },
+  ];
   return (
     <div className="flex-row justify-between items-center hidden 2xl:flex">
       <div className="w-2xs hidden 2xl:block">
@@ -141,17 +86,10 @@ export const HeaderNav = () => {
         </ul>
       </nav>
       <div className="w-2xs flex flex-row justify-end items-center space-x-2">
-        <div
-          className={cn(
-            "w-fit p-3 h-fit xl:p-2 shrink-0 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-lg group hover:text-teal-400 cursor-pointer transition-all"
-          )}
-          onClick={hadleFullScreen}
-        >
-          <Fullscreen size={16} />
-        </div>
-
         {/* 个人中心 */}
         <UserCenter />
+        {/* 全屏 */}
+        <FullScreen />
         {/* 搜索全站 */}
         <SearchAll />
         {/* <ThemeToggle />

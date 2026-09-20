@@ -1,10 +1,7 @@
-import { supabase } from "../../utils/query";
-import { createClient } from "@/lib/server/client";
 export async function recordNoteVisit(noteId: string) {
-  const client = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // const {
+  //   data: { user },
+  // } = await supabase.auth.getUser();
   return [];
   // // 游客：每次访问直接记录，不做去重
   // if(!userId){

@@ -32,7 +32,7 @@ import { CreateTags } from "@/components/CreateTags";
 import { getPortfolioCategories } from "@/app/utils/api/design/reuqery";
 import { UpdateImages } from "@/components/design/UpdateImages";
 import { toast } from "sonner";
-import { createClient } from "@/lib/server/client";
+import client from "@/lib/server";
 import { useCallback } from "react";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { Post } from "@/app/utils/query";
@@ -130,7 +130,7 @@ export const EditePortfolioForm = ({
         return;
       } else {
         if (!data.images) return;
-        const client = createClient();
+
         const user = await client.auth.getUser();
         const userId = user?.data.user?.id;
         const imageUrls: string[] = [];

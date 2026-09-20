@@ -1,47 +1,28 @@
-"use client";
 import { Icon } from "@/components/Icon";
-import { Button } from "@/components/ui/button";
 import { Item, ItemActions, ItemContent } from "@/components/ui/item";
 import { ChevronRight, Feather } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/app/utils/tools";
-import { useQuery } from "@tanstack/react-query";
-import { getUserProfiles } from "@/app/utils/api/user/requery";
-import { QueryKeys } from "@/app/utils/query-keys";
 import { PortfolioCategory } from "@/app/utils/api/design/type";
-import { Suspense, useMemo } from "react";
-import { useUserQuery } from "@/hooks/use-user-query";
-import { Get } from "@/app/utils/query";
+import { Suspense } from "react";
+import Link from "next/link";
+import { getPortfolioCategories } from "@/lib/data/portfolio/categories";
+import { getUserProfiles } from "@/lib/data/user";
 
-export default function DesignLayout({
+export default async function DesignLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ type: string }>;
 }) {
-  const { type } = useParams();
-  const router = useRouter();
-  const { data: user } = useUserQuery();
-  const { data: user_profiles } = useQuery({
-    queryKey: QueryKeys.userCenter.profiles,
-    enabled: !!user,
-    queryFn: async () => {
-      if (!user) return null;
-      const _data = await getUserProfiles();
-      const data = await _data.json();
-      return data.data;
-    },
-  });
-  const { data: portfolio_categories } = useQuery({
-    queryKey: QueryKeys.portfolio.categories,
-    enabled: !!user,
-    queryFn: async () => {
-      if (!user) return null;
-      const data = await Get(`/api/user/design/portfolio/categories`);
-      return data;
-    },
-  });
-
+  const { type } = await params;
+  const [user_profiles, portfolio_categories] = await Promise.all([
+    getUserProfiles(),
+    getPortfolioCategories(),
+  ]);
+  const _portfolio_categories =
+    portfolio_categories instanceof Error ? [] : portfolio_categories;
   return (
     <div className="flex justify-start items-start p-4">
       <div className="w-1/4 h-screen shrink-0 sticky top-22 hidden xl:block">
@@ -72,62 +53,61 @@ export default function DesignLayout({
             <hr className="border-gray-200 dark:border-gray-700 my-4" />
             <div className="overflow-auto max-h-[calc(100vh-20rem)]">
               <div className="flex flex-col gap-6">
-                {portfolio_categories &&
-                  portfolio_categories.map((design: PortfolioCategory) => (
-                    <Item
-                      key={design.id}
+                {_portfolio_categories.map((design: PortfolioCategory) => (
+                  <Item
+                    key={design.id}
+                    className={cn(
+                      "border overflow-hidden shadow-xl border-gray-300 dark:border-gray-600 group h-13 2xl:hover:h-42 hover:h-48 transition-all duration-500 ease-in-out",
+                      design.path.includes(type as string) && "2xl:h-42 h-48",
+                      {
+                        "bg-teal-300 dark:bg-teal-600":
+                          design.key_name === type,
+                      }
+                    )}
+                  >
+                    <div className="w-full flex flex-row justify-between items-center">
+                      <ItemContent className="text-lg font-bold flex flex-row items-center">
+                        {/* <Layers size={24} className="mr-2" /> */}
+                        <Suspense>
+                          <Icon
+                            name={
+                              design.icon_name as Parameters<
+                                typeof Icon
+                              >[0]["name"]
+                            }
+                            size={24}
+                            className="mr-2"
+                          />
+                        </Suspense>
+                        {design.title}
+                      </ItemContent>
+                      <ItemActions>
+                        <div className="bg-gray-200 dark:bg-gray-700 hover:bg-teal-300 dark:bg-teal-600 cursor-pointer rounded-lg">
+                          <div className="group-hover:hidden px-2 py-1">
+                            共计 {design.total_count} 个
+                          </div>
+                          <Link
+                            href={design.path}
+                            className="hidden group-hover:flex flex-row items-center px-2 py-1"
+                          >
+                            前往查看 <ChevronRight size={16} />
+                          </Link>
+                        </div>
+                      </ItemActions>
+                    </div>
+                    <div
                       className={cn(
-                        "border overflow-hidden shadow-xl border-gray-300 dark:border-gray-600 group h-13 2xl:hover:h-42 hover:h-48 transition-all duration-500 ease-in-out",
-                        design.path.includes(type as string) && "2xl:h-42 h-48",
-                        {
-                          "bg-teal-300 dark:bg-teal-600":
-                            design.key_name === type,
-                        }
+                        "w-full group-hover:visible group-hover:scale-100 invisible transform scale-0 transition-all duration-500 ease-in-out",
+                        design.path.includes(type as string)
+                          ? "visible scale-100"
+                          : "invisible scale-0"
                       )}
                     >
-                      <div className="w-full flex flex-row justify-between items-center">
-                        <ItemContent className="text-lg font-bold flex flex-row items-center">
-                          {/* <Layers size={24} className="mr-2" /> */}
-                          <Suspense>
-                            <Icon
-                              name={
-                                design.icon_name as Parameters<
-                                  typeof Icon
-                                >[0]["name"]
-                              }
-                              size={24}
-                              className="mr-2"
-                            />
-                          </Suspense>
-                          {design.title}
-                        </ItemContent>
-                        <ItemActions>
-                          <div className="bg-gray-200 dark:bg-gray-700 hover:bg-teal-300 dark:bg-teal-600 cursor-pointer rounded-lg">
-                            <div className="group-hover:hidden px-2 py-1">
-                              共计 {design.total_count} 个
-                            </div>
-                            <Button
-                              className="hidden group-hover:flex flex-row items-center"
-                              onClick={() => router.push(design.path)}
-                            >
-                              前往查看 <ChevronRight size={16} />
-                            </Button>
-                          </div>
-                        </ItemActions>
-                      </div>
-                      <div
-                        className={cn(
-                          "w-full group-hover:visible group-hover:scale-100 invisible transform scale-0 transition-all duration-500 ease-in-out",
-                          design.path.includes(type as string)
-                            ? "visible scale-100"
-                            : "invisible scale-0"
-                        )}
-                      >
-                        <hr className="w-full border-gray-400/40 mb-4" />
-                        <div>{design.description}</div>
-                      </div>
-                    </Item>
-                  ))}
+                      <hr className="w-full border-gray-400/40 mb-4" />
+                      <div>{design.description}</div>
+                    </div>
+                  </Item>
+                ))}
               </div>
             </div>
           </div>
@@ -137,7 +117,7 @@ export default function DesignLayout({
               {user_profiles?.display_name}
             </div>
             <div className="text-sm flex flex-row text-gray-500 justify-self-center">
-              有 {portfolio_categories?.[0]?.total_count} 个设计作品
+              有 {_portfolio_categories?.[0]?.total_count} 个设计作品
             </div>
           </div>
         </div>
