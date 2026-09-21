@@ -12,12 +12,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import React, { Suspense, useEffect, useMemo } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import LogoutButton from "../LogoutButton";
 import { UserCenter } from "../UserCenter";
 import { SearchAll } from "../SearchAll";
 import FullScreen from "../HeaderNav/components/FullScreen";
 import { Menu } from "lucide-react";
+import client from "@/lib/server";
+import { UserMetadata } from "@/app/utils/api/user/type";
 
 type Path = {
   name: string;
@@ -55,6 +57,7 @@ NavMenuList.displayName = "NavMenuList";
 export function MobileSheetNav() {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
+  const [user, setUser] = useState<UserMetadata | null>(null);
   const paths: {
     name: string;
     path: string;
@@ -88,7 +91,17 @@ export function MobileSheetNav() {
       },
     ];
   }, []);
-
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = client.auth.onAuthStateChange(async (e) => {
+      const data = await client.auth.getUser();
+      setUser((data.data.user?.user_metadata as UserMetadata) ?? null);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   const handleOpenOrClose = () => {
     setOpen(false);
   };
@@ -108,7 +121,7 @@ export function MobileSheetNav() {
           {/* 全屏 */}
           <FullScreen />
           {/* 个人中心 */}
-          <UserCenter />
+          {user && <UserCenter userMetadata={user} />}
           {/* 搜索全站 */}
           <SearchAll />
         </div>
@@ -117,7 +130,7 @@ export function MobileSheetNav() {
       <SheetContent
         side="left"
         lang="zh"
-        className="bg-white/95 border-none truncate z-[100] p-6 max-h-[calc(100vh)]"
+        className="bg-white/95 border-none truncate z-100 p-6 max-h-[calc(100vh)]"
         showCloseButton={false}
         // overlayClassName="bg-black/40"
       >
@@ -128,7 +141,7 @@ export function MobileSheetNav() {
         <NavMenuList paths={paths} pathname={pathname} />
         <SheetFooter className="p-0">
           {/* 退出登录 */}
-          {<LogoutButton />}
+          {user && <LogoutButton />}
         </SheetFooter>
       </SheetContent>
     </Sheet>

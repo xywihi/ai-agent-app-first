@@ -1,3 +1,5 @@
+import { Profiles } from "../user/type";
+
 //分类
 export type PortfolioCategory = {
   id: string;
@@ -46,6 +48,7 @@ export type ProcessedPortfolioWork = PortfolioWork & {
   portfolio_categories: PortfolioCategory;
   portfolio_work_likes: PortfolioLikes[];
   portfolio_work_collects: PortfolioCollects[];
+  author: Profiles;
   actions: {
     like: {
       count: number;

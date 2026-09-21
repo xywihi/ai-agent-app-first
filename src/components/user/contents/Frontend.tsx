@@ -80,7 +80,7 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
   });
   const handleToSee = () => {
     router.push(
-      `/frontend?category_id=${note.category_id}&seconde_id=${note.sub_category_id}&note_id=${note.id}`
+      `/frontend/${note.id}?category_id=${note.category_id}&seconde_id=${note.sub_category_id}`
     );
   };
   const handleToDelete = async (id: string) => {

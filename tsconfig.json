@@ -31,7 +31,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
-  ],
+    "**/*.mts", 
+    "src/app/design/detail/[id]/components/Content"  ],
   "exclude": ["node_modules"]
 }

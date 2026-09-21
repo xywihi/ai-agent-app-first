@@ -10,7 +10,6 @@ export default async function Chat() {
     getDefaultPortfolio("all"),
     getFrontNotes(),
   ]);
-  console.log("frontnotes_data", frontnotes_data);
   return (
     // <div className="flex-1 flex flex-col justify-between items-center bg-linear-to-br from-white via-slate-50 to-zinc-50">
     <div className="flex-1 flex flex-col justify-between items-center pb-46">

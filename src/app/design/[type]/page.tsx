@@ -31,6 +31,8 @@ export default function Design() {
   >(new Map());
   const { data: user } = useUserQuery();
   const { type } = useParams();
+  console.log("type", type);
+
   const { data: portfolio_works, isPending } = useQuery({
     queryKey: QueryKeys.portfolio.portfolios(type as string),
     enabled: !!user,
@@ -42,6 +44,7 @@ export default function Design() {
       return data;
     },
   });
+  console.log("portfolio_works", portfolio_works);
   useEffect(() => {
     // 懒加载
     if (!containerRef.current) return;
@@ -135,6 +138,7 @@ export default function Design() {
     });
     return () => clearTimeout(timer);
   }, [cardHeightsRef, getColumnCount, portfolio_works]);
+  // console.log("portfolio_works", portfolio_works);
   return (
     <div onClick={() => setShowSearch(false)}>
       <div className="mb-6 flex flex-col xl:flex-row gap-4 justify-between items-center">

@@ -6,16 +6,15 @@ import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@/app/utils/query-keys";
-import { useUserQuery } from "@/hooks/use-user-query";
 export default function LogoutButton() {
   const queryclient = useQueryClient();
   // 获取用户信息
-  const { data: user } = useUserQuery();
   const router = useRouter();
   const handleSignOut = async () => {
     try {
       await client.auth.signOut();
       queryclient.removeQueries({
+        // 刷新数据
         queryKey: QueryKeys.userCenter.data,
       });
       router.push("/login");
@@ -25,16 +24,14 @@ export default function LogoutButton() {
     }
   };
   return (
-    user?.id && (
-      <div>
-        <Button
-          className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-teal-400 dark:bg-teal-600 hover:text-white cursor-pointer"
-          onClick={handleSignOut}
-        >
-          <LogOut />
-          退出帐号
-        </Button>
-      </div>
-    )
+    <div>
+      <Button
+        className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-teal-400 dark:hover:bg-teal-600 hover:text-white cursor-pointer"
+        onClick={handleSignOut}
+      >
+        <LogOut />
+        退出帐号
+      </Button>
+    </div>
   );
 }

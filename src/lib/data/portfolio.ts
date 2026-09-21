@@ -49,6 +49,29 @@ const _getDefaultPortfolio = async (
       }
       if (error) throw new Error("Failed to load portfolio works");
     }
+
+    // 提取全部作者id
+    const authorIds = [
+      ...new Set(data.map((item) => item.user_id).filter(Boolean) || []),
+    ];
+
+    // 批量查询profiles
+    const { data: profiles, error: profilesError } = await supabase
+      .from("profiles")
+      .select("id,display_name,avatar_url")
+      .in("id", authorIds);
+    if (profilesError) throw new Error("Failed to load profiles");
+
+    // 将profiles数据添加到data中
+    const profileMap = new Map(profiles.map((item) => [item.id, item]) || []);
+    data.forEach((item) => {
+      if (item.user_id) {
+        const profile = profileMap.get(item.user_id);
+        if (profile) {
+          item.author = profile;
+        }
+      }
+    });
     data.forEach((item: ProcessedPortfolioWork) => {
       item.actions = {
         like: {
@@ -77,13 +100,14 @@ const _getDefaultPortfolio = async (
 };
 export const getDefaultPortfolio = async (category: string) => {
   const _cookies = await cookies();
-  const _unstable_cache = unstable_cache(
-    async () => await _getDefaultPortfolio(category, _cookies),
-    [...QueryKeys.portfolio.data],
-    {
-      revalidate: 1, // 表示每 300 秒重新生成缓存
-    }
-  );
-  const data = await _unstable_cache();
+  // const _unstable_cache = unstable_cache(
+  //   async () => await _getDefaultPortfolio(category, _cookies),
+  //   [...QueryKeys.portfolio.data],
+  //   {
+  //     revalidate: 300, // 表示每 300 秒重新生成缓存
+  //   }
+  // );
+  // const data = await _unstable_cache();
+  const data = await _getDefaultPortfolio(category, _cookies);
   return data;
 };

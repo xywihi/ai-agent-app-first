@@ -1,37 +1,20 @@
 "use client";
-import { GlobalModel } from "@/components/GlobalModel";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { Maximize, Share2, Star, ThumbsUp, X } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useOptimistic,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
-import { useQueryClient } from "@tanstack/react-query";
-import { getTime } from "@/app/utils/tools";
-import { QueryKeys } from "@/app/utils/query-keys";
-import { Post } from "@/app/utils/query";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LikeButton } from "./components/LikeButton";
+import { CardModel } from "./components/CardModel";
 
 interface props {
   index?: number;
@@ -44,7 +27,6 @@ interface props {
 }
 export const DesignCard = ({
   data: card,
-  index,
   height,
   className,
   cardHeightsRef,
@@ -53,8 +35,6 @@ export const DesignCard = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const [showImage, setShowImage] = useState<boolean>(false);
   const router = useRouter();
-  const { type } = useParams();
-  const queryClient = useQueryClient();
   useEffect(() => {
     // 右键拦截
     const onContext = (e: MouseEvent) => e.preventDefault();
@@ -100,95 +80,7 @@ export const DesignCard = ({
       cardRef.current = null;
     };
   }, [cardHeightsRef, card, cardRef, calcLayout]);
-  const handleToLike = useCallback(
-    async (id?: string): Promise<void> => {
-      const res = await Post(`/api/user/design/portfolio/like`, {
-        body: JSON.stringify({
-          workId: card.id,
-          id,
-        }),
-      });
-      console.log("res", res);
-      if (res) {
-        queryClient.invalidateQueries({
-          queryKey: QueryKeys.portfolio.portfolios(type as string),
-        });
-        queryClient.setQueryData(
-          QueryKeys.portfolio.portfolios(type as string),
-          (oldData: { list: ProcessedPortfolioWork[] }) => {
-            console.log("oldData", oldData);
-            if (!oldData) return oldData;
-            const list = oldData?.list.map((item: ProcessedPortfolioWork) => {
-              if (item.id === card.id) {
-                return {
-                  ...item,
-                  actions: {
-                    ...item.actions,
-                    like: {
-                      ...item.actions.like,
-                      active: !item.actions.like.active,
-                      count: id
-                        ? item.actions.like.count - 1
-                        : item.actions.like.count + 1,
-                    },
-                  },
-                };
-              }
-              return item;
-            });
-            return {
-              list,
-            };
-          }
-        );
-      }
-    },
-    [card.id, queryClient, type]
-  );
-  const handleToCollect = useCallback(
-    async (id?: string) => {
-      const res = await Post(`/api/user/design/portfolio/collect`, {
-        body: JSON.stringify({
-          workId: card.id,
-          id,
-        }),
-      });
-      console.log("res", res);
-      if (res) {
-        queryClient.invalidateQueries({
-          queryKey: QueryKeys.portfolio.portfolios(type as string),
-        });
-        queryClient.setQueryData(
-          QueryKeys.portfolio.portfolios(type as string),
-          (oldData: { list: ProcessedPortfolioWork[] }) => {
-            if (!oldData) return oldData;
-            const list = oldData?.list.map((item: ProcessedPortfolioWork) => {
-              if (item.id === card.id) {
-                return {
-                  ...item,
-                  actions: {
-                    ...item.actions,
-                    star: {
-                      ...item.actions.star,
-                      active: !item.actions.star.active,
-                      count: id
-                        ? item.actions.star.count - 1
-                        : item.actions.star.count + 1,
-                    },
-                  },
-                };
-              }
-              return item;
-            });
-            return {
-              list,
-            };
-          }
-        );
-      }
-    },
-    [card.id, queryClient, type]
-  );
+
   return (
     <Card
       className={cn(
@@ -213,12 +105,12 @@ export const DesignCard = ({
         }}
       />
       <CardContent>
-        <CardTitle className="text-md xl:text-xl line-clamp-1">
+        <CardTitle className="text-lg xl:text-xl line-clamp-1">
           {card.title}
         </CardTitle>
         <CardDescription
           vocab="https://schema.org"
-          className="flex space-x-2 mt-2 xl:mt-4"
+          className="hidden xl:flex space-x-2 mt-2 xl:mt-4"
         >
           {card.tags.map((badge) => (
             <Badge
@@ -233,197 +125,25 @@ export const DesignCard = ({
         <section className="space-x-2 mt-2 xl:mt-4 hidden xl:flex">
           <p className="text-gray-500 line-clamp-2">{card.description}</p>
         </section>
-        <CardAction className="w-full flex space-x-2 justify-around mt-2">
-          <LikeButton card={card} handleToLike={handleToLike} />
-          <CollectButton card={card} handleToCollect={handleToCollect} />
-          <Button className="hidden xl:flex rounded-full cursor-pointer hover:bg-teal-400 dark:hover:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
-            <Share2 />
-            <span>{card.actions.share.count}</span>
-          </Button>
+        <CardAction className="w-full flex justify-between items-center mt-2">
+          <div className="flex space-x-2 items-center">
+            <Avatar
+              size="sm"
+              className="cursor-pointer"
+              onClick={() => {
+                router.push("/user/" + card.user_id);
+              }}
+            >
+              <AvatarImage src={card.author.avatar_url} />
+              <AvatarFallback>{card.author.display_name}</AvatarFallback>
+            </Avatar>
+            <span>{card.author.display_name}</span>
+          </div>
+          <LikeButton card={card} />
         </CardAction>
       </CardContent>
 
-      {showImage && (
-        <GlobalModel handleShowModel={() => setShowImage((pre) => !pre)}>
-          <div className="relative">
-            <div>
-              <div className="absolute -top-14 right-15 cursor-pointer group">
-                <Tooltip>
-                  <TooltipTrigger
-                    className="w-10 h-10 flex justify-center items-center bg-white dark:bg-gray-700 rounded-full cursor-pointer"
-                    onClick={() => router.push("/design/detail/" + card.id)}
-                  >
-                    <Maximize
-                      size={20}
-                      className="group-hover:stroke-4 group-hover:text-teal-400 transition-all duration-200"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent sideOffset={6}>
-                    <p>查看详情</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <div className="absolute -top-15 right-0 cursor-pointer group">
-                <Tooltip>
-                  <TooltipTrigger
-                    className="w-12 h-12 flex justify-center items-center bg-white dark:bg-gray-700 rounded-full cursor-pointer"
-                    onClick={() => setShowImage((pre) => !pre)}
-                  >
-                    <X
-                      size={20}
-                      strokeWidth={4}
-                      className="group-hover:size-7 group-hover:text-teal-400 transition-all duration-200"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent sideOffset={6}>
-                    <p>关闭</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </div>
-            <Card className="bg-white dark:bg-gray-700 pt-0 flex flex-col xl:flex-row">
-              <div className="flex-1 max-h-[calc(100vh-200px)] overflow-auto">
-                <Image
-                  width={200}
-                  height={300}
-                  loading="eager"
-                  src={card.portfolio_work_images[0].image_url}
-                  alt="Event cover"
-                  className="relative z-20 w-full object-top rounded-none! select-none [-webkit-user-drag:none]"
-                />
-              </div>
-
-              <div className="flex-1 xl:w-full xl:max-w-90 pt-4 flex flex-col justify-between">
-                {/* <CardHeader className="py-4"></CardHeader> */}
-                <CardContent className="py-4">
-                  <CardTitle className="text-4xl mb-4 font-bold">
-                    {card.title}
-                  </CardTitle>
-                  <CardDescription
-                    vocab="https://schema.org"
-                    className="flex space-x-2 mb-4"
-                  >
-                    {card.tags.map((badge) => (
-                      <Badge
-                        key={badge}
-                        variant="outline"
-                        className="opacity-50"
-                      >
-                        {badge}
-                      </Badge>
-                    ))}
-                  </CardDescription>
-                  <section className="flex space-x-2">
-                    <p className="text-gray-500">{card.description}</p>
-                  </section>
-                  <CardAction className="w-full flex space-x-2 justify-start mt-4">
-                    <LikeButton card={card} handleToLike={handleToLike} />
-                    <CollectButton
-                      card={card}
-                      handleToCollect={handleToCollect}
-                    />
-                    <Button className="shrink-0 flex-nowrap flex rounded-full cursor-pointer hover:bg-teal-400 dark:hover:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
-                      <Share2 />
-                      <span>{card.actions.share.count}</span>
-                    </Button>
-                  </CardAction>
-                </CardContent>
-                <CardFooter className="border-t-gray-200 dark:border-t-gray-800 text-gray-500">
-                  更新时间：{getTime(card.updated_at)}
-                </CardFooter>
-              </div>
-            </Card>
-          </div>
-        </GlobalModel>
-      )}
+      {showImage && <CardModel card={card} setShowImage={setShowImage} />}
     </Card>
-  );
-};
-
-const LikeButton = ({
-  card,
-  handleToLike,
-}: {
-  card: ProcessedPortfolioWork;
-  handleToLike: (id?: string) => Promise<void>;
-}) => {
-  const [optLiked, setOptLiked] = useOptimistic(
-    card.actions.like.active,
-    (pre: boolean, _action: "toggle") => {
-      console.log("pre", pre, _action);
-      return !pre;
-    }
-  );
-  const [optLikeCount, setOptLikeCount] = useOptimistic(
-    card.actions.like.count,
-    (pre: number, _action: "add" | "remove") => {
-      console.log("pre", pre, _action);
-      if (_action === "remove") {
-        return pre - 1;
-      }
-      return pre + 1;
-    }
-  );
-  return (
-    <Button
-      className="rounded-full cursor-pointer hover:bg-amber-300 dark:hover:bg-amber-600 hover:drop-shadow-[0_4px_12px_#f59e0bcc]"
-      onClick={() => {
-        startTransition(async () => {
-          setOptLiked("toggle");
-          setOptLikeCount(optLiked ? "remove" : "add");
-          // 乐观更新后的值会在异步结束后立即结束，返回旧值
-          await handleToLike(
-            card.portfolio_work_likes?.[0] && card.portfolio_work_likes?.[0].id
-          );
-        });
-      }}
-    >
-      <ThumbsUp fill={optLiked ? "#f59e0b" : "transparent"} />
-      <span>{optLikeCount}</span>
-    </Button>
-  );
-};
-const CollectButton = ({
-  card,
-  handleToCollect,
-}: {
-  card: ProcessedPortfolioWork;
-  handleToCollect: (id?: string) => Promise<void>;
-}) => {
-  const [optCollected, setOptCollected] = useOptimistic(
-    card.actions.star.active,
-    (pre: boolean, _action: "toggle") => {
-      console.log("pre", pre, _action);
-      return !pre;
-    }
-  );
-  const [optCollectCount, setOptCollectCount] = useOptimistic(
-    card.actions.star.count,
-    (pre: number, _action: "add" | "remove") => {
-      console.log("pre", pre, _action);
-      if (_action === "remove") {
-        return pre - 1;
-      }
-      return pre + 1;
-    }
-  );
-  return (
-    <Button
-      className="rounded-full cursor-pointer hover:bg-rose-300 dark:hover:bg-rose-600 hover:drop-shadow-[0_4px_12px_#f43f5ecc]"
-      onClick={() => {
-        startTransition(async () => {
-          setOptCollected("toggle");
-          setOptCollectCount(optCollected ? "remove" : "add");
-          // 乐观更新后的值会在异步结束后立即结束，返回旧值
-          await handleToCollect(
-            card.portfolio_work_collects?.[0] &&
-              card.portfolio_work_collects?.[0].id
-          );
-        });
-      }}
-    >
-      <Star fill={optCollected ? "#f43f5e" : "transparent"} />
-      <span>{optCollectCount}</span>
-    </Button>
   );
 };

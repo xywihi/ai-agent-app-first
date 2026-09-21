@@ -13,39 +13,31 @@ import { Button } from "@/components/ui/button";
 import {
   MessageSquareText,
   PencilRuler,
+  Plus,
   Share2,
   Star,
   ThumbsUp,
 } from "lucide-react";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Input } from "@base-ui/react";
 import z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  PortfolioWorkImage,
-  ProcessedPortfolioWork,
-} from "@/app/utils/api/design/type";
-import { getTime } from "@/app/utils/tools";
+import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
 import { ToTop } from "@/components/ToTop";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { Get, Post } from "@/app/utils/query";
 import { recordPortfolioVisit } from "@/app/utils/api/design/reuqery";
+import { Recommands } from "./components/Recommands";
+import { LeaveMessage } from "./components/LeavveMessage";
+// import { Content } from "next/font/google"; //
+import { Content } from "./components/Content";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Author } from "./components/Author";
 // import {VariableSizeGrid as Grid} from "react-window";
 // type User = z.infer<typeof Schema>;
 
-const formSchema = z.object({
-  leaveMessage: z.string().min(1, "请输入留言"),
-  phone: z.string().min(1, "请输入手机号"),
-  email: z.string().email("请输入正确的邮箱"),
-});
-type FormValues = z.infer<typeof formSchema>;
 export default function Design() {
   const containerRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
-  const router = useRouter();
   const { id } = useParams();
   useEffect(() => {
     // 右键拦截
@@ -90,15 +82,7 @@ export default function Design() {
       return data;
     },
   });
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-  });
 
-  const onSubmit = async (data: FormValues) => {};
   const handleToLike = useCallback(
     async (likeId?: string): Promise<void> => {
       const res = await Post(`/api/user/design/portfolio/like`, {
@@ -172,12 +156,9 @@ export default function Design() {
   );
   return (
     card && (
-      <div
-        ref={containerRef}
-        className="pb-12 mb-4 relative w-full lg:max-w-1/2 m-auto bg-white dark:bg-gray-700 px-4 rounded-2xl shadow-2xl"
-      >
+      <div>
         {/* 活动按钮 */}
-        <div className="fixed right-26 bottom-25 z-10  lg:right-8 lg:bottom-40 flex lg:flex-col space-y-2 bg-white dark:bg-gray-700 rounded-full py-2 lg:py-4 px-2 shadow-xl mt-2 border border-gray-200 dark:border-gray-700">
+        <div className="fixed right-26 bottom-25 z-50 lg:right-8 lg:bottom-40 flex lg:flex-col space-y-2 bg-white dark:bg-gray-700 rounded-full py-2 lg:py-4 px-2 shadow-xl mt-2 border border-gray-200 dark:border-gray-700">
           <div className="px-2 lg:p-0 m-0 lg:mb-2">
             <LikeButton card={card} handleToLike={handleToLike} />
           </div>
@@ -198,184 +179,25 @@ export default function Design() {
         <div className="fixed bottom-26 right-9 z-50 flex items-center gap-4">
           <ToTop />
         </div>
-        <section className="py-6">
-          <div>
-            <div>
-              <h1 className="text-4xl font-bold mb-6">{card.title}</h1>
-              <div vocab="https://schema.org" className="flex space-x-2 mb-4">
-                {card.tags.map((tag: string) => (
-                  <Badge key={tag} variant="outline" className="opacity-50">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-              <p className="border-t-gray-200 dark:border-t-gray-800 text-gray-500 text-sm">
-                更新时间：{getTime(card.updated_at)}
-              </p>
-              <section className="flex space-x-2 my-4">
-                <p className="">{card.description}</p>
-              </section>
-            </div>
-          </div>
-          {card.portfolio_work_images.map(
-            (item: PortfolioWorkImage, index: number) => {
-              return (
-                <Image
-                  key={item.id}
-                  width={200}
-                  height={300}
-                  loading="eager"
-                  src={item.image_url}
-                  alt="Event cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // 加载优化
-                  className={cn(
-                    "relative z-20 w-full h-auto object-cover object-top select-none [-webkit-user-drag:none]",
-                    {
-                      "rounded-t-xl": index === 0,
-                      "rounded-b-xl":
-                        card.portfolio_work_images.length === index + 1,
-                    }
-                  )}
-                />
-              );
-            }
-          )}
+        <section className="mb-19">
+          <Author card={card} />
         </section>
-        {recomandCards && recomandCards.length > 0 && (
-          <section className="mt-12">
-            <h2 className="text-2xl font-bold my-6 flex items-center gap-2">
-              <PencilRuler size={24} />
-              推荐相关 · <span className="text-teal-400">设计作品</span>
-            </h2>
-            <ScrollArea className="w-full">
-              <div className="flex flex-row gap-4">
-                {recomandCards.map((card: ProcessedPortfolioWork) => (
-                  <figure key={card.id} className="h-full w-60 shrink-0">
-                    <div
-                      className="relative"
-                      onClick={() => router.push(`/design/detail/${card.id}`)}
-                    >
-                      <Image
-                        width={200}
-                        height={300}
-                        loading="eager"
-                        src={card.portfolio_work_images[0].image_url}
-                        alt="Event cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // 加载优化
-                        className="relative z-20 rounded-2xl aspect-4/3 h-fit w-full object-cover object-top select-none [-webkit-user-drag:none]"
-                      />
-                      <p className="absolute top-2 left-2 z-20 bg-white dark:bg-gray-700/20 backdrop-blur-md px-3 py-1 rounded-full text-sm text-white flex gap-1 items-center cursor-pointer">
-                        <ThumbsUp
-                          size={16}
-                          fill={
-                            card.actions.like.active ? "#f59e0b" : "transparent"
-                          }
-                        />
-                        {card.actions.like.count}
-                      </p>
-                    </div>
-
-                    <figcaption className="w-full pt-2 flex justify-between items-center gap-2">
-                      <span className="line-clamp-1 text-md font-bold">
-                        {card.title}
-                      </span>
-                      {/* <span className="text-sm text-gray-400 flex items-center gap-1 shrink-0">
-                        <Eye size={16} />
-                        {card.actions.like.count}
-                      </span> */}
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+        <div
+          ref={containerRef}
+          className="pb-12 mb-4 relative w-full lg:max-w-1/2 m-auto bg-white dark:bg-gray-700 px-4 rounded-2xl shadow-2xl"
+        >
+          <section className="py-6">
+            <Content card={card} />
           </section>
-        )}
-        <section className="mt-12">
-          <h2 className="text-2xl font-bold my-6 flex items-center gap-2">
-            <MessageSquareText size={24} />
-            <span>
-              留下足迹
-              <span className="text-teal-400 hidden lg:inline-block">
-                {" "}
-                · 在此给作者写下您的留言
-              </span>
-            </span>
-          </h2>
-          <form method="post" onSubmit={handleSubmit(onSubmit)}>
-            <div>
-              <div className="rounded-2xl p-6 border-6 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 overflow-hidden">
-                <textarea
-                  maxLength={500}
-                  {...register("leaveMessage")}
-                  className="w-full h-40 min-h-40 max-h-80 outline-none focus:outline-none"
-                  placeholder="在此给作者写下您的留言"
-                ></textarea>
-              </div>
-              <span
-                className={cn("text-red-500 text-sm h-4 w-full inline-block", {
-                  invisible: !errors.leaveMessage,
-                })}
-              >
-                {errors.leaveMessage && errors.leaveMessage.message}
-              </span>
-            </div>
-            <div>
-              <div className="flex flex-row gap-4 mt-2">
-                <div className="flex-1">
-                  <Input
-                    {...register("phone")}
-                    type="phone"
-                    placeholder="请输入您的手机号"
-                    className="flex-1 block w-full h-max rounded-2xl p-4 border-6 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 outline-none focus:outline-none"
-                  />
-                  <span
-                    className={cn(
-                      "text-red-500 text-sm shrink-0 h-4 w-full inline-block",
-                      {
-                        invisible: !errors.phone,
-                      }
-                    )}
-                  >
-                    {errors.phone && errors.phone.message}
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <Input
-                    {...register("email")}
-                    type="email"
-                    placeholder="请输入您的邮箱"
-                    className="flex-1 block w-full h-fit rounded-2xl p-4 border-6 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 outline-none focus:outline-none"
-                  />
-                  <span
-                    className={cn(
-                      "text-red-500 text-sm shrink-0 h-4 w-full inline-block",
-                      {
-                        invisible: !errors.email,
-                      }
-                    )}
-                  >
-                    {errors.email && errors.email.message}
-                  </span>
-                </div>
-              </div>
-              <div className="flex flex-row gap-4 mt-6">
-                <Button
-                  type="submit"
-                  className="w-60 h-14 rounded-2xl px-4 py-2 bg-gray-300 dark:bg-gray-600 text-2xl font-bold mt-4 cursor-pointer"
-                >
-                  取消留言
-                </Button>
-                <Button
-                  type="submit"
-                  className="flex-1 h-14 rounded-2xl px-4 py-2 bg-teal-300 dark:bg-teal-600 text-2xl font-bold mt-4 cursor-pointer"
-                >
-                  提交
-                </Button>
-              </div>
-            </div>
-          </form>
-        </section>
+          {recomandCards && recomandCards.length > 0 && (
+            <section className="mt-12">
+              <Recommands recomandCards={recomandCards} />
+            </section>
+          )}
+          <section className="mt-12">
+            <LeaveMessage />
+          </section>
+        </div>
       </div>
     )
   );

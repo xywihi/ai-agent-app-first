@@ -178,9 +178,9 @@ export default async function User() {
             {notes_data.list?.map((item: Note) => {
               return (
                 <Link
-                  href={`/frontend?category_id=${item.category_id}&seconde_id=${item.sub_category_id}&note_id=${item.id}`}
+                  href={`/frontend/${item.id}?category_id=${item.category_id}&seconde_id=${item.sub_category_id}`}
                   key={item.id}
-                  className="mb-4 p-4 bg-white dark:bg-gray-700 rounded-2xl shadow-xl cursor-pointer transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
+                  className="block mb-4 p-4 bg-white dark:bg-gray-700 rounded-2xl shadow-xl cursor-pointer transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
                 >
                   <h1 className="text-xl font-bold mb-4">{item.title}</h1>
                   <div className="flex justify-between">

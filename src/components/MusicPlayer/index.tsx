@@ -5,6 +5,7 @@ import { GroundGlassCard } from "../GroundGlassCard";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Item, ItemActions, ItemContent, ItemTitle } from "../ui/item";
+import { Pause, Play, SkipForward } from "lucide-react";
 const audios = [
   {
     name: "Alarm Clock",
@@ -80,7 +81,6 @@ export const MusicPlayer = ({ className }: { className?: string }) => {
       // 如果点击目标在音乐播放器之内,则不关闭音乐播放器
       if (musicPlayerRef.current?.contains(e.target as Node)) {
         if (!openList) setOpenList(true);
-        console.log("被点击了");
         return;
       }
 
@@ -136,7 +136,7 @@ export const MusicPlayer = ({ className }: { className?: string }) => {
               })}
             >
               {_index === index ? (
-                <span>⏸</span>
+                <Pause size={12} />
               ) : (
                 <div
                   onClick={() => {
@@ -150,7 +150,11 @@ export const MusicPlayer = ({ className }: { className?: string }) => {
                 >
                   <Tooltip>
                     <TooltipTrigger>
-                      {playing && index === _index ? "⏸" : "▶"}
+                      {playing && index === _index ? (
+                        <Pause size={12} />
+                      ) : (
+                        <Play size={12} />
+                      )}
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>播放</p>
@@ -215,7 +219,11 @@ export const MusicPlayer = ({ className }: { className?: string }) => {
           >
             <Tooltip>
               <TooltipTrigger
-                render={(props) => <span {...props}>⏭</span>}
+                render={(props) => (
+                  <span {...props}>
+                    <SkipForward size={12} />
+                  </span>
+                )}
               ></TooltipTrigger>
               <TooltipContent>
                 <p>切换下一首</p>
@@ -231,7 +239,9 @@ export const MusicPlayer = ({ className }: { className?: string }) => {
             <Tooltip>
               <TooltipTrigger
                 render={(props) => (
-                  <span {...props}>{playing ? "⏸" : "▶"}</span>
+                  <span {...props}>
+                    {playing ? <Pause size={12} /> : <Play size={12} />}
+                  </span>
                 )}
               ></TooltipTrigger>
               <TooltipContent>

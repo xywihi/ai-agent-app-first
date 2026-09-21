@@ -5,13 +5,16 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import client from "@/lib/server";
+import { QueryKeys } from "../utils/query-keys";
+import { useQueryClient } from "@tanstack/react-query";
 const formSchema = z.object({
   username: z.string().min(2, "用户名至少2个字"),
   password: z.string(),
 });
 type FormValues = z.infer<typeof formSchema>;
-
 export default function LoginPage() {
+  const queryclient = useQueryClient();
+
   const router = useRouter();
   const {
     register,
@@ -45,7 +48,8 @@ export default function LoginPage() {
         position: "top-center",
         style: { backgroundColor: "white" },
       });
-      localStorage.setItem("user", JSON.stringify(user));
+      // localStorage.setItem("user", JSON.stringify(user));
+
       router.replace("/user");
       router.refresh();
     }

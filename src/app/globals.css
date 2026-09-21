@@ -22,6 +22,12 @@
   -webkit-user-select: none;
     user-select: none;
 } */
+img {
+  -webkit-touch-callout: none; /* iOS禁止长按弹出菜单 ✅ */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none; /* 禁止拖拽图片 */
+}
 
 /* 只有该元素处于网页全屏模式才生效 */
 #global_anln {

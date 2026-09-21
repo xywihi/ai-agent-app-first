@@ -65,7 +65,9 @@ export async function getCategoryTree() {
     .select("*")
     .order("sort_order", { ascending: true });
   if (error) throw error;
-  const { data: _noteData } = await client.from("frontend_notes").select("*");
+  const { data: _noteData } = await client
+    .from("frontend_notes")
+    .select("id,title,sub_category_id");
 
   // 递归构建树，自动支持 1/2/3/N级
   const buildTree = (list: CategoryItem[]): CategoryTree => {
@@ -183,7 +185,6 @@ export async function updateNote(note: Note) {
 }
 // 查询笔记
 export async function getNote(noteId: string) {
-  console.log("noteId----", noteId);
   const { data } = await client
     .from("frontend_notes")
     .select("*")
