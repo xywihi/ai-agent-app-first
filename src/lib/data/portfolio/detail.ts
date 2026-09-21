@@ -65,13 +65,14 @@ const _getDetailPortfolio = async (
 
 export const getDetailPortfolio = async (id: string) => {
   const _cookies = await cookies();
-  const _unstable_cache = unstable_cache(
-    async () => await _getDetailPortfolio(id, _cookies),
-    [...QueryKeys.portfolio.data],
-    {
-      revalidate: 300, // 表示每 300 秒重新生成缓存
-    }
-  );
-  const data = await _unstable_cache();
+  // const _unstable_cache = unstable_cache(
+  //   async () => await _getDetailPortfolio(id, _cookies),
+  //   [...QueryKeys.portfolio.data],
+  //   {
+  //     revalidate: 300, // 表示每 300 秒重新生成缓存
+  //   }
+  // );
+  // const data = await _unstable_cache();
+  const data = await _getDetailPortfolio(id, _cookies);
   return data;
 };

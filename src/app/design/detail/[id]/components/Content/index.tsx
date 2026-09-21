@@ -11,7 +11,7 @@ export const Content = ({ card }: { card: ProcessedPortfolioWork }) => {
   return (
     <div>
       <div>
-        <div>
+        <article>
           <h1 className="text-4xl font-bold mb-6">{card.title}</h1>
           <div vocab="https://schema.org" className="flex space-x-2 mb-4">
             {card.tags.map((tag: string) => (
@@ -26,7 +26,7 @@ export const Content = ({ card }: { card: ProcessedPortfolioWork }) => {
           <section className="flex space-x-2 my-4">
             <p className="">{card.description}</p>
           </section>
-        </div>
+        </article>
       </div>
       {card.portfolio_work_images.map(
         (item: PortfolioWorkImage, index: number) => {

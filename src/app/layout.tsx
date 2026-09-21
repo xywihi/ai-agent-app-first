@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -22,12 +22,6 @@ export const metadata: Metadata = {
   title: "夕夜 · 前端开发/UI设计/AI Agent",
   description:
     "个人作品集，展示 UI 设计、前端开发、技术笔记以及 AI Agent 全栈项目。",
-};
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

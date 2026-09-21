@@ -1,5 +1,4 @@
 "use client";
-import { cn } from "@/lib/utils";
 import {
   startTransition,
   useCallback,
@@ -7,17 +6,8 @@ import {
   useOptimistic,
   useRef,
 } from "react";
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  MessageSquareText,
-  PencilRuler,
-  Plus,
-  Share2,
-  Star,
-  ThumbsUp,
-} from "lucide-react";
+import { Share2, Star, ThumbsUp } from "lucide-react";
 import z from "zod";
 import { useParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -28,12 +18,8 @@ import { Get, Post } from "@/app/utils/query";
 import { recordPortfolioVisit } from "@/app/utils/api/design/reuqery";
 import { Recommands } from "./components/Recommands";
 import { LeaveMessage } from "./components/LeavveMessage";
-// import { Content } from "next/font/google"; //
 import { Content } from "./components/Content";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Author } from "./components/Author";
-// import {VariableSizeGrid as Grid} from "react-window";
-// type User = z.infer<typeof Schema>;
 
 export default function Design() {
   const containerRef = useRef<HTMLDivElement>(null);

@@ -6,7 +6,27 @@ import { cn, getDateTime } from "@/app/utils/tools";
 import { getCategoryTree } from "@/lib/data/notes/categories";
 import { getNote } from "@/lib/data/notes/detail";
 import { recordNoteVisit } from "@/lib/data/notes/visit";
+import { getFrontNotes } from "@/lib/data/notes";
 
+// frontend/[id]/page.tsx
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id?: string }>;
+}) {
+  const { id } = await params;
+  // 请求数据库获取当前作品
+  const work = await getNote(id as string);
+  return {
+    title: work?.title ?? "笔记详情",
+    description: work?.description ?? "实用的前端笔记",
+  };
+}
+export async function generateStaticParams() {
+  const notes = await getFrontNotes();
+  return notes?.list.map((n) => ({ id: n.id }));
+}
 export default async function Page({
   params,
 }: {
@@ -19,11 +39,10 @@ export default async function Page({
     id && recordNoteVisit(id as string),
   ]);
   const updateTime = getDateTime(note_data?.updated_at || 0);
-  console.log("note_data", note_data);
   return (
     <div className="">
       <NoteAsideNav note_id={id as string} />
-      <section className="pb-28 xl:p-0">
+      <article className="pb-28 xl:p-0">
         <div className="prose prose-slate max-w-none">
           <div className={cn("gap-4 hidden", { flex: updateTime })}>
             <p className="text-gray-400 my-4 flex items-center">
@@ -48,7 +67,7 @@ export default async function Page({
             languageType="JavaScript"
           />
         </div>
-      </section>
+      </article>
       <CreateNote rootCategory={root_category} id={id} data={note_data} />
     </div>
   );
