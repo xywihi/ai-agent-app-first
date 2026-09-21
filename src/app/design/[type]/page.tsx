@@ -31,7 +31,6 @@ export default function Design() {
   >(new Map());
   const { data: user } = useUserQuery();
   const { type } = useParams();
-  console.log("type", type);
 
   const { data: portfolio_works, isPending } = useQuery({
     queryKey: QueryKeys.portfolio.portfolios(type as string),
@@ -44,7 +43,6 @@ export default function Design() {
       return data;
     },
   });
-  console.log("portfolio_works", portfolio_works);
   useEffect(() => {
     // 懒加载
     if (!containerRef.current) return;
