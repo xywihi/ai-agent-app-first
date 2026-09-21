@@ -1,7 +1,8 @@
 export const Get = async (url: string, headers?: HeadersInit) => {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ?? "https//ai-agent-app-first.vercel.app";
-  const result = await fetch(baseUrl + url, {
+  // const baseUrl =
+  //   process.env.NEXT_PUBLIC_BASE_URL ??
+  //   "https://ai-agent-app-first-31o5k563o-xywihis-projects.vercel.app";
+  const result = await fetch(url, {
     headers: headers,
     next: {
       revalidate: 300,
