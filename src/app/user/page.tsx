@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { Note } from "../utils/api/font-notes/typs";
 import { Calendar, Eye, NotebookText, ThumbsUp, Users } from "lucide-react";
 import { getDateTime, getTime } from "../utils/tools";
