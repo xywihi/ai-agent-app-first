@@ -6,7 +6,7 @@ import { cn, getDateTime } from "@/app/utils/tools";
 import { getCategoryTree } from "@/lib/data/notes/categories";
 import { getNote } from "@/lib/data/notes/detail";
 import { recordNoteVisit } from "@/lib/data/notes/visit";
-import { getFrontNotes } from "@/lib/data/notes";
+import { getFrontNotesB } from "@/lib/data/back/notes";
 
 // frontend/[id]/page.tsx
 
@@ -24,8 +24,8 @@ export async function generateMetadata({
   };
 }
 export async function generateStaticParams() {
-  const notes = await getFrontNotes();
-  return notes?.list.map((n) => ({ id: n.id }));
+  const notes = await getFrontNotesB();
+  return notes?.list.map((n) => ({ id: n.id })) || [];
 }
 export default async function Page({
   params,

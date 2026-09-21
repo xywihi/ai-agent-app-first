@@ -1,4 +1,4 @@
-import { getDefaultPortfolio } from "@/lib/data/portfolio";
+import { getDefaultPortfolioB } from "@/lib/data/back/portfolio";
 import { getDetailPortfolio } from "@/lib/data/portfolio/detail";
 
 export async function generateMetadata({
@@ -16,8 +16,8 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-  const portfolios = await getDefaultPortfolio("all");
-  return portfolios?.list.map((p) => ({ id: p.id }));
+  const portfolios = await getDefaultPortfolioB("all");
+  return portfolios?.list.map((p) => ({ id: p.id })) || [];
 }
 export default function DesignLayout({
   children,
