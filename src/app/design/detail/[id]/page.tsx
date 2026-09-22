@@ -144,7 +144,7 @@ export default function Design() {
     card && (
       <div>
         {/* 活动按钮 */}
-        <div className="fixed right-26 bottom-25 z-50 lg:right-8 lg:bottom-40 flex lg:flex-col space-y-2 bg-white dark:bg-gray-700 rounded-full py-2 lg:py-4 px-2 shadow-xl mt-2 border border-gray-200 dark:border-gray-700">
+        <div className="fixed bottom-4 xl:bottom-25 z-50 left-4 xl:right-8 xl:left-auto lg:bottom-40 flex lg:flex-col space-y-2 bg-white dark:bg-gray-700 rounded-full py-2 lg:py-4 px-2 shadow-xl mt-2 border border-gray-200 dark:border-gray-700">
           <div className="px-2 lg:p-0 m-0 lg:mb-2">
             <LikeButton card={card} handleToLike={handleToLike} />
           </div>
@@ -162,7 +162,7 @@ export default function Design() {
           </div>
         </div>
         {/* 返回顶部 */}
-        <div className="fixed bottom-26 right-9 z-50 flex items-center gap-4">
+        <div className="fixed bottom-4 xl:bottom-9 right-4 xl:right-9 z-50 flex items-center gap-4">
           <ToTop />
         </div>
         <section className="mb-19">

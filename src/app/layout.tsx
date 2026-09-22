@@ -33,13 +33,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <div
           id="global_anln"
-          className="h-screen flex flex-col justify-between bg-white dark:bg-gray-700 bg-[radial-gradient(#b1cacb_1px,transparent_1px)]! dark:bg-[radial-gradient(#32393a_1px,transparent_1px)]! bg-size-[24px_24px]!"
+          className="relative flex flex-col justify-between bg-white dark:bg-gray-700 bg-[radial-gradient(#b1cacb_1px,transparent_1px)]! dark:bg-[radial-gradient(#32393a_1px,transparent_1px)]! bg-size-[24px_24px]!"
         >
           <div className="flex-1 flex flex-col justify-between items-center bg-linear-to-br from-transparent via-35% to-[white] dark:to-[black]">
             <QueryProviders>
               <TooltipProvider>
                 <>
-                  <header className="fixed z-90 top-0 w-full p-4 max-h-24 bg-white dark:bg-gray-700/40 border-b border-white/40 dark:border-black/40 backdrop-blur-md shadow-xl shadow-[#d3d5d848] dark:shadow-[#2e2f2f48]">
+                  <header className="fixed z-50 top-0 w-full p-4 max-h-24 bg-white dark:bg-gray-700/40 border-b border-white/40 dark:border-black/40 backdrop-blur-md shadow-xl shadow-[#d3d5d848] dark:shadow-[#2e2f2f48]">
                     <MobileSheetNav />
                     <HeaderNav />
                   </header>
@@ -48,20 +48,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                     <div id="global-loading"></div>
                     {children}
                     {/* sonner 提示 */}
-                    <Toaster className="bg-white dark:bg-gray-700" />
+                    <Toaster className="bg-white dark:bg-gray-700 z-9999" />
                   </main>
-                  <footer className="w-full">
-                    <div className="w-full py-8 bg-white dark:bg-gray-700 shadow-xl  drop-shadow-[0_-4px_12px_#d3d5d848] dark:drop-shadow-[0_-4px_12px_#2e2f2f48] border-t border-slate-100 dark:border-slate-800 text-center text-sm text-slate-400">
-                      <p>©2026 个人作品集 · Next.js + TailwindCSS 构建</p>
-                    </div>
-                  </footer>
                 </>
               </TooltipProvider>
             </QueryProviders>
           </div>
         </div>
-        {/* 音乐播放器 */}
-        <MusicPlayer className="fixed z-90 bottom-6 right-6" />
+        <footer className="hidden xl:block w-full absolute -bottom-16 hover:bottom-0 transition-all duration-500 ease-in-out">
+          <div className="w-full py-8 bg-white dark:bg-gray-700 shadow-xl drop-shadow-[0_-8px_12px_#d3d5d848] dark:drop-shadow-[0_-4px_12px_#2e2f2f48] border-t border-slate-100 dark:border-slate-800 text-center text-sm text-slate-400">
+            <p>©2026 个人作品集 · Next.js + TailwindCSS 构建</p>
+          </div>
+        </footer>
       </body>
     </html>
   );

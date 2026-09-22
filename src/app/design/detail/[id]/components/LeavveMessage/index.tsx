@@ -38,11 +38,11 @@ export const LeaveMessage = () => {
       </h2>
       <form method="post" onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <div className="rounded-2xl p-6 border-6 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 overflow-hidden">
+          <div className="rounded-2xl p-6 border-3 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 overflow-hidden">
             <textarea
               maxLength={500}
               {...register("leaveMessage")}
-              className="w-full h-40 min-h-40 max-h-80 outline-none focus:outline-none"
+              className="w-full h-20 min-h-20 max-h-80 outline-none focus:outline-none"
               placeholder="在此给作者写下您的留言"
             ></textarea>
           </div>
@@ -61,7 +61,7 @@ export const LeaveMessage = () => {
                 {...register("phone")}
                 type="phone"
                 placeholder="请输入您的手机号"
-                className="flex-1 block w-full h-max rounded-2xl p-4 border-6 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 outline-none focus:outline-none"
+                className="flex-1 block w-full h-max rounded-2xl p-3 border-3 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 outline-none focus:outline-none"
               />
               <span
                 className={cn(
@@ -79,7 +79,7 @@ export const LeaveMessage = () => {
                 {...register("email")}
                 type="email"
                 placeholder="请输入您的邮箱"
-                className="flex-1 block w-full h-fit rounded-2xl p-4 border-6 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 outline-none focus:outline-none"
+                className="flex-1 block w-full h-fit rounded-2xl p-3 border-3 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 outline-none focus:outline-none"
               />
               <span
                 className={cn(
@@ -96,13 +96,13 @@ export const LeaveMessage = () => {
           <div className="flex flex-row gap-4 mt-2 xl:mt-6">
             <Button
               type="submit"
-              className="xl:w-60 h-14 rounded-2xl px-4 py-2 bg-gray-300 dark:bg-gray-600 text-2xl font-bold xl:mt-4 cursor-pointer"
+              className="xl:w-60 h-14 rounded-xl px-4 py-2 bg-gray-300 dark:bg-gray-600 text-xl font-bold xl:mt-4 cursor-pointer"
             >
               取消留言
             </Button>
             <Button
               type="submit"
-              className="flex-1 h-14 rounded-2xl px-4 py-2 bg-teal-300 dark:bg-teal-600 text-2xl font-bold xl:mt-4 cursor-pointer"
+              className="flex-1 h-14 rounded-xl px-4 py-2 bg-teal-300 dark:bg-teal-600 text-xl font-bold xl:mt-4 cursor-pointer"
             >
               提交
             </Button>

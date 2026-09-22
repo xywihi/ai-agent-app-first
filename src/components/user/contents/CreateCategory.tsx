@@ -143,7 +143,10 @@ export const CreateCategory = ({
       });
       toast.success("创建成功", {
         position: "top-center",
-        className: "bg-teal-400 text-white dark:bg-teal-600",
+        style: {
+          backgroundColor: "#00d5be",
+          borderRadius: "8px",
+        },
       });
     },
     onError: () => {},

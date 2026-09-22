@@ -10,8 +10,10 @@ import { useEffect, useState } from "react";
 import client from "@/lib/server";
 import { UserMetadata } from "@/app/utils/api/user/type";
 import { useRouter } from "next/navigation";
+import { useCanGoBack } from "@/hooks/use-can-go-back";
 export const HeaderNav = () => {
   const router = useRouter();
+  const { goBack } = useCanGoBack();
   const [user, setUser] = useState<UserMetadata | null>(null);
   useEffect(() => {
     const {
@@ -21,7 +23,9 @@ export const HeaderNav = () => {
         router.push("/login");
         router.refresh();
       } else if (e === "SIGNED_IN") {
-        router.replace("/user");
+        // router.replace("/user");
+        // router.back();
+        goBack();
         router.refresh();
       }
       if (_data && _data.user)

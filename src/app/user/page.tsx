@@ -27,9 +27,9 @@ export default async function User() {
     ]);
   const users = _users instanceof Error ? null : _users;
   return (
-    <div className="h-full grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4  gap-4">
+    <div className="h-[calc(100vh-10rem)] grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4  gap-4">
       {/* 用户信息 */}
-      <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
+      <div className="h-full bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
         <div>
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">个人资料</h1>
@@ -41,7 +41,7 @@ export default async function User() {
             </Link>
           </div>
           <hr className="my-4 border-gray-200 dark:border-gray-700" />
-          <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
+          <div className="overflow-y-scroll pb-4 h-[calc(100vh-16rem)]">
             <div>
               <div>
                 <p className="text-gray-400">头像</p>
@@ -105,7 +105,7 @@ export default async function User() {
         </div>
 
         <hr className="my-4 border-gray-200 dark:border-gray-700" />
-        <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
+        <div className="overflow-y-scroll pb-4 h-[calc(100vh-16rem)]">
           {portfolioss_data && !portfolioss_data.list?.length && (
             <p className="text-gray-400 text-center h-full flex flex-col justify-center">
               暂无笔记
@@ -150,26 +150,28 @@ export default async function User() {
       <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
         <div>
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">前端笔记</h1>
-            <Link
-              href="/user/frontend"
-              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 block xl:hidden"
-            >
-              查看详情
-            </Link>
-          </div>
-          <div className="gap-4 hidden xl:flex">
-            <div className="flex gap-2 items-center">
-              <NotebookText size={14} />
-              <span>{notes_data?.noteTotal ?? 0}</span>
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold">前端笔记</h1>
+              <Link
+                href="/user/frontend"
+                className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 block xl:hidden"
+              >
+                查看详情
+              </Link>
             </div>
-            <div className="flex gap-2 items-center">
-              <Eye size={14} />
-              <span>{notes_data?.totalView ?? 0}</span>
+            <div className="gap-4 hidden xl:flex">
+              <div className="flex gap-2 items-center">
+                <NotebookText size={14} />
+                <span>{notes_data?.noteTotal ?? 0}</span>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Eye size={14} />
+                <span>{notes_data?.totalView ?? 0}</span>
+              </div>
             </div>
           </div>
           <hr className="my-4 border-gray-200 dark:border-gray-700" />
-          <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
+          <div className="overflow-y-scroll pb-4 h-[calc(100vh-16rem)]">
             {notes_data && !notes_data.list?.length && (
               <p className="text-gray-400 text-center h-full flex flex-col justify-center">
                 暂无笔记
@@ -216,7 +218,7 @@ export default async function User() {
             </div>
           </div>
           <hr className="my-4 border-gray-200 dark:border-gray-700" />
-          <div className="overflow-y-scroll pb-4 h-[calc(100vh-20rem)]">
+          <div className="overflow-y-scroll pb-4 h-[calc(100vh-16rem)]">
             {users &&
               users.users?.map((item: User) => {
                 return (

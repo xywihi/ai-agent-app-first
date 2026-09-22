@@ -113,7 +113,10 @@ const PortfolioItem = memo(function PortfolioItem({
       if (res) {
         toast.success("删除成功", {
           position: "top-center",
-          className: "bg-teal-400 text-white dark:bg-teal-600",
+          style: {
+            backgroundColor: "#00d5be",
+            borderRadius: "8px",
+          },
         });
       }
     }

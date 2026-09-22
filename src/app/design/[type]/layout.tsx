@@ -25,8 +25,8 @@ export default async function DesignLayout({
     portfolio_categories instanceof Error ? [] : portfolio_categories;
   return (
     <div className="flex justify-start items-start p-4">
-      <div className="w-1/4 h-screen shrink-0 sticky top-22 hidden xl:block">
-        <div className="min-h-[calc(100%-10rem)] bg-gray-100 dark:bg-gray-800  rounded-2xl shadow-2xl py-8 px-6 m-4 flex flex-col justify-between">
+      <div className="w-1/4 shrink-0 sticky top-22 hidden xl:block">
+        <div className="min-h-[calc(100vh-10rem)] bg-gray-100 dark:bg-gray-800  rounded-2xl shadow-2xl py-8 px-6 m-4 flex flex-col justify-between">
           <div>
             <div className="w-[calc(100%+1.5rem)] mb-4 flex felx-row flex-nowrap items-center gap-6 shadow-md bg-white dark:bg-gray-700 p-4 py-8 rounded-l-2xl">
               <div className="w-20 h-20">
@@ -51,7 +51,7 @@ export default async function DesignLayout({
               自2017年投身UI与网页设计行业，擅长界面交互、网页、插画、海报及KV主视觉设计，兼顾设计创意与落地实现，注重真实可用的用户体验。
             </div>
             <hr className="border-gray-200 dark:border-gray-700 my-4" />
-            <div className="overflow-auto max-h-[calc(100vh-20rem)]">
+            <div className="overflow-auto max-h-[calc(100vh-36rem)]">
               <div className="flex flex-col gap-6">
                 {_portfolio_categories.map((design: PortfolioCategory) => (
                   <Item
@@ -82,7 +82,7 @@ export default async function DesignLayout({
                         {design.title}
                       </ItemContent>
                       <ItemActions>
-                        <div className="bg-gray-200 dark:bg-gray-700 hover:bg-teal-300 dark:bg-teal-600 cursor-pointer rounded-lg">
+                        <div className="bg-gray-200 dark:bg-gray-700 hover:bg-teal-300 dark:hover:bg-teal-600 cursor-pointer rounded-lg">
                           <div className="group-hover:hidden px-2 py-1">
                             共计 {design.total_count} 个
                           </div>

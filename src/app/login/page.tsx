@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import client from "@/lib/server";
 const formSchema = z.object({
   username: z.string().min(2, "用户名至少2个字"),
@@ -11,7 +10,6 @@ const formSchema = z.object({
 });
 type FormValues = z.infer<typeof formSchema>;
 export default function LoginPage() {
-  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -36,13 +34,19 @@ export default function LoginPage() {
       if (error.code === "invalid_credentials") {
         toast.error("用户名或密码错误", {
           position: "top-center",
-          className: "bg-red-400 text-white dark:bg-red-600",
+          style: {
+            backgroundColor: "#FF6470",
+            borderRadius: "8px",
+          },
         });
       }
     } else {
       toast.success("登录成功", {
         position: "top-center",
-        className: "bg-teal-400 text-white dark:bg-teal-600",
+        style: {
+          backgroundColor: "#00d5be",
+          borderRadius: "8px",
+        },
       });
       // localStorage.setItem("user", JSON.stringify(user));
     }

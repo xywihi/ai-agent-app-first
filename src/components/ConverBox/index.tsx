@@ -92,7 +92,7 @@ export const ConverBox = ({ initialMessages, api }: PropsType) => {
     if (!initialMessages) return;
     console.log("messages", initialMessages);
     setMessages(initialMessages);
-  }, [initialMessages]);
+  }, [initialMessages, setMessages]);
   const reload = useCallback(() => {
     const lastUserMessage = messages.filter(
       (message) => message.role === "user"
@@ -101,10 +101,10 @@ export const ConverBox = ({ initialMessages, api }: PropsType) => {
     sendMessage(lastUserMessage[lastUserMessage.length - 1]);
   }, [messages]);
   return (
-    <div className="p-4 relative h-[calc(100vh-5rem)] pt-4 lg:pt-0 pb-12">
+    <div className="p-4 relative h-[calc(100vh-5rem)] xl:h-[calc(100vh-10rem)] pt-4 lg:pt-0 pb-12">
       <div
         ref={scrollRef}
-        className="flex-1 h-[calc(100vh-10rem)] overflow-y-auto space-y-4 pb-16 "
+        className="flex-1 h-[calc(100vh-10rem)] xl:h-[calc(100vh-14rem)] overflow-y-auto space-y-4 pb-16 "
       >
         {messages.map((message) => (
           <div key={message.id} className="whitespace-pre-wrap mb-4">
@@ -309,13 +309,15 @@ export const ConverBox = ({ initialMessages, api }: PropsType) => {
           </Button>
         )}
       </div>
-      <ConversateInput
-        messages={messages}
-        status={status}
-        stop={stop}
-        setMessages={setMessages}
-        sendMessage={sendMessage}
-      />
+      <div>
+        <ConversateInput
+          messages={messages}
+          status={status}
+          stop={stop}
+          setMessages={setMessages}
+          sendMessage={sendMessage}
+        />
+      </div>
     </div>
   );
 };

@@ -56,7 +56,7 @@ export const PortfoliosCarousel = ({
     // });
   }, [api]);
   return (
-    <div className="relative xl:max-h-[20vh] min-h-52.5 flex">
+    <div className="relative xl:max-h-[30vh] flex">
       <CarouselComponent
         className="w-full flex-1 overflow-auto flex"
         plugins={[autoplayPlugin]}

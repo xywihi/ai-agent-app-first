@@ -31,7 +31,7 @@ type Path = {
 const NavMenuList = React.memo(
   ({ paths, pathname }: { paths: Path[]; pathname: string }) => {
     return (
-      <ul className="flex flex-col space-y-14 mt-6">
+      <ul className="flex flex-col space-y-8 mt-6">
         {paths.map((item) => (
           <li key={item.path}>
             <Suspense>
@@ -150,6 +150,9 @@ export function MobileSheetNav() {
           </SheetHeader>
           <NavMenuList paths={paths} pathname={pathname} />
           <SheetFooter className="p-0">
+            {/* 音乐播放器 */}
+            {/* <MusicPlayer />
+            <hr className="my-4 border-gray-200" /> */}
             {/* 退出登录 */}
             {user && <LogoutButton />}
           </SheetFooter>

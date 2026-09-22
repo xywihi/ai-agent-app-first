@@ -90,7 +90,10 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
       if (res.status === 200) {
         toast.success("删除成功", {
           position: "top-center",
-          className: "bg-teal-400 text-white dark:bg-teal-600",
+          style: {
+            backgroundColor: "#00d5be",
+            borderRadius: "8px",
+          },
         });
       }
     }

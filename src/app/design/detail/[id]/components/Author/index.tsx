@@ -34,7 +34,7 @@ export const Author = ({ card }: { card: ProcessedPortfolioWork }) => {
   return (
     <div
       id="author"
-      className="fixed top-22 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] lg:max-w-[calc(50%-1rem)] p-4 transform translate-y-0 flex justify-between items-center bg-white dark:bg-gray-700 rounded-xl shadow-xl shadow-gray-400/15 mb-2 transition-all duration-600 ease-in-out"
+      className="fixed top-22 left-1/2 -translate-x-1/2 z-49 w-[calc(100%-2rem)] lg:max-w-[calc(50%-1rem)] p-4 transform translate-y-0 flex justify-between items-center bg-white dark:bg-gray-700 rounded-xl shadow-xl shadow-gray-400/15 mb-2 transition-all duration-600 ease-in-out"
     >
       <div className="flex items-center gap-2">
         <Avatar>

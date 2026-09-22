@@ -56,8 +56,8 @@ export default function HomeLayout({
     setShowConverHistory((pre) => !pre);
   };
   return (
-    <div className="flex flex-row">
-      <div className="flex-1 max-w-3xl mx-4 fixed top-4 dark:bg-gray-800 rounded-2xl z-10 border bg-white dark:bg-gray-700 py-2 px-4 block lg:hidden">
+    <div className="flex flex-row xl:mt-8">
+      <div className="flex-1 max-w-3xl mx-4 fixed top-4 rounded-2xl z-10 border bg-white dark:bg-gray-700 py-2 px-4 block lg:hidden">
         <button className="px-2" onClick={handleShowConverHistory}>
           会话记录
         </button>

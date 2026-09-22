@@ -55,7 +55,7 @@ export default async function UserLayout({
   ]);
   return (
     <div className="lg:flex gap-4 p-6">
-      <aside className="hidden lg:flex shrink-0 p-6 sticky top-24  flex-col justify-between bg-linear-to-b from-gray-200 dark:from-gray-900 to-white dark:to-gray-700  bg-white dark:bg-gray-700 rounded-2xl min-w-90 h-[calc(100vh-13rem)] shadow-2xl">
+      <aside className="hidden lg:flex shrink-0 p-6 sticky top-24  flex-col justify-between bg-linear-to-b from-gray-200 dark:from-gray-900 to-white dark:to-gray-700  bg-white dark:bg-gray-700 rounded-2xl min-w-90 h-[calc(100vh-10rem)] shadow-2xl">
         <div>
           {user && (
             <div className="flex  items-center gap-4">

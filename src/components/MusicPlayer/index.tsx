@@ -166,106 +166,81 @@ export const MusicPlayer = ({ className }: { className?: string }) => {
           </Item>
         ))}
       </div>
-      <GroundGlassCard
-        className={cn(
-          "w-max h-fit p-2 transition-all duration-500 hover:delay-0 delay-100 "
-        )}
-        cardClassName={cn(
-          "relative min-w-12 w-12 h-12 flex flex-row items-center justify-end gap-3 group-hover:w-88 transition-all duration-500 hover:delay-0 delay-300",
-          currentTime && "w-43"
-        )}
-      >
-        <div className="flex-1 w-full flex flex-row items-center justify-end space-x-3 px-3">
-          {/* 时间 */}
-          <div
-            className={cn(
-              "shrink-0 items-center gap-1 text-gray-600 dark:text-gray-300 opacity-0 group-hover:opacity-100 group-hover:flex group-hover:relative group-hover:duration-300 group-hover:delay-600 absolute transition-opacity duration-0 delay-300",
-              currentTime && "relative opacity-100"
-            )}
-          >
-            <span>{totalTime}</span>
-            <span>/</span>
-            <span>{currentTime}</span>
+      <div className="bg-teal-50 p-4 rounded-xl flex-1 w-full ">
+        <div className="flex justify-between items-center mb-2">
+          <p className="truncate pr-2">{audios[index].name}</p>
+          <div className="shrink-0 flex items-center justify-between gap-2">
+            {/* 播放按钮 */}
+            <div
+              onClick={() => {
+                console.log(
+                  "(pre + 1 > urls.length ? 0 : pre + 1)",
+                  index + 1 > audios.length ? 0 : index + 1
+                );
+                stop();
+                setIndex((pre) => {
+                  play(true);
+                  return (pre + 1) % audios.length;
+                }); //(pre + 1 >= urls.length ? 0 : pre + 1));
+              }}
+              className="shrink-0 rounded-full w-6 h-6 bg-teal-500 text-white text-sm flex items-center justify-center transition-all duration-500"
+            >
+              <Tooltip>
+                <TooltipTrigger
+                  render={(props) => (
+                    <span {...props}>
+                      <SkipForward size={12} />
+                    </span>
+                  )}
+                ></TooltipTrigger>
+                <TooltipContent>
+                  <p>切换下一首</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+
+            {/* 播放按钮 */}
+            <div
+              onClick={playing ? stop : () => play()}
+              className="shrink-0 rounded-full w-6 h-6 bg-teal-500 text-white text-xs flex items-center justify-center transition-all duration-500"
+            >
+              <Tooltip>
+                <TooltipTrigger
+                  render={(props) => (
+                    <span {...props}>
+                      {playing ? <Pause size={12} /> : <Play size={12} />}
+                    </span>
+                  )}
+                ></TooltipTrigger>
+                <TooltipContent>
+                  <p>播放/暂停</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
+        </div>
+        <div className="flex flex-row items-center justify-end space-x-3 py-2">
           {/* 进度条 */}
-          <div className="opacity-0 group-hover:opacity-100 group-hover:relative group-hover:duration-300 group-hover:delay-600 absolute transition-opacity duration-0 delay-0">
+          <div className="opacity-100 relative flex-1">
             <div className="relative">
-              <div className="bg-gray-300 w-40 h-2 rounded-full"></div>
+              <div className="bg-gray-300 w-full h-2 rounded-full"></div>
               <div
                 className="bg-teal-300 dark:bg-teal-600 h-2 rounded-full absolute top-0 left-0"
                 style={{ width: `${percent}%` }}
               ></div>
             </div>
             <div
-              className="absolute top-1/2 -translate-1/2 w-1.5 h-4 bg-teal-500 rounded-full transition-all duration-100"
+              className={cn(
+                "absolute top-1/2 -translate-y-2 -translate-x-3.5 flex flex-col items-center"
+              )}
               style={{ left: `${percent}%` }}
-            ></div>
-          </div>
-
-          {/* 播放按钮 */}
-          <div
-            onClick={() => {
-              console.log(
-                "(pre + 1 > urls.length ? 0 : pre + 1)",
-                index + 1 > audios.length ? 0 : index + 1
-              );
-              stop();
-              setIndex((pre) => {
-                play(true);
-                return (pre + 1) % audios.length;
-              }); //(pre + 1 >= urls.length ? 0 : pre + 1));
-            }}
-            className="shrink-0 rounded-full w-6 h-6 bg-teal-500 text-white text-sm flex items-center justify-center transition-all duration-500"
-          >
-            <Tooltip>
-              <TooltipTrigger
-                render={(props) => (
-                  <span {...props}>
-                    <SkipForward size={12} />
-                  </span>
-                )}
-              ></TooltipTrigger>
-              <TooltipContent>
-                <p>切换下一首</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-
-          {/* 播放按钮 */}
-          <div
-            onClick={playing ? stop : () => play()}
-            className="shrink-0 rounded-full w-6 h-6 bg-teal-500 text-white text-xs flex items-center justify-center transition-all duration-500"
-          >
-            <Tooltip>
-              <TooltipTrigger
-                render={(props) => (
-                  <span {...props}>
-                    {playing ? <Pause size={12} /> : <Play size={12} />}
-                  </span>
-                )}
-              ></TooltipTrigger>
-              <TooltipContent>
-                <p>播放/暂停</p>
-              </TooltipContent>
-            </Tooltip>
+            >
+              <div className="w-1.5 h-4 bg-teal-500 rounded-full transition-all duration-100"></div>
+              <span className="text-xs text-teal-600">{currentTime}</span>
+            </div>
           </div>
         </div>
-        {/* <button
-        onClick={stop}
-        className="rounded-full w-4 h-4 bg-gray-300  text-xs flex items-center justify-center"
-      >
-        ⏹
-      </button> */}
-
-        {/* <button
-        onClick={toggleLoop}
-        className={`px-3 py-1 rounded-lg ${
-          loop ? "bg-teal-400 dark:bg-teal-600 text-white" : "bg-gray-200 dark:bg-gray-700"
-        }`}
-      >
-        {loop ? "循环开启" : "循环关闭"}
-      </button> */}
-      </GroundGlassCard>
+      </div>
     </div>
   );
 };

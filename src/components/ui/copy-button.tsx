@@ -18,7 +18,10 @@ export function CopyButton({ text, className }: CopyButtonProps) {
       console.log("复制成功");
       toast.success("复制成功", {
         position: "top-center",
-        className: "bg-teal-400 text-white dark:bg-teal-600",
+        style: {
+          backgroundColor: "#00d5be",
+          borderRadius: "8px",
+        },
       });
     }
   };

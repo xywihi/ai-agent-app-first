@@ -55,13 +55,13 @@ const WorkflowInput = ({
         <div className="flex flex-row-reverse mb-2 pointer-events-none">
           <button
             type="button"
-            className="p-2 border border-zinc-300 bg-gray-200 dark:bg-gray-700 dark:bg-zinc-900 w-max text-xs rounded-md"
+            className="p-2 border border-zinc-300 bg-gray-200 dark:bg-gray-700 w-max text-xs rounded-md"
             onClick={() => setMessages([])}
           >
             清空当前对话
           </button>
         </div>
-        <div className="flex flex-row justify-between bg-gray-100 dark:bg-gray-800 dark:bg-zinc-900  border border-zinc-300 rounded-xl overflow-auto">
+        <div className="flex flex-row justify-between bg-gray-100 dark:bg-gray-800  border border-zinc-300 rounded-xl overflow-auto">
           <textarea
             className="max-w-2xl p-2 flex-1 max-h-12 leading-8 resize-none outline-none"
             value={input}
@@ -107,7 +107,7 @@ const WorkflowInput = ({
               ) : (
                 <button
                   type="submit"
-                  className="dark:bg-zinc-900 min-h-12 max-w-md p-2 w-max px-4 bg-teal-400 dark:bg-teal-600 text-teal-700"
+                  className="min-h-12 max-w-md p-2 w-max px-4 bg-teal-400 dark:bg-teal-600 text-teal-700"
                 >
                   ✈️
                 </button>
@@ -121,6 +121,5 @@ const WorkflowInput = ({
 };
 
 export default memo(WorkflowInput, (prev, next) => {
-  console.log("prev.status", prev.status === next.status);
   return prev.status === next.status;
 });

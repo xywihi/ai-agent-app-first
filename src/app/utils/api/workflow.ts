@@ -146,7 +146,6 @@ export const getWorkflowHistoryList = async () => {
     console.log("error", error);
     return;
   }
-  console.log("workflow_history_list data", data);
   return data.reverse();
 };
 
