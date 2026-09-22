@@ -216,7 +216,7 @@ export default function Design() {
       >
         <div>
           {isPending && (
-            <div className="text-center xl:text-xl text-gray-400">
+            <div className="flex justify-center items-center h-[calc(100vh-20rem)] text-center xl:text-xl text-gray-400">
               作品努力加载中...
             </div>
           )}

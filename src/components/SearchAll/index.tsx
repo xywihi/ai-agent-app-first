@@ -2,13 +2,8 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandInput,
-} from "@/components/ui/command";
-import { Eye, FileIcon, Search, ThumbsUp } from "lucide-react";
+import { CommandEmpty } from "@/components/ui/command";
+import { Eye, FileIcon, Search, SearchIcon, ThumbsUp } from "lucide-react";
 import { cn } from "@/app/utils/tools";
 import { useQuery } from "@tanstack/react-query";
 import { fuzzySearchAll } from "@/app/utils/api/requery";
@@ -18,12 +13,17 @@ import { Note } from "@/app/utils/api/font-notes/typs";
 import { Spinner } from "../ui/spinner";
 import { PortfolioWork } from "@/app/utils/api/design/type";
 import { QueryKeys } from "@/app/utils/query-keys";
+import { Dialog, DialogContent, DialogPortal } from "../ui/dialog";
+import { useEffect } from "react";
+import { InputGroup, InputGroupAddon } from "../ui/input-group";
+import { Input } from "../ui/input";
 const debounceFn = debounce((fn) => {
   if (typeof fn !== "function") return;
   // 在此处做你的搜索逻辑
   fn("9999999");
 }, 500);
 export const SearchAll = () => {
+  const [mountEl, setMountEl] = React.useState<HTMLElement | null>(null);
   const [open, setOpen] = React.useState(false);
   const [keyValue, setKeyValue] = React.useState("");
   const router = useRouter();
@@ -51,6 +51,15 @@ export const SearchAll = () => {
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
+  useEffect(() => {
+    const el = document.getElementById("global_anln");
+    const timer = setTimeout(() => {
+      if (el) {
+        setMountEl(el);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <div className="">
       <Button
@@ -68,105 +77,130 @@ export const SearchAll = () => {
           搜索
         </span>
       </Button>
-      <CommandDialog
-        open={open}
-        onOpenChange={setOpen}
-        className="bg-white dark:bg-gray-700/80 backdrop-blur-md"
-      >
-        <Command>
-          <CommandInput
-            placeholder="通过关键词搜索前端笔记和UI作品集..."
-            onValueChange={(val) => {
-              doDebounce(val);
-            }}
-          />
-          <div>
-            {isPending && (
-              <div className="flex items-center gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer">
-                <Spinner className="size-3 text-gray-400" />
-                <span>搜索中...</span>
-              </div>
-            )}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogPortal keepMounted={true} container={mountEl}>
+          {open && (
+            <div
+              role="presentation"
+              data-base-ui-inert
+              aria-hidden="true"
+              className="bg-gray-400/20 fixed inset-0 select-none"
+            />
+          )}
 
-            {data && (
-              <div>
-                {!!data?.notes?.length && (
-                  <div className="mt-2">
-                    <div className="px-2  text-gray-500 text-sm">前端笔记</div>
-                    {data.notes
-                      .slice(0, !keyValue ? 4 : data.length)
-                      ?.map((item: Note) => (
-                        <div
-                          className="flex items-center justify-between gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer"
-                          key={item.id}
-                          onClick={() => {
-                            const searchParams = new URLSearchParams();
-                            searchParams.set("category_id", item.category_id);
-                            searchParams.set(
-                              "seconde_id",
-                              item.sub_category_id
-                            );
-                            searchParams.set("note_id", item.id as string);
-                            const url = `/frontend?${searchParams.toString()}`;
-                            router.push(url);
-                            setOpen(false);
-                          }}
-                        >
-                          <div className="flex items-center gap-2">
-                            <FileIcon size={16} />
-                            <span>{item.title}</span>
-                          </div>
-                          <span className="ml-auto text-xs text-gray-400 flex items-center gap-1">
-                            <Eye size={16} />
-                            {item.view_count}
-                          </span>
-                        </div>
-                      ))}
-                    {data.notes?.length === 0 && (
-                      <CommandEmpty>无相关前端笔记</CommandEmpty>
-                    )}
-                  </div>
+          <DialogContent
+            className="bg-white dark:bg-gray-700/80 backdrop-blur-md"
+            showCloseButton={false}
+          >
+            <InputGroup className="h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!">
+              <Input
+                data-slot="command-input"
+                className={cn(
+                  "w-full text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
+                  "h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!",
+                  "border-none outline-none focus:outline-none focus-visible:ring-0"
                 )}
-
-                {!!data?.portfolios?.length && (
-                  <div className="mt-2">
-                    <div className="px-2  text-gray-500 text-sm">设计作品</div>
-                    {data.portfolios
-                      .slice(0, !keyValue ? 4 : data.length)
-                      ?.map((item: PortfolioWork) => (
-                        <div
-                          className="flex items-center justify-between gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer"
-                          key={item.id}
-                          onClick={() => {
-                            const url = `/design/detail/${item.id}`;
-                            router.push(url);
-                            setOpen(false);
-                          }}
-                        >
-                          <div className="flex items-center gap-2">
-                            <FileIcon size={16} />
-                            <span>{item.title}</span>
-                          </div>
-                          <span className="ml-auto text-xs text-gray-400 flex items-center gap-1">
-                            <ThumbsUp size={16} />
-                            {item.like_count}
-                          </span>
-                        </div>
-                      ))}
-                  </div>
-                )}
-              </div>
-            )}
-            {!data?.portfolios?.length &&
-              !data?.notes?.length &&
-              !isPending && (
-                <CommandEmpty className="text-gray-400">
-                  无相关结果
-                </CommandEmpty>
+                placeholder="通过关键词搜索前端笔记和UI作品集..."
+                onChange={(e) => {
+                  doDebounce(e.target.value);
+                }}
+              />
+              <InputGroupAddon>
+                <SearchIcon className="size-4 shrink-0 opacity-50" />
+              </InputGroupAddon>
+            </InputGroup>
+            <div>
+              {isPending && (
+                <div className="flex items-center gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer">
+                  <Spinner className="size-3 text-gray-400" />
+                  <span>搜索中...</span>
+                </div>
               )}
-          </div>
-        </Command>
-      </CommandDialog>
+
+              {data && (
+                <div>
+                  {!!data?.notes?.length && (
+                    <div className="mt-2">
+                      <div className="px-2  text-gray-500 text-sm">
+                        前端笔记
+                      </div>
+                      {data.notes
+                        .slice(0, !keyValue ? 4 : data.length)
+                        ?.map((item: Note) => (
+                          <div
+                            className="flex items-center justify-between gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer"
+                            key={item.id}
+                            onClick={() => {
+                              const searchParams = new URLSearchParams();
+                              searchParams.set("category_id", item.category_id);
+                              searchParams.set(
+                                "seconde_id",
+                                item.sub_category_id
+                              );
+                              searchParams.set("note_id", item.id as string);
+                              const url = `/frontend?${searchParams.toString()}`;
+                              router.push(url);
+                              setOpen(false);
+                            }}
+                          >
+                            <div className="flex items-center gap-2">
+                              <FileIcon size={16} />
+                              <span>{item.title}</span>
+                            </div>
+                            <span className="ml-auto text-xs text-gray-400 flex items-center gap-1">
+                              <Eye size={16} />
+                              {item.view_count}
+                            </span>
+                          </div>
+                        ))}
+                      {data.notes?.length === 0 && (
+                        <CommandEmpty>无相关前端笔记</CommandEmpty>
+                      )}
+                    </div>
+                  )}
+
+                  {!!data?.portfolios?.length && (
+                    <div className="mt-2">
+                      <div className="px-2  text-gray-500 text-sm">
+                        设计作品
+                      </div>
+                      {data.portfolios
+                        .slice(0, !keyValue ? 4 : data.length)
+                        ?.map((item: PortfolioWork) => (
+                          <div
+                            className="flex items-center justify-between gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer"
+                            key={item.id}
+                            onClick={() => {
+                              const url = `/design/detail/${item.id}`;
+                              router.push(url);
+                              setOpen(false);
+                            }}
+                          >
+                            <div className="flex items-center gap-2">
+                              <FileIcon size={16} />
+                              <span>{item.title}</span>
+                            </div>
+                            <span className="ml-auto text-xs text-gray-400 flex items-center gap-1">
+                              <ThumbsUp size={16} />
+                              {item.like_count}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              {!data?.portfolios?.length &&
+                !data?.notes?.length &&
+                !isPending && (
+                  <CommandEmpty className="text-gray-400">
+                    无相关结果
+                  </CommandEmpty>
+                )}
+            </div>
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
     </div>
   );
 };

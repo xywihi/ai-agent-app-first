@@ -5,16 +5,12 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import client from "@/lib/server";
-import { QueryKeys } from "../utils/query-keys";
-import { useQueryClient } from "@tanstack/react-query";
 const formSchema = z.object({
   username: z.string().min(2, "用户名至少2个字"),
   password: z.string(),
 });
 type FormValues = z.infer<typeof formSchema>;
 export default function LoginPage() {
-  const queryclient = useQueryClient();
-
   const router = useRouter();
   const {
     register,
@@ -40,23 +36,20 @@ export default function LoginPage() {
       if (error.code === "invalid_credentials") {
         toast.error("用户名或密码错误", {
           position: "top-center",
-          style: { backgroundColor: "white" },
+          className: "bg-red-400 text-white dark:bg-red-600",
         });
       }
     } else {
       toast.success("登录成功", {
         position: "top-center",
-        style: { backgroundColor: "white" },
+        className: "bg-teal-400 text-white dark:bg-teal-600",
       });
       // localStorage.setItem("user", JSON.stringify(user));
-
-      router.replace("/user");
-      router.refresh();
     }
   };
   return (
     <div className="flex flex-col h-[calc(100vh-10rem)] flex-1 justify-center items-center">
-      <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-xl shadow-gray-100 shadow-lg">
+      <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-xl shadow-gray-100 dark:shadow-gray-800 shadow-lg">
         <form
           className="flex flex-col items-center space-y-4 xl:w-lg"
           action=""
@@ -77,7 +70,7 @@ export default function LoginPage() {
             <input
               type="text"
               {...register("username")}
-              className="border rounded-lg px-2 py-2 w-full border-teal-500"
+              className="dark:bg-gray-700! border rounded-lg px-2 py-2 w-full border-teal-500 dark:border-teal-500"
             />
             {errors.username && (
               <span className="text-red-500 text-sm">

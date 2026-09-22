@@ -29,6 +29,7 @@ export const GlobalModel = ({
     <div>
       {createPortal(
         <div
+          id="global_model"
           className="fixed inset-0 flex items-center justify-center z-100 bg-gray-600/80"
           onClick={handleShowModel}
         >

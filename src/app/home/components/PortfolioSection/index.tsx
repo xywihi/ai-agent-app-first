@@ -12,6 +12,7 @@ import Image from "next/image";
 import { Suspense } from "react";
 import { PortfoliosCarousel } from "../PortfoliosCarousel";
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
+import Link from "next/link";
 
 export const PortfolioSection = async <
   T extends { data: { list: ProcessedPortfolioWork[] } | undefined }
@@ -66,14 +67,14 @@ export const PortfolioSection = async <
         </CardDescription>
       </CardContent>
       <CardFooter className="border-gray-200 dark:border-gray-700">
-        <p className="w-full flex gap-2">
-          <span className="shrink-0">站酷链接：</span>
-          <a
-            className="text-teal-400 flex-1 text-wrap truncate underline decoration-1 decoration-teal-400 italic"
+        <p className="w-full xl:flex">
+          <span className="xl:shrink-0">站酷链接：</span>
+          <Link
+            className="inline-block text-teal-400 w-[calc(100%-0.5rem)] text-wrap truncate underline decoration-1 decoration-teal-400 italic"
             href="https://www.zcool.com.cn/u/ZNjEyODMzODA="
           >
             https://www.zcool.com.cn/u/ZNjEyODMzODA=
-          </a>
+          </Link>
         </p>
       </CardFooter>
     </GroundGlassCard>

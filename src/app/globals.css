@@ -18,6 +18,19 @@
     --foreground: #ededed;
   }
 }
+@media (prefers-color-scheme: dark) {
+  /* 全局css，比如globals.css */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  
+  -webkit-box-shadow: 0 0 0 30px #1e2939 inset !important;  /*修改浏览器自动填充背景颜色*/
+  -webkit-text-fill-color: #fff !important;
+}
+}
+
+
 /* *{
   -webkit-user-select: none;
     user-select: none;

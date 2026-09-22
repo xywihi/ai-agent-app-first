@@ -111,7 +111,10 @@ const PortfolioItem = memo(function PortfolioItem({
     if (res) {
       const res = await Delete(`/api/user/frontend/${id}`);
       if (res) {
-        toast.success("删除成功");
+        toast.success("删除成功", {
+          position: "top-center",
+          className: "bg-teal-400 text-white dark:bg-teal-600",
+        });
       }
     }
   };

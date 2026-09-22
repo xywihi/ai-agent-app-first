@@ -125,7 +125,7 @@ export const EditePortfolioForm = ({
       if (result_new_portfolio.error) {
         toast.error("创建失败", {
           position: "top-center",
-          style: { backgroundColor: "white" },
+          className: "bg-red-400 text-white dark:bg-red-600",
         });
         return;
       } else {
@@ -157,7 +157,7 @@ export const EditePortfolioForm = ({
         if (result_new_images.error) {
           toast.error("创建失败", {
             position: "top-center",
-            style: { backgroundColor: "white" },
+            className: "bg-red-400 text-white dark:bg-red-600",
           });
           return;
         }
@@ -168,7 +168,7 @@ export const EditePortfolioForm = ({
       });
       toast.success("创建成功", {
         position: "top-center",
-        style: { backgroundColor: "white" },
+        className: "bg-teal-400 text-white dark:bg-teal-600",
       });
       // 重置表单
       reset();

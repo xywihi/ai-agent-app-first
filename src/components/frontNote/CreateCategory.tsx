@@ -116,7 +116,7 @@ export const CreateCategory = ({
       });
       toast.success("创建成功", {
         position: "top-center",
-        style: { backgroundColor: "white" },
+        className: "bg-teal-400 text-white dark:bg-teal-600",
       });
       setCategory({
         name: "",

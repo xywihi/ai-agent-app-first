@@ -1,7 +1,6 @@
 "use client";
 
 import client from "@/lib/server";
-import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -9,7 +8,6 @@ import { QueryKeys } from "@/app/utils/query-keys";
 export default function LogoutButton() {
   const queryclient = useQueryClient();
   // 获取用户信息
-  const router = useRouter();
   const handleSignOut = async () => {
     try {
       await client.auth.signOut();
@@ -17,8 +15,6 @@ export default function LogoutButton() {
         // 刷新数据
         queryKey: QueryKeys.userCenter.data,
       });
-      router.push("/login");
-      router.refresh();
     } catch (error) {
       console.log("退出帐号失败", error);
     }

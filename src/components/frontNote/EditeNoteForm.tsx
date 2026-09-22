@@ -137,7 +137,7 @@ export const EditeNoteForm = ({
         if (res?.status !== 200) {
           toast.error("创建失败", {
             position: "top-center",
-            style: { backgroundColor: "white" },
+            className: "bg-red-400 text-white dark:bg-red-600",
           });
           return;
         }
@@ -147,7 +147,7 @@ export const EditeNoteForm = ({
         if (res?.status !== 200) {
           toast.error("更新失败", {
             position: "top-center",
-            style: { backgroundColor: "white" },
+            className: "bg-red-400 text-white dark:bg-red-600",
           });
           return;
         }
@@ -166,7 +166,7 @@ export const EditeNoteForm = ({
       });
       toast.success("创建成功", {
         position: "top-center",
-        style: { backgroundColor: "white" },
+        className: "bg-teal-400 text-white dark:bg-teal-600",
       });
     } catch (error) {
       console.log("error", error);

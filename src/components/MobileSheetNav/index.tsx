@@ -20,6 +20,7 @@ import FullScreen from "../HeaderNav/components/FullScreen";
 import { Menu } from "lucide-react";
 import client from "@/lib/server";
 import { UserMetadata } from "@/app/utils/api/user/type";
+import { DialogPortal } from "../ui/dialog";
 
 type Path = {
   name: string;
@@ -56,6 +57,7 @@ NavMenuList.displayName = "NavMenuList";
 
 export function MobileSheetNav() {
   const pathname = usePathname();
+  const [mountEl, setMountEl] = React.useState<HTMLElement | null>(null);
   const [open, setOpen] = React.useState(false);
   const [user, setUser] = useState<UserMetadata | null>(null);
   const paths: {
@@ -94,14 +96,22 @@ export function MobileSheetNav() {
   useEffect(() => {
     const {
       data: { subscription },
-    } = client.auth.onAuthStateChange(async (e) => {
-      const data = await client.auth.getUser();
-      setUser((data.data.user?.user_metadata as UserMetadata) ?? null);
+    } = client.auth.onAuthStateChange(async (e, _data) => {
+      if (_data && _data.user)
+        setUser((_data.user?.user_metadata as UserMetadata) ?? null);
     });
+    const el = document.getElementById("global_anln");
+    const timer = setTimeout(() => {
+      if (el) {
+        setMountEl(el);
+      }
+    }, 0);
     return () => {
       subscription.unsubscribe();
+      clearTimeout(timer);
     };
   }, []);
+  useEffect(() => {}, []);
   const handleOpenOrClose = () => {
     setOpen(false);
   };
@@ -126,24 +136,25 @@ export function MobileSheetNav() {
           <SearchAll />
         </div>
       </div>
-
-      <SheetContent
-        side="left"
-        lang="zh"
-        className="bg-white/95 border-none truncate z-100 p-6 max-h-[calc(100vh)]"
-        showCloseButton={false}
-        // overlayClassName="bg-black/40"
-      >
-        <SheetHeader className="p-0 flex flex-row justify-between items-center">
-          <SheetTitle>导航菜单</SheetTitle>
-          <SheetClose>关闭</SheetClose>
-        </SheetHeader>
-        <NavMenuList paths={paths} pathname={pathname} />
-        <SheetFooter className="p-0">
-          {/* 退出登录 */}
-          {user && <LogoutButton />}
-        </SheetFooter>
-      </SheetContent>
+      <DialogPortal keepMounted={true} container={mountEl}>
+        <SheetContent
+          side="left"
+          lang="zh"
+          className="bg-white/95 dark:bg-gray-900/95 border-none truncate z-999 p-6 max-h-[calc(100vh)]"
+          showCloseButton={false}
+          // overlayClassName="bg-black/40"
+        >
+          <SheetHeader className="p-0 flex flex-row justify-between items-center">
+            <SheetTitle>导航菜单</SheetTitle>
+            <SheetClose>关闭</SheetClose>
+          </SheetHeader>
+          <NavMenuList paths={paths} pathname={pathname} />
+          <SheetFooter className="p-0">
+            {/* 退出登录 */}
+            {user && <LogoutButton />}
+          </SheetFooter>
+        </SheetContent>
+      </DialogPortal>
     </Sheet>
   );
 }

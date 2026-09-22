@@ -35,7 +35,7 @@ export default async function User() {
             <h1 className="text-2xl font-bold">个人资料</h1>
             <Link
               href="/user/profile"
-              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200"
+              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700"
             >
               查看详情
             </Link>
@@ -98,7 +98,7 @@ export default async function User() {
           <h1 className="text-2xl font-bold">UI 作品集</h1>
           <Link
             href="/user/ui"
-            className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 block xl:hidden"
+            className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 block xl:hidden"
           >
             查看详情
           </Link>
@@ -153,7 +153,7 @@ export default async function User() {
             <h1 className="text-2xl font-bold">前端笔记</h1>
             <Link
               href="/user/frontend"
-              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 block xl:hidden"
+              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 block xl:hidden"
             >
               查看详情
             </Link>
@@ -206,7 +206,7 @@ export default async function User() {
             <h1 className="text-2xl font-bold">用户统计</h1>
             <Link
               href="/user/ui"
-              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 block xl:hidden"
+              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 block xl:hidden"
             >
               查看详情
             </Link>

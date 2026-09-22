@@ -9,15 +9,23 @@ import NavMenuList from "./components/NavMenuList";
 import { useEffect, useState } from "react";
 import client from "@/lib/server";
 import { UserMetadata } from "@/app/utils/api/user/type";
+import { useRouter } from "next/navigation";
 export const HeaderNav = () => {
+  const router = useRouter();
   const [user, setUser] = useState<UserMetadata | null>(null);
   useEffect(() => {
     const {
       data: { subscription },
-    } = client.auth.onAuthStateChange(async (e) => {
-      console.log("e", e);
-      const data = await client.auth.getUser();
-      setUser((data.data.user?.user_metadata as UserMetadata) ?? null);
+    } = client.auth.onAuthStateChange(async (e, _data) => {
+      if (e === "SIGNED_OUT") {
+        router.push("/login");
+        router.refresh();
+      } else if (e === "SIGNED_IN") {
+        router.replace("/user");
+        router.refresh();
+      }
+      if (_data && _data.user)
+        setUser((_data.user?.user_metadata as UserMetadata) ?? null);
     });
     return () => {
       subscription.unsubscribe();

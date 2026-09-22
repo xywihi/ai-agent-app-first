@@ -76,7 +76,7 @@ export const AISection = () => {
               <Input
                 id="input-button-group"
                 placeholder="给AI助手发消息..."
-                className="h-full bg-gray-100 dark:bg-gray-800 border-none rounded-lg outline-none focus:outline-none focus-visible:ring-0"
+                className="h-full bg-gray-100 dark:bg-gray-800 border-none rounded-lg outline-none focus:outline-none focus-visible:ring-0" //清楚input的默认样式
               />
               <Button
                 size={"lg"}
