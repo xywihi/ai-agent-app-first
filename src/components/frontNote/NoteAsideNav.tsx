@@ -63,7 +63,7 @@ export const NoteAsideNav = ({ note_id }: { note_id: string }) => {
   return (
     <aside className="fixed right-4 bottom-30 xl:bottom-40">
       <ScrollArea className="max-h-[45vh]">
-        <nav>
+        <nav className="flex flex-col gap-2">
           {tocList.map((item) => {
             return (
               <Tooltip key={item.id}>
@@ -71,9 +71,9 @@ export const NoteAsideNav = ({ note_id }: { note_id: string }) => {
                   // href={`#${item.id}`}
                   onClick={() => handleClick(item.id)}
                   // scroll={false}
-                  className="block min-w-10 h-10 group/tooltip"
+                  className="block w-3 h-3 group/tooltip"
                 >
-                  <TooltipTrigger className="w-10 h-10 flex justify-center items-center rounded-full cursor-pointer">
+                  <TooltipTrigger className="w-3 h-3 flex justify-center items-center rounded-full cursor-pointer">
                     <div
                       className={cn(
                         "w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-800",
