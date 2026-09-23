@@ -24,6 +24,9 @@ export const NoteAsideNav = ({ note_id }: { note_id: string }) => {
     }
   }, []);
   useEffect(() => {
+    const container = document.getElementById("global_anln");
+    // console.log("container", container);
+    if (!container) return;
     const handleScroll = () => {
       const nodeList = Array.from(document.querySelectorAll("h1, h2"));
       const headings: HTMLElement[] = [];
@@ -32,7 +35,8 @@ export const NoteAsideNav = ({ note_id }: { note_id: string }) => {
           headings.push(el);
         }
       });
-      const scrollY = window.scrollY + 160;
+
+      const scrollY = container.scrollTop + 160;
       let current = "";
       for (const item of headings) {
         if (item.offsetTop <= scrollY) {
@@ -50,64 +54,73 @@ export const NoteAsideNav = ({ note_id }: { note_id: string }) => {
       //   setActiveId(currentHeading.id);
       // }
     };
-    window.addEventListener("scroll", handleScroll);
+
+    container.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      container.removeEventListener("scroll", handleScroll);
     };
   }, []);
   return (
-    <aside className="fixed right-4 bottom-40">
+    <aside className="fixed right-4 bottom-30 xl:bottom-40">
       <ScrollArea className="max-h-[45vh]">
         <nav>
           {tocList.map((item) => {
             return (
               <Tooltip key={item.id}>
-                <div className="group/tooltip">
-                  <TooltipTrigger className="w-10 h-6 flex justify-center items-center rounded-full cursor-pointer">
+                <div
+                  // href={`#${item.id}`}
+                  onClick={() => handleClick(item.id)}
+                  // scroll={false}
+                  className="block min-w-10 h-10 group/tooltip"
+                >
+                  <TooltipTrigger className="w-10 h-10 flex justify-center items-center rounded-full cursor-pointer">
                     <div
                       className={cn(
-                        "w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600",
+                        "w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-800",
                         {
                           "bg-teal-400 dark:bg-teal-600 w-3 h-3":
                             activeId === item.id,
                         }
                       )}
-                      onClick={() => handleClick(item.id)}
                     ></div>
                   </TooltipTrigger>
                   <TooltipContent
                     sideOffset={2}
                     side="left"
-                    className="dark:bg-gray-700"
+                    className="dark:bg-gray-800"
                   >
-                    <Link
-                      href={`#${item.id}`}
+                    <div
                       key={item.id}
-                      scroll={false}
                       className={cn(
-                        `block text-right text-xs hover:bg-accent hover:text-accent-foreground text-white max-w-40 truncate`,
+                        `block text-right text-xs hover:bg-accent hover:text-accent-foreground  text-white max-w-40 truncate`,
                         {
                           hidden: item.level === 3,
                           "text-teal-400 font-medium": activeId === item.id,
                         }
                       )}
-                      onClick={() => handleClick(item.id)}
+                      // onClick={() => handleClick(item.id)}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        handleClick(item.id);
+                      }}
                     >
                       {item.title}
-                    </Link>
+                    </div>
                   </TooltipContent>
                   <div
                     className={cn(
-                      "absolute hidden -mt-6.5 right-10 z-9999 items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-xs text-background",
+                      "absolute hidden -mt-8.5 right-10.5 z-9999 items-center gap-1.5 rounded-md bg-foreground dark:bg-gray-800 px-3 py-1.5 text-xs text-background",
                       {
-                        "inline-flex": activeId === item.id,
+                        "md:inline-flex": activeId === item.id,
                         // "group-hover/tooltip:hidden": activeId !== item.id,
                       }
                     )}
                   >
                     <div className="relative">
-                      <div className="max-w-40 truncate">{item.title}</div>
-                      <div className="absolute right-0 top-1/2 z-50 size-2.5 -translate-y-[calc(50%)] translate-x-[calc(100%+5px)] rotate-45 rounded-xs bg-foreground fill-foreground"></div>
+                      <div className="max-w-40 truncate dark:text-white">
+                        {item.title}
+                      </div>
+                      <div className="absolute right-0 top-1/2 z-50 size-2.5 -translate-y-[calc(50%)] translate-x-[calc(100%+5px)] rotate-45 rounded-xs bg-foreground dark:bg-gray-800 fill-foreground"></div>
                     </div>
                   </div>
                 </div>

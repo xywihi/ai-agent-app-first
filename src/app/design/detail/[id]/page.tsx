@@ -66,42 +66,44 @@ export default function Design() {
   return (
     card && (
       <div>
-        {/* 活动按钮 */}
-        <div className="fixed bottom-4 xl:bottom-25 z-50 left-4 xl:right-8 xl:left-auto lg:bottom-40 flex lg:flex-col space-y-2 bg-white dark:bg-gray-700 rounded-full py-2 lg:py-4 px-2 shadow-xl mt-2 border border-gray-200 dark:border-gray-700">
-          <div className="px-2 lg:p-0 m-0 lg:mb-2">
-            <LikeButton
-              card={card}
-              className="flex-col-reverse w-12 lg:h-16"
-              detail
-            />
-          </div>
-          <div className="px-2 lg:p-0 m-0 lg:mb-2">
-            <CollectButton
-              card={card}
-              className="flex-col-reverse w-12 lg:h-16"
-              detail
-            />
-          </div>
-          <div className="px-2 lg:p-0 m-0">
-            <Button className="rounded-full w-12 lg:h-16 flex flex-row-reverse lg:flex-col justify-center items-center cursor-pointer hover:bg-teal-400 dark:hover:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
-              <span>{card.actions.share.count}</span>
-              <Share2
-                size={46}
-                fill={card.actions.share.active ? "#14b8a6" : "transparent"}
+        <div className="w-full md:w-auto md:right-0 px-4 fixed bottom-4 xl:bottom-10 z-50 flex md:flex-col md:items-end gap-4 justify-between md:justify-end items-center">
+          {/* 活动按钮 */}
+          <div className="flex md:flex-col space-y-2 bg-white dark:bg-gray-700 rounded-full py-2 md:py-4 px-2 shadow-xl border border-gray-200 dark:border-gray-700">
+            <div className="px-2 md:p-0 m-0 md:mb-2">
+              <LikeButton
+                card={card}
+                className="md:flex-col-reverse w-12 md:h-16"
+                detail
               />
-            </Button>
+            </div>
+            <div className="px-2 md:p-0 m-0 md:mb-2">
+              <CollectButton
+                card={card}
+                className="md:flex-col-reverse w-12 md:h-16"
+                detail
+              />
+            </div>
+            <div className="px-2 md:p-0 m-0">
+              <Button className="rounded-full w-12 md:h-16 flex flex-row-reverse md:flex-col justify-center items-center cursor-pointer hover:bg-teal-400 dark:hover:bg-teal-600 hover:drop-shadow-[0_4px_12px_#14b8a6cc]">
+                <span>{card.actions.share.count}</span>
+                <Share2
+                  size={46}
+                  fill={card.actions.share.active ? "#14b8a6" : "transparent"}
+                />
+              </Button>
+            </div>
           </div>
-        </div>
-        {/* 返回顶部 */}
-        <div className="fixed bottom-4 xl:bottom-9 right-4 xl:right-9 z-50 flex items-center gap-4">
-          <ToTop />
+          {/* 返回顶部 */}
+          <div className="flex items-center gap-4 self-center">
+            <ToTop />
+          </div>
         </div>
         <section className="mb-19">
           <Author card={card} />
         </section>
         <div
           ref={containerRef}
-          className="pb-12 mb-4 relative w-full lg:max-w-1/2 m-auto bg-white dark:bg-gray-700 px-4 rounded-2xl shadow-2xl"
+          className="pb-12 relative w-full lg:max-w-1/2 m-auto bg-white dark:bg-gray-700 px-4 xl:rounded-2xl shadow-2xl"
         >
           <section className="py-6">
             <Suspense>

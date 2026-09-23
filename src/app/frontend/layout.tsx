@@ -28,7 +28,7 @@ export default async function FrontendLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen xl:flex justify-between items-start p-4">
+    <div className="min-h-screen xl:flex justify-between items-start md:p-4">
       <div className="hidden xl:block sticky top-22 min-w-80 ">
         <Suspense>
           <AsideNav />

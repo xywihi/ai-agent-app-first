@@ -5,6 +5,7 @@ import { visit } from "unist-util-visit";
 import type { Root } from "mdast";
 import type { ContainerDirective } from "mdast-util-directive";
 import rehypeSlug from "rehype-slug";
+import Image from "next/image";
 // import rehypeShiki from "@shikijs/rehype";
 // import remarkBreaks from "remark-breaks";
 
@@ -148,7 +149,14 @@ export const ChatMarkDown = ({
           ),
           img: ({ src, alt }) => (
             <div className="my-2">
-              <img src={src} alt={alt} />
+              <Image
+                src={src as string}
+                alt={alt as string}
+                width={400}
+                height={400}
+                fetchPriority="high" // 预加载
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
             </div>
           ),
         }}

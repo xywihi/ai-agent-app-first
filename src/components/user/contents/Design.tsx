@@ -178,7 +178,7 @@ const PortfolioItem = memo(function PortfolioItem({
         <div className="flex justify-between space-x-2 my-4 px-2">
           <Tooltip>
             <TooltipTrigger
-              className="flex-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 dark:bg-gray-600 py-2 cursor-pointer"
+              className="flex-1 rounded hover:bg-gray-100  dark:hover:bg-gray-800 dark:bg-gray-600 py-2 cursor-pointer"
               onClick={handleToSee}
             >
               <div className="flex justify-center">

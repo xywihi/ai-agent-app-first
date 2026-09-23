@@ -52,6 +52,16 @@ img {
 
 #article-wrapper{
   word-break:break-all;
+  .card{
+    border-radius: 0;
+    padding: 16px;
+  }
+  @media (min-width: 48rem)  {
+    .card{
+      border-radius: var(--radius-2xl);
+      padding: 24px;
+    }
+  }
 }
 body {
   background: var(--background);

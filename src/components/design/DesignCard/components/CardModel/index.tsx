@@ -32,7 +32,7 @@ export const CardModel = ({
 }) => {
   return (
     <GlobalModel handleShowModel={() => setShowImage((pre) => !pre)}>
-      <div className="relative">
+      <div className="relative mt-20">
         <div>
           <div className="absolute -top-14 right-15 cursor-pointer group">
             <Tooltip>
@@ -68,8 +68,8 @@ export const CardModel = ({
             </Tooltip>
           </div>
         </div>
-        <Card className="bg-white dark:bg-gray-700 pt-0 flex flex-col xl:flex-row">
-          <div className="flex-1 max-h-80 xl:max-h-[calc(100vh-200px)] overflow-auto">
+        <Card className="bg-white dark:bg-gray-700 pt-0 flex flex-col xl:flex-row gap-0">
+          <div className="flex-1 max-h-60 xl:max-h-[calc(100vh-200px)] overflow-auto">
             <Image
               width={200}
               height={300}
@@ -101,18 +101,18 @@ export const CardModel = ({
                 </CardDescription>
               )}
 
-              <section className="flex space-x-2">
+              <section className="flex space-x-2 mb-2">
                 <p className="text-gray-500">{card.description}</p>
               </section>
               <Link
                 href={`/user/${card.user_id}`}
-                className="flex space-x-2 items-center mt-4"
+                className="flex space-x-2 items-center xl:mt-4"
               >
                 <Avatar size="default" className="cursor-pointer">
                   <AvatarImage src={card.author.avatar_url} />
                   <AvatarFallback>{card.author.display_name}</AvatarFallback>
                 </Avatar>
-                <span className="text-lg">{card.author.display_name}</span>
+                <span className="xl:text-lg">{card.author.display_name}</span>
               </Link>
               <CardAction className="w-full flex space-x-2 justify-start mt-4 transform -translate-x-2">
                 <LikeButton card={card} />
@@ -123,7 +123,7 @@ export const CardModel = ({
                 </Button>
               </CardAction>
             </CardContent>
-            <CardFooter className="border-t-gray-200 dark:border-t-gray-800 text-gray-500">
+            <CardFooter className="border-t-gray-200 dark:border-t-gray-800 text-gray-500 p-2 xl:p-4 text-xs xl:text-sm">
               更新时间：{getTime(card.updated_at)}
             </CardFooter>
           </div>

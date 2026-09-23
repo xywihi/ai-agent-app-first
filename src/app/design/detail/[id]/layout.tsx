@@ -25,7 +25,7 @@ export default function DesignLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-start items-start p-4">
+    <div className="flex justify-start items-start pt-6 xl:p-4">
       <div className="flex-1">{children}</div>
     </div>
   );
