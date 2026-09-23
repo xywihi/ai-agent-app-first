@@ -12,7 +12,7 @@ export const Content = ({ card }: { card: ProcessedPortfolioWork }) => {
     <div>
       <div>
         <article>
-          <h1 className="text-4xl font-bold mb-6">{card.title}</h1>
+          <h1 className="text-2xl font-bold mb-6">{card.title}</h1>
           <div vocab="https://schema.org" className="flex space-x-2 mb-4">
             {card.tags.map((tag: string) => (
               <Badge key={tag} variant="outline" className="opacity-50">

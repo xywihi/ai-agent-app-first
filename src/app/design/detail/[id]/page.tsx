@@ -103,7 +103,7 @@ export default function Design() {
         </section>
         <div
           ref={containerRef}
-          className="pb-12 relative w-full lg:max-w-1/2 m-auto bg-white dark:bg-gray-700 px-4 xl:rounded-2xl shadow-2xl"
+          className="pb-24 relative w-full lg:max-w-1/2 m-auto bg-white dark:bg-gray-700 px-4 xl:rounded-2xl shadow-2xl"
         >
           <section className="py-6">
             <Suspense>
