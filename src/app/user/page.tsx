@@ -27,7 +27,7 @@ export default async function User() {
     ]);
   const users = _users instanceof Error ? null : _users;
   return (
-    <div className="h-[calc(100vh-10rem)] grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4  gap-4">
+    <div className="min-h-[calc(100vh-10rem)] grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4  gap-4">
       {/* 用户信息 */}
       <div className="h-full bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
         <div>

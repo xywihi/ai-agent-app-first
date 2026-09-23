@@ -2,25 +2,32 @@
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
 import { Post } from "@/app/utils/query";
 import { QueryKeys } from "@/app/utils/query-keys";
+import { cn } from "@/app/utils/tools";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { Star } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useOptimistic, startTransition, useCallback } from "react";
-export const CollectButton = ({ card }: { card: ProcessedPortfolioWork }) => {
+export const CollectButton = ({
+  card,
+  className,
+  detail,
+}: {
+  card: ProcessedPortfolioWork;
+  className?: string;
+  detail?: boolean;
+}) => {
   const { type } = useParams();
   const queryClient = useQueryClient();
   const [optCollected, setOptCollected] = useOptimistic(
     card.actions.star.active,
     (pre: boolean, _action: "toggle") => {
-      console.log("pre", pre, _action);
       return !pre;
     }
   );
   const [optCollectCount, setOptCollectCount] = useOptimistic(
     card.actions.star.count,
     (pre: number, _action: "add" | "remove") => {
-      console.log("pre", pre, _action);
       if (_action === "remove") {
         return pre - 1;
       }
@@ -35,8 +42,31 @@ export const CollectButton = ({ card }: { card: ProcessedPortfolioWork }) => {
           id,
         }),
       });
-      console.log("res", res);
       if (res) {
+        if (detail) {
+          queryClient.invalidateQueries({
+            queryKey: QueryKeys.portfolio.detail(card.id),
+          });
+          queryClient.setQueryData(
+            QueryKeys.portfolio.detail(card.id),
+            (oldData: ProcessedPortfolioWork) => {
+              if (!oldData) return oldData;
+              return {
+                ...oldData,
+                actions: {
+                  ...oldData.actions,
+                  star: {
+                    ...oldData.actions.star,
+                    active: !oldData.actions.star.active,
+                    count: id
+                      ? oldData.actions.star.count - 1
+                      : oldData.actions.star.count + 1,
+                  },
+                },
+              };
+            }
+          );
+        }
         queryClient.invalidateQueries({
           queryKey: QueryKeys.portfolio.portfolios(type as string),
         });
@@ -69,11 +99,14 @@ export const CollectButton = ({ card }: { card: ProcessedPortfolioWork }) => {
         );
       }
     },
-    [card.id, queryClient, type]
+    [card.id, queryClient, type, detail]
   );
   return (
     <Button
-      className="rounded-full cursor-pointer hover:bg-rose-300 dark:hover:bg-rose-600 hover:drop-shadow-[0_4px_12px_#f43f5ecc]"
+      className={cn(
+        "rounded-full cursor-pointer hover:bg-rose-300 dark:hover:bg-rose-600 hover:drop-shadow-[0_4px_12px_#f43f5ecc]",
+        className
+      )}
       onClick={() => {
         startTransition(async () => {
           setOptCollected("toggle");

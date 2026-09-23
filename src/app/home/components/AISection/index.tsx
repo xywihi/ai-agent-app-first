@@ -39,7 +39,7 @@ export const AISection = () => {
         "flex flex-col xl:max-h-110 transition-all duration-300 ease-out delay-500"
       )}
     >
-      <CardContent className="flex-1 p-8">
+      <CardContent className="flex-1 p-(--card-spacing) xl:p-8">
         <div className="mb-10 flex justify-center items-center flex-wrap space-x-2 text-xl text-center">
           <span>
             一个名叫<b className="text-teal-400 text-2xl">夕夜</b>
@@ -80,7 +80,7 @@ export const AISection = () => {
               />
               <Button
                 size={"lg"}
-                className="h-12 bg-teal-400 dark:bg-teal-600 text-white rounded-lg hover:bg-teal-400 dark:bg-teal-600 hover:text-white"
+                className="h-12 bg-teal-400 dark:bg-teal-600 text-white rounded-lg hover:bg-teal-400 dark:hover:bg-teal-600 hover:text-white"
                 onClick={handleSendMessage}
               >
                 <b>开始聊天</b>

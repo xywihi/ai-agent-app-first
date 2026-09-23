@@ -24,11 +24,11 @@ export function CreateNote({
 }) {
   const [editable, setEditable] = useState(false);
   return (
-    <div className="fixed bottom-28 right-8 z-50 flex items-center gap-4">
+    <div className="fixed bottom-11 right-8 z-50 flex items-center gap-4">
       <Tooltip disableHoverablePopup>
         <TooltipTrigger
           className={cn(
-            "bg-white dark:bg-gray-700 border border-gray-400 cursor-pointer shadow-xl hover:bg-teal-400 dark:bg-teal-600 font-bold py-2 px-4 rounded-full",
+            "bg-white border border-gray-400 cursor-pointer shadow-xl hover:bg-teal-400 dark:bg-teal-600 font-bold py-2 px-4 rounded-full",
             {
               hidden: !id,
             }

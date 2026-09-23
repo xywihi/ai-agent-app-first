@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogPortal } from "../ui/dialog";
 import { useEffect } from "react";
 import { InputGroup, InputGroupAddon } from "../ui/input-group";
 import { Input } from "../ui/input";
+import Link from "next/link";
 const debounceFn = debounce((fn) => {
   if (typeof fn !== "function") return;
   // 在此处做你的搜索逻辑
@@ -127,19 +128,11 @@ export const SearchAll = () => {
                       {data.notes
                         .slice(0, !keyValue ? 4 : data.length)
                         ?.map((item: Note) => (
-                          <div
+                          <Link
+                            href={`/frontend/${item.id}?category_id=${item.category_id}&seconde_id=${item.sub_category_id}`}
                             className="flex items-center justify-between gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer"
                             key={item.id}
                             onClick={() => {
-                              const searchParams = new URLSearchParams();
-                              searchParams.set("category_id", item.category_id);
-                              searchParams.set(
-                                "seconde_id",
-                                item.sub_category_id
-                              );
-                              searchParams.set("note_id", item.id as string);
-                              const url = `/frontend?${searchParams.toString()}`;
-                              router.push(url);
                               setOpen(false);
                             }}
                           >
@@ -151,7 +144,7 @@ export const SearchAll = () => {
                               <Eye size={16} />
                               {item.view_count}
                             </span>
-                          </div>
+                          </Link>
                         ))}
                       {data.notes?.length === 0 && (
                         <CommandEmpty>无相关前端笔记</CommandEmpty>

@@ -43,7 +43,6 @@ export const ChatMarkDown = ({
   content: string;
   languageType?: string;
 }) => {
-  console.log("content", content);
   return (
     <div
       className="markdown-body flex flex-col gap-4 [&_li_div]:indent-0 [&_blockquote_div]:indent-0"

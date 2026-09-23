@@ -1,5 +1,4 @@
 import { Note } from "@/app/utils/api/font-notes/typs";
-import { Get } from "@/app/utils/query";
 import { cn } from "@/app/utils/tools";
 import { GroundGlassCard } from "@/components/GroundGlassCard";
 import { Button } from "@/components/ui/button";
@@ -73,7 +72,7 @@ export const NotesSection = async <
             <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">工程化</Kbd>、
             <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">性能优化</Kbd>、
             <Kbd className="bg-gray-200 dark:bg-gray-700 ml-1">
-              AI‑SDK应用开发
+              AI-SDK应用开发
             </Kbd>
             、 配套可运行Demo与代码示例。
           </p>
@@ -82,7 +81,11 @@ export const NotesSection = async <
           <div className="flex flex-col space-y-2 min-h-33">
             {list.map((item: Note, index: number) => (
               // 解决border影响元素高度问题
-              <div key={index} className="h-11 relative group">
+              <Link
+                href={`/frontend/${item.id}?category_id=${item.category_id}&seconde_id=${item.sub_category_id}`}
+                key={index}
+                className="block h-11 relative group"
+              >
                 <Item className="flex-nowrap border border-gray-200 dark:border-gray-700 group-hover:border-transparent">
                   <ItemContent className="flex-1 min-w-0 flex max-w-md">
                     {/* 文本省略号会受flex、width: fit-content影响 */}
@@ -92,19 +95,15 @@ export const NotesSection = async <
                     {/* <ItemDescription>{item}</ItemDescription> */}
                   </ItemContent>
                   <ItemActions className="group-hover:block hidden shrink-0">
-                    <Link
-                      href={`/frontend?category_id=${item.category_id}&seconde_id=${item.sub_category_id}&note_id=${item.id}`}
-                    >
-                      <CircleChevronRight size={20} color="teal" />
-                    </Link>
+                    <CircleChevronRight size={20} color="teal" />
                   </ItemActions>
                 </Item>
                 <div className="absolute inset-0 rounded-lg pointer-events-none border-2 border-transparent group-hover:border-teal-400 transition-colors" />
-              </div>
+              </Link>
             ))}
           </div>
         </ScrollArea>
-        <p className="mt-8 text-xs text-gray-400">最后更新：2026‑09‑05</p>
+        <p className="mt-8 text-xs text-gray-400">最后更新：2026-09-05</p>
       </CardContent>
       <CardFooter className="border-gray-200 dark:border-gray-700">
         <p>

@@ -58,7 +58,7 @@ export const ProjectSummary = () => {
     };
   }, []);
   return (
-    <div className="px-6 xl:px-14 py-6 flex flex-col gap-4 justify-around items-center w-full md:w-[calc(150%+4rem)] 2xl:max-w-[calc(75%+4rem)]">
+    <div className="px-6 xl:px-14 py-6 flex flex-col gap-4 justify-around items-center w-full md:w-[calc(100%+0rem)] 2xl:max-w-[calc(75%+4rem)]">
       {/* <div className="w-full mt-20 mb-8 px-14 py-6 min-w-md flex gap-4 justify-around items-center flex-wrap">
         {features.map((item, _index) => (
           <div key={_index}>

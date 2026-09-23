@@ -55,7 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </QueryProviders>
           </div>
         </div>
-        <footer className="hidden xl:block w-full absolute -bottom-16 hover:bottom-0 transition-all duration-500 ease-in-out">
+        <footer className="hidden xl:block w-full absolute -bottom-16 hover:bottom-0 z-20 transition-all duration-500 ease-in-out">
           <div className="w-full py-8 bg-white dark:bg-gray-700 shadow-xl drop-shadow-[0_-8px_12px_#d3d5d848] dark:drop-shadow-[0_-4px_12px_#2e2f2f48] border-t border-slate-100 dark:border-slate-800 text-center text-sm text-slate-400">
             <p>©2026 个人作品集 · Next.js + TailwindCSS 构建</p>
           </div>

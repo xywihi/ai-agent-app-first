@@ -86,7 +86,7 @@ const ChatPage = () => {
     <div className="flex flex-col flex-1 max-w-4xl mx-auto">
       {isFetching && currentItem.conversation_name !== "新建对话" ? (
         <div className="p-4 pt-18 lg:pt-0 pb-12 space-y-4 mb-4">
-          <span className="bg-gray-100 dark:bg-gray-800 dark:bg-gray-800 rounded-lg px-2 py-1 text-sm">
+          <span className="bg-gray-100 dark:bg-gray-800  rounded-lg px-2 py-1 text-sm">
             会话历史加载中...
           </span>
         </div>
