@@ -2,6 +2,7 @@ import { useChat } from "@ai-sdk/react";
 import { memo, useCallback, useEffect, useState } from "react";
 import { updateConverHistoryList } from "@/app/utils/api/chat";
 import { useParams } from "next/navigation";
+import { Send } from "lucide-react";
 interface PropsInterface {
   messages?: ReturnType<typeof useChat>["messages"];
   status: ReturnType<typeof useChat>["status"];
@@ -48,7 +49,7 @@ const WorkflowInput = ({
   }, []);
   return (
     <form
-      className="w-[calc(100%-2rem)]  dark:border-zinc-800 absolute bottom-0"
+      className="w-full lg:w-[calc(100%-2rem)]  dark:border-zinc-800 absolute bottom-0"
       onSubmit={handleSubmit}
     >
       <div>
@@ -89,9 +90,9 @@ const WorkflowInput = ({
               ) : (
                 <button
                   type="submit"
-                  className="dark:bg-zinc-900 min-h-12 max-w-md p-2 w-max px-8 bg-teal-400 dark:bg-teal-600 text-teal-700"
+                  className="dark:bg-zinc-900 min-h-12 max-w-md p-2 w-max px-8 bg-teal-400 text-teal-700"
                 >
-                  发送
+                  <Send size={24} />
                 </button>
               )}
             </div>
@@ -107,9 +108,9 @@ const WorkflowInput = ({
               ) : (
                 <button
                   type="submit"
-                  className="min-h-12 max-w-md p-2 w-max px-4 bg-teal-400 dark:bg-teal-600 text-teal-700"
+                  className="dark:bg-zinc-900 min-h-12 max-w-md p-2 w-max px-4 bg-teal-400 text-teal-700"
                 >
-                  ✈️
+                  <Send size={24} />
                 </button>
               )}
             </div>

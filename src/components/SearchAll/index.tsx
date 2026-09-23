@@ -79,7 +79,7 @@ export const SearchAll = () => {
         </span>
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogPortal keepMounted={true} container={mountEl}>
+        <DialogPortal keepMounted={true} container={mountEl} className="z-9999">
           {open && (
             <div
               role="presentation"
@@ -90,7 +90,7 @@ export const SearchAll = () => {
           )}
 
           <DialogContent
-            className="bg-white dark:bg-gray-700/80 backdrop-blur-md"
+            className="bg-white dark:bg-gray-700/80 backdrop-blur-md z-9999"
             showCloseButton={false}
           >
             <InputGroup className="h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!">

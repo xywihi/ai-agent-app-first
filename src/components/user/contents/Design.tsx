@@ -23,7 +23,7 @@ import { EditePortfolioForm } from "./EditePortfolioForm";
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
 import Image from "next/image";
 import { QueryKeys } from "@/app/utils/query-keys";
-import { Delete, Get } from "@/app/utils/query";
+import { Get, Post } from "@/app/utils/query";
 import { toast } from "sonner";
 
 export default function Design() {
@@ -107,19 +107,32 @@ const PortfolioItem = memo(function PortfolioItem({
     router.push(`/design/detail/${work.id}`);
   };
   const handleToDelete = async (id: string) => {
-    const res = confirm("确定删除吗?");
-    if (res) {
-      const res = await Delete(`/api/user/frontend/${id}`);
-      if (res) {
-        toast.success("删除成功", {
-          position: "top-center",
-          style: {
-            backgroundColor: "#00d5be",
-            borderRadius: "8px",
-          },
-        });
-      }
-    }
+    toast("删除作品", {
+      description: "确定要删除吗?",
+      action: {
+        label: "确认删除",
+        onClick: async () => {
+          const res = await Post(`/api/user/design/portfolio/delete`, {
+            body: JSON.stringify({
+              id,
+            }),
+          });
+          if (res.status === 200) {
+            toast.success("删除成功", {
+              position: "top-center",
+              style: {
+                backgroundColor: "#00d5be",
+                borderRadius: "8px",
+              },
+            });
+          }
+        },
+      },
+      cancel: {
+        label: "取消",
+        onClick: () => {},
+      },
+    });
   };
   return (
     <div

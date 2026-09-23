@@ -1,7 +1,7 @@
 "use client";
 import { getCategoryTree } from "@/app/utils/api/font-notes/requery";
 import { CategoryTree, Note } from "@/app/utils/api/font-notes/typs";
-import { Delete, Get } from "@/app/utils/query";
+import { Get, Post } from "@/app/utils/query";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { getTime } from "@/app/utils/tools";
 import { EditeNoteForm } from "@/components/frontNote/EditeNoteForm";
@@ -84,19 +84,32 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
     );
   };
   const handleToDelete = async (id: string) => {
-    const res = confirm("确定删除吗?");
-    if (res) {
-      const res = await Delete(`/api/user/frontend/${id}`);
-      if (res.status === 200) {
-        toast.success("删除成功", {
-          position: "top-center",
-          style: {
-            backgroundColor: "#00d5be",
-            borderRadius: "8px",
-          },
-        });
-      }
-    }
+    toast("删除笔记", {
+      description: "确定要删除吗?",
+      action: {
+        label: "确认删除",
+        onClick: async () => {
+          const res = await Post(`/api/user/frontend/delete`, {
+            body: JSON.stringify({
+              id,
+            }),
+          });
+          if (res.status === 200) {
+            toast.success("删除成功", {
+              position: "top-center",
+              style: {
+                backgroundColor: "#00d5be",
+                borderRadius: "8px",
+              },
+            });
+          }
+        },
+      },
+      cancel: {
+        label: "取消",
+        onClick: () => {},
+      },
+    });
   };
   return (
     <div

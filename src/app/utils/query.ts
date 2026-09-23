@@ -33,16 +33,3 @@ export const Post = async (
   }
   throw new Error("请求失败");
 };
-
-export const Delete = async (url: string, headers?: HeadersInit) => {
-  const result = await fetch(url, {
-    method: "DELETE",
-    headers,
-  });
-
-  if (result.ok) {
-    const data = await result.json();
-    return data.data;
-  }
-  throw new Error("请求失败");
-};
