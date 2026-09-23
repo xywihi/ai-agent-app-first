@@ -23,8 +23,10 @@ export const HeaderNav = () => {
         router.push("/login");
         router.refresh();
       } else if (e === "SIGNED_IN") {
-        const { data: oldSession } = await client.auth.getSession();
-        if (oldSession.session) return; // 避免重复登录
+        const {
+          data: { user },
+        } = await client.auth.getUser();
+        if (user) return; // 避免重复登录
         // router.replace("/user");
         // router.back();
         goBack();

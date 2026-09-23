@@ -46,7 +46,7 @@ export const ChatMarkDown = ({
 }) => {
   return (
     <div
-      className="markdown-body flex flex-col gap-4 [&_li_div]:indent-0 [&_blockquote_div]:indent-0"
+      className="markdown-body flex flex-col gap-2 md:gap-4 [&_li_div]:indent-0 [&_blockquote_div]:indent-0"
       id="article-wrapper"
     >
       <ReactMarkdown
