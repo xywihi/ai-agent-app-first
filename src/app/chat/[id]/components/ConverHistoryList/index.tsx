@@ -15,6 +15,7 @@ import z from "zod";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Schema = z.object({
   user: z.object({
@@ -95,11 +96,11 @@ export const ConverHistoryList = () => {
     },
   });
   return (
-    <div className="hidden lg:block p-4 py-6 rounded-2xl h-[calc(100vh-8rem)] xl:h-[calc(100vh-10rem)] flex-1 max-w-140 w-full lg:w-120 xl:w-180 z-10 bg-white dark:bg-gray-700 px-4 shadow-2xl">
+    <div className="p-4 py-6 rounded-2xl h-[calc(100vh-8rem)] xl:h-[calc(100vh-10rem)] flex-1 max-w-140 w-full lg:w-120 xl:w-180 z-10 bg-white dark:bg-gray-700 px-4 shadow-2xl">
       <div className="flex flex-row justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">会话历史</h1>
         <Button
-          className="rounded-2xl px-4 py-1 text-xs cursor-pointer hover:text-white hover:bg-teal-400 dark:bg-teal-600"
+          className="rounded-2xl px-4 py-1 text-xs cursor-pointer bg-gray-100 dark:bg-gray-800 hover:text-white hover:bg-teal-400 dark:hover:bg-teal-600"
           onClick={() => mutateCreate()}
         >
           {isLoadingCreate ? <Spinner /> : "新建对话+"}
@@ -114,9 +115,10 @@ export const ConverHistoryList = () => {
         )}
         <ul className="h-full flex flex-col gap-2">
           {isPending && (
-            <li className="flex-1 flex flex-col justify-center text-center">
-              加载中...
-            </li>
+            <div className="flex-1 flex flex-col gap-2">
+              <Skeleton className="h-12 w-[calc(100%-4)] bg-gray-200 dark:bg-gray-800 rounded-xl" />
+              <Skeleton className="h-12 w-[calc(100%-4)] bg-gray-200 dark:bg-gray-800 rounded-xl" />
+            </div>
           )}
           {data?.map((item) => (
             <li

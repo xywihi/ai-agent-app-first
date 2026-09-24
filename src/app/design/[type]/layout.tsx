@@ -24,7 +24,7 @@ export default async function DesignLayout({
   const _portfolio_categories =
     portfolio_categories instanceof Error ? [] : portfolio_categories;
   return (
-    <div className="flex justify-start items-start p-4">
+    <div className="flex justify-start items-start p-4 mt-8 xl:mt-0">
       <div className="w-1/4 shrink-0 sticky top-22 hidden xl:block">
         <div className="min-h-[calc(100vh-10rem)] bg-gray-100 dark:bg-gray-800  rounded-2xl shadow-2xl py-8 px-6 m-4 flex flex-col justify-between">
           <div>

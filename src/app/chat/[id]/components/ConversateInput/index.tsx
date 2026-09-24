@@ -49,7 +49,7 @@ const WorkflowInput = ({
   }, []);
   return (
     <form
-      className="w-full lg:w-[calc(100%-2rem)]  dark:border-zinc-800 absolute bottom-0"
+      className="fixed bottom-4 left-4 w-[calc(100%-2rem)]  dark:border-zinc-800 lg:absolute lg:bottom-0"
       onSubmit={handleSubmit}
     >
       <div>

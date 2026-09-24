@@ -16,6 +16,7 @@ import { QueryKeys } from "@/app/utils/query-keys";
 import z from "zod";
 import client from "@/lib/server";
 import notFound from "../../not-found";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Schema = z.object({
   user: z.object({
@@ -65,7 +66,7 @@ export const ConverBox = () => {
   const {
     data: { historyData: initialMessages, currentItem } = {
       historyData: [],
-      currentItem: { conversation_name: "新建对话" },
+      currentItem: { conversation_name: "" },
     },
     isPending: historyPending,
     error: history_rror,
@@ -132,14 +133,33 @@ export const ConverBox = () => {
     notFound();
   }
   return (
-    <div className="lg:px-4 relative h-[calc(100vh-6rem)] lg:h-[calc(100vh-8rem)] xl:h-[calc(100vh-10rem)] lg:pt-0 pb-12 max-w-4xl  w-full xl:w-240">
-      <Suspense fallback="哈哈哈哈哈哈哈哈！！！！！">
+    <div className="lg:px-4 relative h-[calc(100vh-4rem)] lg:h-[calc(100vh-8rem)] xl:h-[calc(100vh-10rem)] lg:pt-0 pb-12 max-w-4xl  w-full xl:w-240">
+      <Suspense
+        fallback={
+          <div className="flex flex-col gap-4">
+            <div className="w-full">
+              <Skeleton className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700" />
+              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-2xl mt-4 flex flex-col gap-2">
+                <Skeleton className="ml-8 h-8 w-[calc(100%-32px)] bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="h-8 w-[calc(100%-4)] bg-gray-200 dark:bg-gray-700" />
+              </div>
+            </div>
+            <div className="w-full">
+              <Skeleton className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700" />
+              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-2xl mt-4 flex flex-col gap-2">
+                <Skeleton className="ml-8 h-8 w-[calc(100%-32px)] bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="h-8 w-[calc(100%-4)] bg-gray-200 dark:bg-gray-700" />
+              </div>
+            </div>
+          </div>
+        }
+      >
         <MessageList
           messages={messages}
           sendMessage={sendMessage}
           status={status}
           error={error}
-          isPending={historyPending}
+          isPending={converListPending}
           currentItem={currentItem}
         />
       </Suspense>

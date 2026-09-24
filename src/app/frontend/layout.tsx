@@ -1,4 +1,7 @@
 import { AsideNav } from "@/components/frontNote/AsideNav";
+import { MobileAsideNav } from "@/components/frontNote/MobileAsideNav";
+import { Button } from "@/components/ui/button";
+import { EllipsisVertical } from "lucide-react";
 import { Suspense } from "react";
 
 export const metadata = {
@@ -29,11 +32,9 @@ export default async function FrontendLayout({
 }) {
   return (
     <div className="min-h-screen xl:flex justify-between items-start md:p-4">
-      <div className="hidden xl:block sticky top-22 min-w-80 ">
-        <Suspense>
-          <AsideNav />
-        </Suspense>
-      </div>
+      <Suspense>
+        <MobileAsideNav />
+      </Suspense>
       <div className="flex-1 px-0 xl:px-40">{children}</div>
     </div>
   );

@@ -85,7 +85,7 @@ export const ConverListSchema = z.array(
 export const getConverHistoryList = async (user_id: string) => {
   const { data, error } = await client
     .from("conversation_history_list")
-    .select("*")
+    .select("id,user_id,conversation_name")
     .eq("user_id", user_id);
   if (error) {
     console.log("error", error);

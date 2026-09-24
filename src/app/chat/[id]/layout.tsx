@@ -1,5 +1,4 @@
 import { ConverHistoryList } from "@/app/chat/[id]/components/ConverHistoryList";
-import { Suspense } from "react";
 export default function HomeLayout({
   children,
 }: {
@@ -7,9 +6,9 @@ export default function HomeLayout({
 }) {
   return (
     <div className="flex flex-row justify-center px-4 lg:mt-8">
-      <Suspense>
+      <div className="hidden lg:block ">
         <ConverHistoryList />
-      </Suspense>
+      </div>
       {children}
     </div>
   );

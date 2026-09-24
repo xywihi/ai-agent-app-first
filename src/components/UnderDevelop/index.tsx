@@ -7,6 +7,7 @@ export const UnderDevelop = ({ title }: { title: string }) => {
         alt="AI Agent"
         width={200}
         height={200}
+        className="w-60 h-auto object-cover object-center"
       />
       <div className="flex flex-col justify-center items-center gap-4 transform -translate-y-10">
         <h1 className="text-4xl font-bold">{title}</h1>

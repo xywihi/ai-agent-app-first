@@ -1,17 +1,13 @@
 "use client";
-import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
-import { Get } from "@/app/utils/query";
-import { QueryKeys } from "@/app/utils/query-keys";
 import { debounce } from "@/app/utils/tools";
-import { DesignCard } from "@/components/design/DesignCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useUserQuery } from "@/hooks/use-user-query";
-import { cn } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Divide, Search } from "lucide-react";
+import { Suspense, useCallback, useState } from "react";
+import { PortfolioList } from "./components/PortfolioList";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
+import { SkeletonD } from "./components/SkeletonD";
 
 const debounceFn = debounce((fn) => {
   if (typeof fn !== "function") return;
@@ -19,66 +15,9 @@ const debounceFn = debounce((fn) => {
   // fn("9999999");
 }, 500);
 export default function Design() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [visibleIndexes, setVisibleIndexes] = useState(new Set());
-  const [containerHeight, setContainerHeight] = useState(0);
-  const cardHeightsRef = useRef<Map<string, number>>(new Map());
-  const cardRefs = useRef<HTMLDivElement[]>([]);
   const [showSearch, setShowSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [positions, setPositions] = useState<
-    Map<string, { left: number; top: number; width: number; height: number }>
-  >(new Map());
-  const { data: user } = useUserQuery();
-  const { type } = useParams();
-
-  const { data: portfolio_works, isPending } = useQuery({
-    queryKey: QueryKeys.portfolio.portfolios(type as string),
-    enabled: !!user,
-    queryFn: async () => {
-      if (!user) return null;
-      const data = await Get(
-        `/api/user/design/portfolio/default?category=${type}`
-      );
-      return data;
-    },
-  });
-  useEffect(() => {
-    // 懒加载
-    if (!containerRef.current) return;
-    let observers: IntersectionObserver[] = [];
-    let observer: IntersectionObserver;
-    const timer = setTimeout(() => {
-      // 分别监听每张卡片
-      observers = cardRefs.current.map((card, index) => {
-        observer = new IntersectionObserver(
-          (entries) => {
-            if (entries[0].isIntersecting) {
-              // 这张卡片露出来了，加入 Set
-              setVisibleIndexes((prev) => {
-                const _visibleIndexes = new Set(prev).add(index);
-                return _visibleIndexes;
-              });
-              if (card) {
-                observer.unobserve(card); // 只触发一次，取消该卡片的观察
-              }
-              // observer.disconnect(); // 会取消所有的观察
-            }
-          },
-          { threshold: 0.15 } // 露出 15% 就触发
-        );
-        if (card) observer.observe(card); // 如果有卡片，就观察
-        return observer;
-      }, 300);
-    });
-
-    // 清理所有 observer
-    return () => {
-      observers.forEach((obs) => obs.disconnect());
-      clearTimeout(timer);
-      observer?.disconnect();
-    };
-  }, [portfolio_works]);
+  const [portfolioLength, setPortfolioLength] = useState(0);
   const doDebounce = useCallback(
     (value: string) =>
       debounceFn((val) => {
@@ -87,62 +26,13 @@ export default function Design() {
       }),
     []
   );
-  // 列数配置
-  const getColumnCount = useCallback(() => {
-    const width = window.innerWidth;
-    if (width < 1000) return 2;
-    if (width < 1300) return 3;
-    return 4;
-  }, []);
-  // 计算布局
-  const calcLayout = useCallback(() => {
-    if (!containerRef.current) return;
-    // 用测量到的高度计算布局
-    const columnCount = getColumnCount();
-    const columnHeights = new Array(columnCount).fill(0);
-    const gap = 10;
-    const containerWidth = containerRef.current
-      ? containerRef.current?.offsetWidth
-      : 0;
-    const columnWidth =
-      (containerWidth - gap * (columnCount - 1)) / columnCount;
-    const newPositions: Map<
-      string,
-      { left: number; top: number; width: number; height: number }
-    > = new Map();
-    if (!portfolio_works) return;
-    portfolio_works.list.forEach((work: ProcessedPortfolioWork) => {
-      const height = cardHeightsRef.current.get(work.id) || 200;
-      const shortestCol = columnHeights.indexOf(Math.min(...columnHeights));
-      const left = shortestCol * (columnWidth + gap);
-      const top = columnHeights[shortestCol];
-      newPositions.set(work.id, { left, top, width: columnWidth, height });
-      columnHeights[shortestCol] += height + gap + 14;
-    });
 
-    const timer = setTimeout(() => {
-      // setPositions(newPositions);
-      setPositions(
-        (
-          prev: Map<
-            string,
-            { left: number; top: number; width: number; height: number }
-          >
-        ) => {
-          return new Map([...prev, ...newPositions]);
-        }
-      );
-      setContainerHeight(Math.max(...columnHeights));
-    });
-    return () => clearTimeout(timer);
-  }, [cardHeightsRef, getColumnCount, portfolio_works]);
   // console.log("portfolio_works", portfolio_works);
   return (
     <div onClick={() => setShowSearch(false)}>
       <div className="mb-6 flex flex-col xl:flex-row gap-4 justify-between items-center">
-        <h1 className="text-3xl font-bold">
-          设计作品{" "}
-          <span className="underline">{portfolio_works?.list?.length}</span> 个
+        <h1 className="text-gray-400 xl:text-2xl">
+          设计作品 <span className="underline">{portfolioLength}</span> 个
         </h1>
         {/* 搜索框 */}
         <div className="relative w-[calc(100%-1.5rem)] xl:w-auto">
@@ -209,72 +99,9 @@ export default function Design() {
           )}
         </div>
       </div>
-      <div
-        ref={containerRef}
-        className="pb-12 mb-4 relative"
-        style={{ height: containerHeight || "2000px" }}
-      >
-        <div>
-          {isPending && (
-            <div className="flex justify-center items-center h-[calc(100vh-20rem)] text-center xl:text-xl text-gray-400">
-              作品努力加载中...
-            </div>
-          )}
-          {portfolio_works && !portfolio_works?.list.length && (
-            <div>暂无作品</div>
-          )}
-          {portfolio_works &&
-            portfolio_works.list.map(
-              (work: ProcessedPortfolioWork, index: number) => {
-                const pos = positions.get(work.id);
-                return (
-                  <div
-                    key={index}
-                    ref={(work) => {
-                      cardRefs.current[index] = work as HTMLDivElement;
-                    }}
-                    className={cn(
-                      "w-[calc(33%-1.5rem)] h-fit rounded-2xl opacity-0 translate-y-40 transform  duration-600 ease-bezier[0.22,1,0,0.36,1] delay-0",
-                      visibleIndexes.has(index) &&
-                        "opacity-100 translate-y-0 delay-0"
-                      // shouldAnimate ? "opacity-100 translate-y-0" : ""
-                    )}
-                    onClick={() => {
-                      console.log(cardHeightsRef.current, 1);
-                    }}
-                    // style={{
-                    //   position: "absolute",
-                    //   top: pos?.top + "px",
-                    //   left: pos?.left + "px",
-                    //   width: pos?.width + "px",
-                    //   height: pos?.height + "px",
-                    // }}
-                    // 解决在卡片延迟滑出时，下面的卡片延迟时间不协调的问题
-                    style={
-                      {
-                        position: "absolute",
-                        // top: pos?.top + "px",
-                        top:
-                          (pos?.top === undefined ? index * 450 : pos?.top) +
-                          "px",
-                        left: pos?.left + "px",
-                        width: (pos?.width || 450) + "px",
-                        height: (pos?.height || 600) + "px",
-                        transitionDelay: `${200}ms`,
-                      } as React.CSSProperties
-                    }
-                  >
-                    <DesignCard
-                      data={work}
-                      cardHeightsRef={cardHeightsRef}
-                      calcLayout={calcLayout}
-                    />
-                  </div>
-                );
-              }
-            )}
-        </div>
-      </div>
+      <Suspense fallback={<SkeletonD />}>
+        <PortfolioList setPortfolioLength={setPortfolioLength} />
+      </Suspense>
     </div>
   );
 }

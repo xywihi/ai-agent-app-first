@@ -117,6 +117,56 @@ export async function getCategoryTree() {
   };
   return buildTree(data);
 }
+export async function getMCategoryTree() {
+  const { data, error } = await client
+    .from("note_categories")
+    .select("*")
+    .order("sort_order", { ascending: true });
+  if (error) throw error;
+  const { data: _noteData } = await client
+    .from("frontend_notes")
+    .select("id,title,sub_category_id");
+
+  // 递归构建树，自动支持 1/2/3/N级
+  const buildTree = (list: CategoryItem[]): CategoryItem[] => {
+    const map = new Map<string, CategoryItem>();
+    const root: CategoryItem[] = [];
+    list.forEach((item) => {
+      if (!item.parent_id) {
+        root.push(item);
+      }
+    });
+    list.forEach((item) => {
+      if (item.type === "folder") {
+        map.set(item.id as string, { ...item, children: [] });
+      }
+    });
+    map.forEach((item) => {
+      if (item.children && _noteData) {
+        _noteData.forEach((note) => {
+          if (note.sub_category_id === item.id) {
+            item.children!.push({
+              name: note.title,
+              id: note.id,
+              parent_id: note.sub_category_id,
+            });
+          }
+        });
+      }
+      if (item.parent_id) {
+        const parent = map.get(item.parent_id);
+        if (parent) {
+          parent.children!.push(map.get(item.id as string)!);
+        }
+      }
+    });
+    root.forEach((item) => {
+      item.children = map.get(item.id as string)?.children;
+    });
+    return root;
+  };
+  return buildTree(data);
+}
 // 获取笔记访问记录
 export async function getNoteVisits(noteId: string) {
   const { data } = await client
@@ -190,7 +240,6 @@ export async function getNote(noteId: string) {
     .select("*")
     .eq("id", noteId)
     .single();
-  console.log("note_data", data);
   return data;
 }
 

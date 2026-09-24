@@ -44,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                     <HeaderNav />
                   </header>
 
-                  <main className="w-full mt-18">
+                  <main className="w-full mt-16">
                     <div id="global-loading"></div>
                     {children}
                     {/* sonner 提示 */}
