@@ -33,7 +33,12 @@ export default async function FrontendLayout({
   return (
     <div className="min-h-screen xl:flex justify-between items-start md:p-4">
       <Suspense>
-        <MobileAsideNav />
+        <div className="xl:hidden">
+          <MobileAsideNav />
+        </div>
+        <div className="hidden xl:block">
+          <AsideNav />
+        </div>
       </Suspense>
       <div className="flex-1 px-0 xl:px-40">{children}</div>
     </div>

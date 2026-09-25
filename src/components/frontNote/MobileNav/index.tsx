@@ -25,7 +25,7 @@ export const MobileNav = ({
   secondes: CategoryItem[] | null;
 }) => {
   const { id } = useParams();
-  const [cuurentClickId, setCurrentClickId] = useState<string[] | undefined>();
+  const [curentClickId, setCurrentClickId] = useState<string[] | undefined>();
   const { data: note, isPending: noting } = useQuery({
     queryKey: QueryKeys.fronend.note(id as string),
     // enabled: !category_id,
@@ -60,10 +60,10 @@ export const MobileNav = ({
     if ("children" in fileItem) {
       return (
         <CollapsibleItem
-          cuurentClickId={cuurentClickId}
+          curentClickId={curentClickId}
           setCurrentClickId={setCurrentClickId}
           fileItem={fileItem}
-          defaultOpen={!!cuurentClickId?.includes(fileItem.id as string)}
+          defaultOpen={!!curentClickId?.includes(fileItem.id as string)}
           renderItem={renderItem}
           key={index}
         />

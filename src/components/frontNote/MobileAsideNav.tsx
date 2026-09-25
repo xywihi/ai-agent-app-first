@@ -15,7 +15,7 @@ export const MobileAsideNav = () => {
   const { id } = useParams();
   const [openAsideNav, setOpenAsideNav] = useState(false);
   const { data: category = [], isPending: rooting } = useQuery({
-    queryKey: QueryKeys.fronend.rootCategories(),
+    queryKey: QueryKeys.fronend.mobileCategories(),
     queryFn: async () => {
       try {
         const data: CategoryItem[] = await getMCategoryTree();

@@ -2,9 +2,10 @@ import { CategoryItem } from "@/app/utils/api/font-notes/typs";
 import { FileIcon } from "lucide-react";
 import { CollapsibleItem } from "../CollapsibleItem";
 import { cn } from "@/app/utils/tools";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 
 type FileTreeItem =
   | { name: string; id?: string | undefined; parent_id?: string | null }
@@ -24,26 +25,24 @@ export const SecondeNav = ({
   secondeId: string | null;
   categoryId: string | null;
 }) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [currentId, setCurrentId] = useState<string | undefined>(
-    pathname.split("/")[2]
-  );
-  const getUrl = (id: string, parent_id: string) => {
-    const _searchParams = new URLSearchParams();
-    _searchParams.set("category_id", categoryId || "");
-    _searchParams.set("seconde_id", parent_id || "");
-    // searchParams.set("note_id", fileItem.id || "");
-    const url = `/frontend/${id}?${_searchParams.toString()}`;
-    return url;
-  };
-
+  const { id } = useParams();
+  const [curentClickId, setCurrentClickId] = useState<string[] | undefined>();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (categoryId && secondeId && id) {
+        setCurrentClickId([categoryId, secondeId, id as string]);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [secondeId, categoryId, id]);
   const renderItem = (fileItem: FileTreeItem, index: number) => {
     if ("children" in fileItem) {
       return (
         <CollapsibleItem
+          curentClickId={curentClickId}
+          setCurrentClickId={setCurrentClickId}
           fileItem={fileItem}
-          defaultOpen={fileItem.id === secondeId}
+          defaultOpen={!!curentClickId?.includes(fileItem.id as string)}
           renderItem={renderItem}
           key={index}
         />
@@ -55,20 +54,18 @@ export const SecondeNav = ({
         className="w-full my-2 flex text-md justify-start gap-2 text-foreground"
       >
         <FileIcon />
-        <span
+        <Link
+          href={`/frontend/${fileItem.id}`}
           className={cn("hover:underline truncate", {
-            "underline text-teal-500 font-bold": currentId === fileItem.id,
+            "underline text-teal-500 font-bold": id === fileItem.id,
           })}
-          onClick={() => {
-            setCurrentId(fileItem.id);
-            router.push(getUrl(fileItem.id || "", fileItem.parent_id || ""));
-          }}
         >
           {fileItem.name}
-        </span>
+        </Link>
       </Button>
     );
   };
+
   return (
     <div>
       {secondes &&

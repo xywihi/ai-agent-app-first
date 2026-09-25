@@ -18,25 +18,26 @@ type FileTreeItem =
     };
 
 export const CollapsibleItem = ({
-  cuurentClickId,
+  curentClickId,
   setCurrentClickId,
   fileItem,
   defaultOpen,
   renderItem,
 }: {
-  cuurentClickId: string[] | undefined;
+  curentClickId: string[] | undefined;
   setCurrentClickId: React.Dispatch<React.SetStateAction<string[] | undefined>>;
   fileItem: FileTreeItem;
   defaultOpen?: boolean;
   renderItem: (fileItem: FileTreeItem, index: number) => JSX.Element;
 }) => {
+  console.log("curentClickId", curentClickId);
   return (
     <Collapsible
-      open={!!cuurentClickId?.includes(fileItem.id as string) || defaultOpen}
+      open={!!curentClickId?.includes(fileItem.id as string) || defaultOpen}
       onOpenChange={(open) => {
         if (fileItem)
           setCurrentClickId((pre) => {
-            // console.log(fileItem, "cuurentClickId", cuurentClickId, pre);
+            // console.log(fileItem, "curentClickId", curentClickId, pre);
             if (typeof fileItem.parent_id === "string") {
               if (pre?.includes(fileItem.parent_id)) {
                 return open

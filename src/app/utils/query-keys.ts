@@ -17,6 +17,8 @@ export const QueryKeys = {
     visit: ["fontend_note_visit"] as const,
     rootCategories: (id?: string) =>
       ["fontend_note_root_categories", id] as const,
+    mobileCategories: (id?: string) =>
+      ["fontend_note_mobile_categories", id] as const,
     note: (id: string) => ["fontend_notes", id] as const,
     notesAll: ["fontend_notes_all"] as const,
   },

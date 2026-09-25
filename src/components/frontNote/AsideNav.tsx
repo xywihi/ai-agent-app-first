@@ -4,11 +4,15 @@ import { useMemo, useState } from "react";
 import { GlobalModel } from "@/components/GlobalModel";
 import { Button } from "@/components/ui/button";
 import z from "zod";
-import { CategorySchema, CategoryTree } from "@/app/utils/api/font-notes/typs";
-import { useSearchParams } from "next/navigation";
+import {
+  CategorySchema,
+  CategoryTree,
+  Note,
+} from "@/app/utils/api/font-notes/typs";
+import { useParams, useSearchParams } from "next/navigation";
 import { CreativeCommons, FileClock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getCategoryTree } from "@/app/utils/api/font-notes/requery";
+import { getCategoryTree, getNote } from "@/app/utils/api/font-notes/requery";
 import { EditeNoteForm } from "./EditeNoteForm";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { SecondeNav } from "./SecondsNav";
@@ -20,10 +24,27 @@ export const AsideNav = () => {
   const [editable, setEditable] = useState(false);
   const [currentRootCategory, setCurrentRootCategory] =
     useState<CategoryType>();
-  const searchParams = useSearchParams();
-  const category_id = searchParams.get("category_id");
-  const seconde_id = searchParams.get("seconde_id");
+  const { id } = useParams();
+  // const searchParams = useSearchParams();
+  // const category_id = searchParams.get("category_id");
+  // const seconde_id = searchParams.get("seconde_id");
+  const { data: note, isPending: noting } = useQuery({
+    queryKey: QueryKeys.fronend.note(id as string),
+    // enabled: !category_id,
+    queryFn: async () => {
+      try {
+        const data: Note = await getNote(id as string);
 
+        return data;
+      } catch (error) {
+        console.log("error", error);
+        return {};
+      }
+    },
+    // 请求结束
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
   const { data: root_category = {}, isPending: rooting } = useQuery({
     queryKey: QueryKeys.fronend.rootCategories(),
     // enabled: !category_id,
@@ -41,7 +62,7 @@ export const AsideNav = () => {
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
-  const root = (() => {
+  const root = useMemo(() => {
     if (!(root_category as CategoryTree)?.root) return null;
     const _root = (root_category as CategoryTree).root?.find((item) => {
       if (currentRootCategory?.id) {
@@ -50,12 +71,12 @@ export const AsideNav = () => {
         }
         return;
       }
-      if (item.id === category_id) {
+      if (item.id === (note as Note)?.category_id) {
         return item;
       }
     });
     return _root ?? (root_category as CategoryTree)?.root[0];
-  })();
+  }, [currentRootCategory, root_category, note]);
 
   const secondes = useMemo(() => {
     if (!(root_category as CategoryTree)?.seconde) return null;
@@ -67,7 +88,7 @@ export const AsideNav = () => {
           }
           return;
         }
-        if (item.id === seconde_id) {
+        if (item.id === (note as Note)?.sub_category_id) {
           return item;
         }
         if (item.parent_id === root?.id) {
@@ -76,11 +97,10 @@ export const AsideNav = () => {
       }
     );
     return _secondes;
-  }, [root_category, seconde_id, currentRootCategory, root]);
-
+  }, [root_category, note, currentRootCategory, root]);
   return (
     ((root_category as CategoryTree)?.root || rooting) && (
-      <div className="fixed top-22 transform -translate-x-86 xl:block hover:translate-x-0 transition-transform duration-500">
+      <div className="fixed top-22 z-99 transform -translate-x-86 xl:block hover:translate-x-0 transition-transform duration-500">
         <div className="ml-4 min-w-80 relative">
           <aside className="w-1/5 h-[calc(100vh-10rem)] bg-black rounded-2xl p-4 group/root">
             <div className="absolute top-20 -right-39">
@@ -108,8 +128,8 @@ export const AsideNav = () => {
               <div className="flex-1 flex flex-col gap-1 px-6">
                 <SecondeNav
                   secondes={secondes}
-                  secondeId={seconde_id}
-                  categoryId={category_id}
+                  secondeId={(note as Note)?.sub_category_id}
+                  categoryId={(note as Note)?.category_id}
                 />
               </div>
               <div className="bg-white dark:bg-gray-700 w-full sticky bottom-0 flex flex-col gap-4">
