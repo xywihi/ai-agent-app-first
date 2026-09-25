@@ -38,9 +38,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { Spinner } from "../ui/spinner";
-import { id } from "zod/v4/locales";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { NotebookPen } from "lucide-react";
+import client from "@/lib/server";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -276,6 +276,7 @@ export const EditeNoteForm = ({
                 setValue={setValue}
                 getValues={getValues}
                 root_category={root_category as CategoryTree}
+                noteData={note_data}
               />
             </div>
             <Field>
@@ -341,12 +342,14 @@ const RootCategoryWatcher = ({
   setValue,
   errors,
   control,
+  noteData,
 }: {
   root_category: CategoryTree | undefined;
   getValues: ReturnType<typeof useForm<FormData>>["getValues"];
   setValue: ReturnType<typeof useForm<FormData>>["setValue"];
   errors: ReturnType<typeof useForm<FormData>>["formState"]["errors"];
   control: ReturnType<typeof useForm<FormData>>["control"];
+  noteData?: Note;
 }) => {
   const root_second = useWatch({
     control,
@@ -358,7 +361,11 @@ const RootCategoryWatcher = ({
     // enabled: !userId,
     queryFn: async () => {
       try {
-        const data = await getNoteSecondCategories(root_second[0]?.id);
+        if (!noteData || !noteData.owner_id) return [];
+        const data = await getNoteSecondCategories(
+          root_second[0]?.id,
+          noteData.owner_id
+        );
         return data;
       } catch (error) {
         console.log("error", error);
