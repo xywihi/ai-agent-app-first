@@ -31,7 +31,7 @@ export async function getUserProfiles() {
     }
     const { data, error } = await client
       .from("profiles")
-      .select("*")
+      .select("id,display_name,avatar_url,bio")
       .eq("id", user.data.user?.id)
       .single();
     if (error) {

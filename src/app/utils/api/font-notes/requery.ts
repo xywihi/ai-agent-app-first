@@ -46,7 +46,8 @@ export async function recordNoteVisit(noteId: string) {
 }
 //获取笔记类别
 export async function getNoteSecondCategories(
-  currentRootId: string | null = null
+  currentRootId: string | null = null,
+  userId: string
 ) {
   if (!currentRootId) {
     return [];
@@ -55,14 +56,16 @@ export async function getNoteSecondCategories(
     .from("note_categories")
     .select("*")
     .eq("parent_id", currentRootId)
+    .eq("user_id", userId)
     .order("sort_order", { ascending: true });
 
   return data;
 }
-export async function getCategoryTree() {
+export async function getCategoryTree(userId: string) {
   const { data, error } = await client
     .from("note_categories")
     .select("*")
+    .eq("user_id", userId)
     .order("sort_order", { ascending: true });
   if (error) throw error;
   const { data: _noteData } = await client
@@ -117,10 +120,11 @@ export async function getCategoryTree() {
   };
   return buildTree(data);
 }
-export async function getMCategoryTree() {
+export async function getMCategoryTree(userId: string) {
   const { data, error } = await client
     .from("note_categories")
     .select("*")
+    .eq("user_id", userId)
     .order("sort_order", { ascending: true });
   if (error) throw error;
   const { data: _noteData } = await client

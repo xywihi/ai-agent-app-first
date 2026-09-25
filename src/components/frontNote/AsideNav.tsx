@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useMemo, useState } from "react";
 import { GlobalModel } from "@/components/GlobalModel";
 import { Button } from "@/components/ui/button";
-import z from "zod";
+import { z } from "zod";
 import {
   CategorySchema,
   CategoryTree,
@@ -24,38 +24,39 @@ export const AsideNav = () => {
   const [editable, setEditable] = useState(false);
   const [currentRootCategory, setCurrentRootCategory] =
     useState<CategoryType>();
-  const { id } = useParams();
+  const { id, userId } = useParams();
   // const searchParams = useSearchParams();
   // const category_id = searchParams.get("category_id");
   // const seconde_id = searchParams.get("seconde_id");
   const { data: note, isPending: noting } = useQuery({
     queryKey: QueryKeys.fronend.note(id as string),
-    // enabled: !category_id,
+    enabled: !!id,
     queryFn: async () => {
       try {
+        if (!id) return null;
         const data: Note = await getNote(id as string);
-
         return data;
       } catch (error) {
         console.log("error", error);
-        return {};
+        return null;
       }
     },
     // 请求结束
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
-  const { data: root_category = {}, isPending: rooting } = useQuery({
+  const { data: root_category, isPending: rooting } = useQuery({
     queryKey: QueryKeys.fronend.rootCategories(),
-    // enabled: !category_id,
+    enabled: !!userId,
+
     queryFn: async () => {
       try {
-        const data: CategoryTree = await getCategoryTree();
-
+        if (!userId) return null;
+        const data: CategoryTree = await getCategoryTree(userId as string);
         return data;
       } catch (error) {
         console.log("error", error);
-        return {};
+        return null;
       }
     },
     // 请求结束
@@ -128,8 +129,10 @@ export const AsideNav = () => {
               <div className="flex-1 flex flex-col gap-1 px-6">
                 <SecondeNav
                   secondes={secondes}
-                  secondeId={(note as Note)?.sub_category_id}
-                  categoryId={(note as Note)?.category_id}
+                  secondeId={
+                    (note as Note)?.sub_category_id || secondes?.[0]?.id || null
+                  }
+                  categoryId={(note as Note)?.category_id || root?.id || null}
                 />
               </div>
               <div className="bg-white dark:bg-gray-700 w-full sticky bottom-0 flex flex-col gap-4">

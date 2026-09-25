@@ -12,14 +12,14 @@ import { ScrollArea } from "../ui/scroll-area";
 import { useParams } from "next/navigation";
 
 export const MobileAsideNav = () => {
-  const { id } = useParams();
+  const { id, userId } = useParams();
   const [openAsideNav, setOpenAsideNav] = useState(false);
   const { data: category = [], isPending: rooting } = useQuery({
     queryKey: QueryKeys.fronend.mobileCategories(),
+    enabled: !!userId,
     queryFn: async () => {
       try {
-        const data: CategoryItem[] = await getMCategoryTree();
-
+        const data: CategoryItem[] = await getMCategoryTree(userId as string);
         return data;
       } catch (error) {
         console.log("error", error);

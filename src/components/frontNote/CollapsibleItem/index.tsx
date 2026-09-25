@@ -30,7 +30,6 @@ export const CollapsibleItem = ({
   defaultOpen?: boolean;
   renderItem: (fileItem: FileTreeItem, index: number) => JSX.Element;
 }) => {
-  console.log("curentClickId", curentClickId);
   return (
     <Collapsible
       open={!!curentClickId?.includes(fileItem.id as string) || defaultOpen}

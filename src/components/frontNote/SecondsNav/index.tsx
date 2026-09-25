@@ -25,12 +25,14 @@ export const SecondeNav = ({
   secondeId: string | null;
   categoryId: string | null;
 }) => {
-  const { id } = useParams();
+  const { id, userId } = useParams();
   const [curentClickId, setCurrentClickId] = useState<string[] | undefined>();
   useEffect(() => {
     const timer = setTimeout(() => {
       if (categoryId && secondeId && id) {
         setCurrentClickId([categoryId, secondeId, id as string]);
+      } else if (categoryId) {
+        setCurrentClickId([categoryId]);
       }
     }, 0);
     return () => clearTimeout(timer);
@@ -55,7 +57,7 @@ export const SecondeNav = ({
       >
         <FileIcon />
         <Link
-          href={`/frontend/${fileItem.id}`}
+          href={`/frontend/${userId}/detail/${fileItem.id}`}
           className={cn("hover:underline truncate", {
             "underline text-teal-500 font-bold": id === fileItem.id,
           })}

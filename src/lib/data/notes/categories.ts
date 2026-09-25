@@ -8,12 +8,13 @@ import { cookies } from "next/headers";
 
 export const getNoteCategories = async () => {};
 
-export async function getCategoryTree() {
+export async function getCategoryTree(userId: string) {
   const _cookie = await cookies();
   const supabase = await server(_cookie);
   const { data, error } = await supabase
     .from("note_categories")
     .select("*")
+    .eq("user_id", userId)
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   const { data: _noteData, error: _noteError } = await supabase

@@ -25,6 +25,7 @@ export const CategoriesSchema = z.array(CategorySchema);
 
 export type CategoryItem = {
   id?: string;
+  user_id?: string;
   parent_id: string | null;
   name: string;
   icon_name?: Parameters<typeof Icon>[0]["name"] | null;
@@ -43,4 +44,13 @@ export type Root = {
 export type CategoryTree = {
   root: Root[];
   seconde: CategoryItem[];
+};
+
+export type NoteUser = {
+  id: string;
+  display_name: string;
+  avatar_url: string;
+  bio: string;
+  count: number;
+  frontend_notes: Note[];
 };

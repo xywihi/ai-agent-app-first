@@ -96,7 +96,7 @@ export default function RegisterPage() {
     return <div>未找到hcaptcha环境变量，未配置</div>;
   }
   return (
-    <div className="flex flex-col h-[calc(100vh-10rem)]  flex-1 justify-center items-center">
+    <div className="flex flex-col flex-1 justify-center items-center">
       <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-xl shadow-gray-100 shadow-lg">
         <form
           className="flex flex-col items-center space-y-4 xl:w-lg"

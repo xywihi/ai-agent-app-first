@@ -68,7 +68,9 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
     // enabled: !!category_id,
     queryFn: async () => {
       try {
-        const data: CategoryTree = await getCategoryTree();
+        const user = await Get("/api/user");
+        if (!user) return null;
+        const data: CategoryTree = await getCategoryTree(user.id);
         return data;
       } catch (error) {
         console.log("error", error);

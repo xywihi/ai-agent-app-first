@@ -61,7 +61,7 @@ const _getDefaultPortfolio = async (
       .select("id,display_name,avatar_url")
       .in("id", authorIds);
     if (profilesError) throw new Error("Failed to load profiles");
-
+    console.log("authorIds", authorIds, profiles);
     // 将profiles数据添加到data中
     const profileMap = new Map(profiles.map((item) => [item.id, item]) || []);
     data.forEach((item) => {

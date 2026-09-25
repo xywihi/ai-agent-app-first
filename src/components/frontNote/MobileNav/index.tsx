@@ -24,15 +24,15 @@ export const MobileNav = ({
 }: {
   secondes: CategoryItem[] | null;
 }) => {
-  const { id } = useParams();
+  const { id, userId } = useParams();
   const [curentClickId, setCurrentClickId] = useState<string[] | undefined>();
   const { data: note, isPending: noting } = useQuery({
     queryKey: QueryKeys.fronend.note(id as string),
-    // enabled: !category_id,
+    enabled: !!id,
     queryFn: async () => {
       try {
+        if (!id) return null;
         const data: Note = await getNote(id as string);
-
         return data;
       } catch (error) {
         console.log("error", error);
@@ -52,6 +52,8 @@ export const MobileNav = ({
           (note as Note).sub_category_id,
           id as string,
         ]);
+      } else if (secondes && secondes[0]?.id) {
+        setCurrentClickId([secondes[0]?.id]);
       }
     }, 0);
     return () => clearTimeout(timer);
@@ -76,7 +78,7 @@ export const MobileNav = ({
       >
         <FileIcon />
         <Link
-          href={`/frontend/${fileItem.id}`}
+          href={`/frontend/${userId}/detail/${fileItem.id}`}
           className={cn("hover:underline truncate", {
             "underline text-teal-500 font-bold": id === fileItem.id,
           })}
@@ -86,6 +88,7 @@ export const MobileNav = ({
       </Button>
     );
   };
+  // console.log("secondes", secondes);
   return (
     <div>
       {secondes &&

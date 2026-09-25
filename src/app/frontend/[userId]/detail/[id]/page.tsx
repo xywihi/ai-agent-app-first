@@ -1,5 +1,5 @@
 import { ChatMarkDown } from "@/components/ChatMarkDown";
-import { CreateNote } from "../components/CreateNote/inde";
+import { CreateNote } from "../../../components/CreateNote/inde";
 import { CalendarRange, Eye } from "lucide-react";
 import { NoteAsideNav } from "@/components/frontNote/NoteAsideNav";
 import { cn, getDateTime } from "@/app/utils/tools";
@@ -30,14 +30,17 @@ export async function generateStaticParams() {
 export default async function Page({
   params,
 }: {
-  params: Promise<{ id?: string }>;
+  params: Promise<{ id?: string; userId?: string }>;
 }) {
-  const { id } = await params;
-  const [root_category, note_data] = await Promise.all([
-    getCategoryTree(),
+  const { id, userId } = await params;
+  const [note_data] = await Promise.all([
     getNote(id as string),
     id && recordNoteVisit(id as string),
   ]);
+  console.log("note_data", id, userId);
+  if (!note_data) return null;
+  const root_category = await getCategoryTree(userId as string);
+
   const updateTime = getDateTime(note_data?.updated_at || 0);
   return (
     <div className="">
