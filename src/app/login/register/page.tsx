@@ -97,7 +97,7 @@ export default function RegisterPage() {
   }
   return (
     <div className="flex flex-col flex-1 justify-center items-center">
-      <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-xl shadow-gray-100 shadow-lg">
+      <div className=" mt-10 bg-gray-100 dark:bg-gray-800 p-8 rounded-xl shadow-gray-100 shadow-lg">
         <form
           className="flex flex-col items-center space-y-4 xl:w-lg"
           action=""

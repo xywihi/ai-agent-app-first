@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   // const isProtected = request.nextUrl.pathname.startsWith("/chat");
-  console.log("全局路由守卫");
+  console.log("全局路由守卫", user);
   if (!user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

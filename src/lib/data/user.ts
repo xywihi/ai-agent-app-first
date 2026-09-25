@@ -48,7 +48,7 @@ export async function getUserProfiles() {
       throw new Error(error.message);
     }
 
-    return data ?? {};
+    return data ?? null;
   } catch (error) {
     console.log("profiles api error", error);
     await reportBackendError({
