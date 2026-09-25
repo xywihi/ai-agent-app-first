@@ -38,7 +38,7 @@ export default function RegisterPage() {
   const captchaRef = useRef<HCaptcha>(null);
   const [hcaptchaToken, setHcaptchaToken] = useState("");
   const [msg, setMsg] = useState("");
-  const siteKey = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY;
+  // const siteKey = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY;
   const router = useRouter();
   const {
     register,
@@ -92,9 +92,9 @@ export default function RegisterPage() {
     captchaRef.current?.resetCaptcha();
     setHcaptchaToken("");
   };
-  if (!siteKey) {
-    return <div>未找到hcaptcha环境变量，未配置</div>;
-  }
+  // if (!siteKey) {
+  //   return <div>未找到hcaptcha环境变量，未配置</div>;
+  // }
   return (
     <div className="flex flex-col h-[calc(100vh-10rem)]  flex-1 justify-center items-center">
       <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-xl shadow-gray-100 shadow-lg">

@@ -86,9 +86,10 @@ export const ConverBox = () => {
     enabled: !!converList,
     refetchOnWindowFocus: false,
   });
+
   const { messages, sendMessage, status, error, stop, setMessages } = useChat({
     transport: new DefaultChatTransport({
-      api: "api/chat",
+      api: "/api/chat",
     }),
     onFinish: async (msg) => {
       const userMessage = messages[messages.length - 2];
