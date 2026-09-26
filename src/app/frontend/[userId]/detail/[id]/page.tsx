@@ -23,10 +23,7 @@ export async function generateMetadata({
     description: work?.description ?? "实用的前端笔记",
   };
 }
-export async function generateStaticParams() {
-  const notes = await getFrontNotesB();
-  return notes?.list.map((n) => ({ id: n.id })) || [];
-}
+
 export default async function Page({
   params,
 }: {
@@ -37,7 +34,6 @@ export default async function Page({
     getNote(id as string),
     id && recordNoteVisit(id as string),
   ]);
-  console.log("note_data", id, userId);
   if (!note_data) return null;
   const root_category = await getCategoryTree(userId as string);
 
@@ -47,7 +43,7 @@ export default async function Page({
       <NoteAsideNav note_id={id as string} />
       <article className="pb-28 xl:p-0">
         <div className="prose prose-slate max-w-none">
-          <div className={cn("gap-4 hidden", { flex: updateTime })}>
+          <div className={cn("gap-4 hidden px-4", { flex: updateTime })}>
             <p className="text-gray-400 my-4 flex items-center">
               <span className="xl:inline-block hidden">更新时间：</span>
               <span className="inline-block xl:hidden mr-2">

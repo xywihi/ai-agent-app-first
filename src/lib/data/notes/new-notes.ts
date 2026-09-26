@@ -1,9 +1,11 @@
 import server from "@/lib/server/server";
 import { cookies } from "next/headers";
+import getUserClaimsServer from "../userClaimsServer";
 
 export const getNewNotes = async () => {
   const _cookie = await cookies();
   const supabase = await server(_cookie);
+  const userId = await getUserClaimsServer();
   const { data, count, error } = await supabase
     .from("frontend_notes")
     .select("id,title,view_count,updated_at,category_id,sub_category_id", {
@@ -17,6 +19,7 @@ export const getNewNotes = async () => {
         -  head:false ：返回命中的完整记录数据，同时附带 count */
       head: false,
     })
+    .eq("owner_id", userId)
     .order("updated_at", { ascending: false })
     .limit(8);
   if (error) {

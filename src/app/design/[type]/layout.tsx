@@ -26,7 +26,7 @@ export default async function DesignLayout({
   return (
     <div className="flex justify-start items-start p-4 mt-8 xl:mt-0">
       <div className="w-1/4 shrink-0 sticky top-22 hidden xl:block">
-        <div className="min-h-[calc(100vh-10rem)] bg-gray-100 dark:bg-gray-800  rounded-2xl shadow-2xl py-8 px-6 m-4 flex flex-col justify-between">
+        <div className="min-h-[calc(100vh-10rem)] bg-gray-100 dark:bg-gray-800  rounded-2xl shadow-2xl py-8 px-6 flex flex-col justify-between">
           <div>
             <div className="w-[calc(100%+1.5rem)] mb-4 flex felx-row flex-nowrap items-center gap-6 shadow-md bg-white dark:bg-gray-700 p-4 py-8 rounded-l-2xl">
               <div className="w-20 h-20">

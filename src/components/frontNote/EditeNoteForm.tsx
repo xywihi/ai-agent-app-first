@@ -129,7 +129,6 @@ export const EditeNoteForm = ({
       summary: "",
       is_published: false,
     };
-    console.log("newNote", newNote);
     try {
       if (!noteId) {
         // 创建新的笔记
@@ -355,7 +354,6 @@ const RootCategoryWatcher = ({
     control,
     name: ["root", "seconde"],
   });
-  console.log("root_second", root_second);
   const { data: second_category = [], isPending: rooting } = useQuery({
     queryKey: QueryKeys.fronend.rootCategories(root_second[0]?.id as string),
     // enabled: !userId,

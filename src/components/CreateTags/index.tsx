@@ -4,15 +4,17 @@ import { Input } from "../ui/input";
 import { Plus } from "lucide-react";
 
 export const CreateTags = ({
+  defaultTags = [],
   getValues,
   setValue,
   reset,
 }: {
+  defaultTags: string[];
   getValues: any;
   setValue: any;
   reset: any;
 }) => {
-  const [currentTags, setCurrentTags] = useState<string[]>([]);
+  const [currentTags, setCurrentTags] = useState<string[]>(defaultTags);
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     setValue("tags", currentTags);

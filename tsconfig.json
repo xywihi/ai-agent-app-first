@@ -32,6 +32,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts", 
-    "src/app/design/detail/[id]/components/Content"  ],
+    "src/app/design/detail/[id]/components/Content", "src/app/api/user/design/portfolio/ownerPortfolio"  ],
   "exclude": ["node_modules"]
 }

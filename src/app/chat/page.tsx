@@ -34,7 +34,6 @@ export default function Chat() {
           const result = await getConverHistoryList(
             user?.data?.user.id as string
           );
-          console.log("result", result);
           return result;
         } else {
           throw new Error(user.error.message);

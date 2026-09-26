@@ -64,7 +64,7 @@ export const MessageList = ({
   }, [messages]);
   if (isPending && currentItem.conversation_name !== "新建对话") {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 pt-8">
         <div className="w-full">
           <Skeleton className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700" />
           <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-2xl mt-4 flex flex-col gap-2">
@@ -82,13 +82,12 @@ export const MessageList = ({
       </div>
     );
   }
-  console.log("isPending", isPending, currentItem.conversation_name);
   return (
     <ScrollArea
       ref={scrollRef}
       className="flex-1 h-[calc(100vh-8rem)] lg:h-[calc(100vh-11rem)] overflow-auto"
     >
-      <div className="space-y-4 pb-16">
+      <div className="space-y-4 pb-16 pt-8">
         {messages.map((message) => (
           <div key={message.id} className="whitespace-pre-wrap mb-4">
             <div className="mb-2">
@@ -163,7 +162,6 @@ export const MessageList = ({
                       </p>
                     );
                   const { location, temperature } = part.output as LocationType;
-                  console.log("part.output", part.output);
                   return (
                     <div key={`${message.id}-${i}`}>
                       <div className="border rounded-2xl p-2 ">

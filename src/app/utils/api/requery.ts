@@ -16,6 +16,7 @@ export async function fuzzySearchAll(keyValue: string) {
       .select("id,title,content")
       // 构建权重：标题命中=10，内容命中=1
       .select("*")
+      .eq("is_published", true)
       .or(`title.ilike.${pattern},content.ilike.${pattern}`)
       .order("title", { ascending: false })
       .order("content", { ascending: false });
@@ -26,6 +27,7 @@ export async function fuzzySearchAll(keyValue: string) {
     const { data: _data, error: _error } = await client
       .from("portfolio_works")
       .select("id,title,like_count")
+      .eq("is_published", true)
       .or(`title.ilike.${pattern}`)
       .order("like_count", { ascending: false });
     //   .limit(4); // 取出权重最高前4条

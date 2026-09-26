@@ -15,7 +15,6 @@ export function CopyButton({ text, className }: CopyButtonProps) {
   const handleCopy = async () => {
     const success = await copyToClipboard(text);
     if (success) {
-      console.log("复制成功");
       toast.success("复制成功", {
         position: "top-center",
         style: {

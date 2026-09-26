@@ -1,20 +1,18 @@
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
-import { Get } from "@/app/utils/query";
-import { QueryKeys } from "@/app/utils/query-keys";
 import { cn } from "@/app/utils/tools";
 import { DesignCard } from "@/components/design/DesignCard";
-import { useUserQuery } from "@/hooks/use-user-query";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SkeletonD } from "../SkeletonD";
 export const PortfolioList = ({
-  setPortfolioLength,
+  portfolioWorks,
+  isPending,
 }: {
-  setPortfolioLength: React.Dispatch<React.SetStateAction<number>>;
+  portfolioWorks: {
+    list: ProcessedPortfolioWork[];
+    total: number;
+  };
+  isPending: boolean;
 }) => {
-  const { data: user } = useUserQuery();
-  const { type } = useParams();
   const containerRef = useRef<HTMLDivElement>(null);
   const cardHeightsRef = useRef<Map<string, number>>(new Map());
   const cardRefs = useRef<HTMLDivElement[]>([]);
@@ -23,22 +21,7 @@ export const PortfolioList = ({
   const [positions, setPositions] = useState<
     Map<string, { left: number; top: number; width: number; height: number }>
   >(new Map());
-  const { data: portfolio_works, isPending } = useQuery({
-    queryKey: QueryKeys.portfolio.portfolios(type as string),
-    enabled: !!user,
-    queryFn: async () => {
-      if (!user) return null;
-      const data = await Get(
-        `/api/user/design/portfolio/default?category=${type}`
-      );
-      return data;
-    },
-  });
-  useEffect(() => {
-    if (portfolio_works) {
-      setPortfolioLength(portfolio_works?.list?.length);
-    }
-  }, [portfolio_works, setPortfolioLength]);
+
   // 列数配置
   const getColumnCount = useCallback(() => {
     const width = window.innerWidth;
@@ -81,7 +64,7 @@ export const PortfolioList = ({
       clearTimeout(timer);
       observer?.disconnect();
     };
-  }, [portfolio_works]);
+  }, [portfolioWorks]);
   // 计算布局
   const calcLayout = useCallback(() => {
     if (!containerRef.current) return;
@@ -98,8 +81,8 @@ export const PortfolioList = ({
       string,
       { left: number; top: number; width: number; height: number }
     > = new Map();
-    if (!portfolio_works) return;
-    portfolio_works.list.forEach((work: ProcessedPortfolioWork) => {
+    if (!portfolioWorks) return;
+    portfolioWorks.list.forEach((work: ProcessedPortfolioWork) => {
       const height = cardHeightsRef.current.get(work.id) || 200;
       const shortestCol = columnHeights.indexOf(Math.min(...columnHeights));
       const left = shortestCol * (columnWidth + gap);
@@ -123,7 +106,7 @@ export const PortfolioList = ({
       setContainerHeight(Math.max(...columnHeights));
     });
     return () => clearTimeout(timer);
-  }, [cardHeightsRef, getColumnCount, portfolio_works]);
+  }, [cardHeightsRef, getColumnCount, portfolioWorks]);
   return (
     <div
       ref={containerRef}
@@ -132,11 +115,9 @@ export const PortfolioList = ({
     >
       <div>
         {isPending && <SkeletonD />}
-        {portfolio_works && !portfolio_works?.list.length && (
-          <div>暂无作品</div>
-        )}
-        {portfolio_works &&
-          portfolio_works.list.map(
+        {portfolioWorks && !portfolioWorks?.list.length && <div>暂无作品</div>}
+        {portfolioWorks &&
+          portfolioWorks.list.map(
             (work: ProcessedPortfolioWork, index: number) => {
               const pos = positions.get(work.id);
               return (

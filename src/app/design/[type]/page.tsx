@@ -1,48 +1,53 @@
 "use client";
-import { debounce } from "@/app/utils/tools";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Divide, Search } from "lucide-react";
-import { Suspense, useCallback, useState } from "react";
+import { Search } from "lucide-react";
+import { Suspense, useState } from "react";
 import { PortfolioList } from "./components/PortfolioList";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent } from "@/components/ui/card";
 import { SkeletonD } from "./components/SkeletonD";
+import { useUserQuery } from "@/hooks/use-user-query";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { QueryKeys } from "@/app/utils/query-keys";
+import { Get } from "@/app/utils/query";
 
-const debounceFn = debounce((fn) => {
-  if (typeof fn !== "function") return;
-  // 在此处做你的搜索逻辑
-  // fn("9999999");
-}, 500);
 export default function Design() {
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const [portfolioLength, setPortfolioLength] = useState(0);
-  const doDebounce = useCallback(
-    (value: string) =>
-      debounceFn((val) => {
-        console.log("value", value, "val", val);
-        // setSearchValue(val);
-      }),
-    []
-  );
-
+  // const [showSearch, setShowSearch] = useState(false);
+  // const [searchValue, setSearchValue] = useState("");
+  const { data: user } = useUserQuery();
+  const { type } = useParams();
+  const { data: portfolioWorks, isPending } = useQuery({
+    queryKey: QueryKeys.portfolio.portfolios(type as string),
+    enabled: !!user,
+    queryFn: async () => {
+      if (!user) return null;
+      const data = await Get(
+        `/api/user/design/portfolio/default?category=${type}`
+      );
+      return data;
+    },
+  });
+  // const handleSearch = () => {
+  //   console.log("search", searchValue);
+  // };
   // console.log("portfolio_works", portfolio_works);
   return (
-    <div onClick={() => setShowSearch(false)}>
+    <div>
       <div className="mb-6 flex flex-col xl:flex-row gap-4 justify-between items-center">
         <h1 className="text-gray-400 xl:text-2xl">
-          设计作品 <span className="underline">{portfolioLength}</span> 个
+          设计作品{" "}
+          <span className="underline">
+            {portfolioWorks && portfolioWorks.list.length}
+          </span>{" "}
+          个
         </h1>
         {/* 搜索框 */}
-        <div className="relative w-[calc(100%-1.5rem)] xl:w-auto">
+        {/* <div className="relative w-[calc(100%-1.5rem)] xl:w-auto">
           <div className="relative">
             <Input
               value={searchValue}
               onChange={(e) => {
                 setSearchValue(e.target.value);
-                const vv = doDebounce(e.target.value);
-                console.log("vv", vv);
               }}
               onClick={(e) => {
                 e.stopPropagation();
@@ -52,12 +57,12 @@ export default function Design() {
               placeholder="搜索"
               className="w-full xl:w-120  p-4 rounded-2xl min-h-10"
             />
-            <Button className="absolute right-2 top-1/2 -translate-y-1/2">
+            <Button
+              className="absolute right-2 top-1/2 -translate-y-1/2"
+              onClick={handleSearch}
+            >
               <Search />
               搜索
-              {/* <Kbd className="ml-1 bg-gray-200 dark:bg-gray-700 rounded">
-                ⌘K
-              </Kbd> */}
             </Button>
           </div>
           {showSearch && (
@@ -97,10 +102,10 @@ export default function Design() {
               </ul>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
       <Suspense fallback={<SkeletonD />}>
-        <PortfolioList setPortfolioLength={setPortfolioLength} />
+        <PortfolioList portfolioWorks={portfolioWorks} isPending={isPending} />
       </Suspense>
     </div>
   );

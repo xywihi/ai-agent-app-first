@@ -22,7 +22,7 @@ export default function Frontend() {
   const { data, isPending } = useQuery({
     queryKey: QueryKeys.fronend.notesAll,
     queryFn: async () => {
-      const data = await Get(`/api/user/frontend`);
+      const data = await Get(`/api/user/frontend/ownerNote`);
       return data;
     },
   });
@@ -53,6 +53,10 @@ export default function Frontend() {
         <div className="flex-1 text-center h-[calc(100vh-10rem)] flex flex-col justify-center items-center xl:text-xl text-gray-400">
           笔记正在努力加载中...
         </div>
+      ) : !data_update ? (
+        <div className="flex-1 text-center h-[calc(100vh-10rem)] flex flex-col justify-center items-center xl:text-xl text-gray-400">
+          暂无笔记
+        </div>
       ) : (
         data_update
       )}
@@ -68,8 +72,10 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
     // enabled: !!category_id,
     queryFn: async () => {
       try {
-        const user = await Get("/api/user");
+        const { user } = await Get("/api/user");
         if (!user) return null;
+        console.log("user-----", user);
+
         const data: CategoryTree = await getCategoryTree(user.id);
         return data;
       } catch (error) {

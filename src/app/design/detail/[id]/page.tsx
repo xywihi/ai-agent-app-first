@@ -57,7 +57,7 @@ export default function Design() {
     enabled: !!card?.portfolio_categories?.id,
     queryFn: async () => {
       const data = await Get(
-        `/api/user/design/portfolio/recomand?categoryId=${card?.portfolio_categories?.id}&id=${id}`
+        `/api/user/design/portfolio/recomand?categoryId=${card?.portfolio_categories?.id}&id=${id}&authorId=${card?.user_id}`
       );
       return data;
     },

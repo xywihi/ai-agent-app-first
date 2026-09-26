@@ -97,6 +97,9 @@ export function MobileSheetNav() {
     const {
       data: { subscription },
     } = client.auth.onAuthStateChange(async (e, _data) => {
+      if (e === "SIGNED_OUT") {
+        setUser(null);
+      }
       if (_data && _data.user)
         setUser((_data.user?.user_metadata as UserMetadata) ?? null);
     });

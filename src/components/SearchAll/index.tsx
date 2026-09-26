@@ -31,7 +31,7 @@ export const SearchAll = () => {
   const doDebounce = React.useCallback(
     (value: string) =>
       debounceFn((val) => {
-        console.log("value", value, "val", val);
+        // console.log("value", value, "val", val);
         setKeyValue(value);
       }),
     []

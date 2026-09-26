@@ -7,7 +7,6 @@ import { Eye, Notebook } from "lucide-react";
 
 export default async function Page() {
   const noteUserList: NoteUser[] = await getNoteUserList();
-  console.log("note_user_list", noteUserList);
   if (!noteUserList) return null;
   return (
     <div className="flex flex-col min-h-screen gap-4">
@@ -18,7 +17,7 @@ export default async function Page() {
           {noteUserList.map((item: NoteUser) => (
             <Card
               key={item.id}
-              className="flex flex-col gap-4 bg-white dark:bg-gray-700 shadow-xl"
+              className="flex flex-col gap-4 min-w-80 w-full bg-white dark:bg-gray-700 shadow-xl"
             >
               <div className="px-4 flex justify-between items-center">
                 <div className="flex items-center gap-4">
@@ -40,7 +39,7 @@ export default async function Page() {
                   <span className="text-md">{item.count}</span>
                 </div>
               </div>
-              <CardContent>
+              <CardContent className="hidden md:block">
                 {item.bio && (
                   <p className="text-sm text-gray-400 line-clamp-2">
                     {item.bio}

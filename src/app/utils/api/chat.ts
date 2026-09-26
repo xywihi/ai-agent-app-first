@@ -30,7 +30,6 @@ export const getHistoryMessages = async (conversation_id: string | number) => {
     console.log("historyError", historyError);
     return;
   }
-  console.log("data", { historyData, currentItem: data });
   const remouldData = historyData.map((item) => {
     return {
       id: item.message_id,
@@ -72,7 +71,6 @@ export const createConver = async (user_id: string) => {
     console.log("historyError", historyError);
     return;
   }
-  console.log("data", historyData, [...historyData][0]?.id);
   return [...historyData][0]?.id;
 };
 export const ConverListSchema = z.array(

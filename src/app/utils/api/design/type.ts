@@ -65,8 +65,8 @@ export type ProcessedPortfolioWork = PortfolioWork & {
 };
 //作品图片
 export type PortfolioWorkImage = {
-  id: string;
-  work_id: string;
+  id?: string;
+  work_id?: string;
   image_url: string;
-  sort_order: number;
+  sort_order?: number;
 };

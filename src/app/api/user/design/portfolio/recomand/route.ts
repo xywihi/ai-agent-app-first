@@ -8,9 +8,9 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const categoryId = url.searchParams.get("categoryId");
   const id = url.searchParams.get("id");
+  const authorId = url.searchParams.get("authorId");
   const _cookie = await cookies();
   const supabase = await server(_cookie);
-  console.log("categoryId", categoryId);
   let data: ProcessedPortfolioWork[] = [];
   const { data: _data, error } = await supabase
     .from("portfolio_categories")
@@ -21,7 +21,6 @@ export async function GET(req: Request) {
   }
   if (_data && !!_data.length) {
     const category_id = _data[0].id;
-    console.log("category_id", category_id);
     const { data: __data, error } = await supabase
       .from("portfolio_works")
       .select(
@@ -32,7 +31,8 @@ export async function GET(req: Request) {
       )
       .eq("is_published", true)
       .eq("category_id", category_id)
-      .neq("id", id)
+      .eq("user_id", authorId)
+      .neq("id", id) // 排除当前作品
       .order("created_at", { ascending: false })
       .limit(1, { referencedTable: "portfolio_work_likes" })
       .limit(5);

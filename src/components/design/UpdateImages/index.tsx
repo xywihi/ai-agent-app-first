@@ -3,12 +3,25 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X, Upload } from "lucide-react";
 import Image from "next/image";
+import { PortfolioWorkImage } from "@/app/utils/api/design/type";
+import { toast } from "sonner";
+import { Post } from "@/app/utils/query";
+import { QueryKeys } from "@/app/utils/query-keys";
+import { useQueryClient } from "@tanstack/react-query";
 
-export function UpdateImages({ setValue }: { setValue: any }) {
+export function UpdateImages({
+  setValue,
+  defaultImages = [],
+}: {
+  setValue: any;
+  defaultImages: PortfolioWorkImage[];
+}) {
+  const queryClient = useQueryClient();
   // 存储选中的文件
   const [fileList, setFileList] = useState<File[]>([]);
   // 预览图url数组
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [previewUrls, setPreviewUrls] =
+    useState<PortfolioWorkImage[]>(defaultImages);
   const inputRef = useRef<HTMLInputElement>(null);
   // 监听fileList
   useEffect(() => {
@@ -30,7 +43,9 @@ export function UpdateImages({ setValue }: { setValue: any }) {
     setFileList(updatedFiles);
 
     // 生成本地预览url
-    const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
+    const newPreviews = newFiles.map((file) => ({
+      image_url: URL.createObjectURL(file),
+    }));
     setPreviewUrls((prev) => [...prev, ...newPreviews]);
 
     // 清空input，保证可以重复选择同一批文件
@@ -38,12 +53,50 @@ export function UpdateImages({ setValue }: { setValue: any }) {
   };
 
   // 删除单张图片
-  const handleRemoveImage = (index: number) => {
-    // 释放预览blob内存，防止内存泄漏
-    URL.revokeObjectURL(previewUrls[index]);
-
-    setFileList(fileList.filter((_, i) => i !== index));
-    setPreviewUrls(previewUrls.filter((_, i) => i !== index));
+  const handleRemoveImage = async (index: number, item: PortfolioWorkImage) => {
+    toast("删除作品", {
+      description: "删除后，此图片无法恢复，确定要删除吗?",
+      action: {
+        label: "确认删除",
+        onClick: async () => {
+          try {
+            if (!item.id) {
+              // 释放预览blob内存，防止内存泄漏
+              URL.revokeObjectURL(previewUrls[index].image_url);
+            } else {
+              // 删除后端图片
+              await Post("/api/user/design/images/delete", {
+                body: JSON.stringify({
+                  id: item.id,
+                }),
+              });
+            }
+            setFileList(fileList.filter((_, i) => i !== index));
+            setPreviewUrls(previewUrls.filter((_, i) => i !== index));
+            await queryClient.invalidateQueries({
+              queryKey: QueryKeys.portfolio.portfoliosAll,
+            });
+            toast.success("删除成功", {
+              position: "top-center",
+              style: {
+                backgroundColor: "#00d5be",
+                borderRadius: "8px",
+              },
+            });
+          } catch (error) {
+            toast.error("删除失败");
+          }
+        },
+      },
+      cancel: {
+        label: "取消",
+        onClick: () => {},
+      },
+      style: {
+        backgroundColor: "white",
+        borderRadius: "8px",
+      },
+    });
   };
 
   return (
@@ -67,10 +120,10 @@ export function UpdateImages({ setValue }: { setValue: any }) {
       {/* 图片预览区域 */}
       {previewUrls.length > 0 && (
         <div className="flex gap-3 flex-wrap">
-          {previewUrls.map((url, idx) => (
+          {previewUrls.map((item, idx) => (
             <div key={idx} className="relative overflow-hidden aspect-square">
               <Image
-                src={url}
+                src={item.image_url}
                 alt="preview"
                 width={0}
                 height={0}
@@ -81,7 +134,7 @@ export function UpdateImages({ setValue }: { setValue: any }) {
                 size="icon"
                 variant="destructive"
                 className="absolute top-1 right-1 w-6 h-6"
-                onClick={() => handleRemoveImage(idx)}
+                onClick={() => handleRemoveImage(idx, item)}
               >
                 <X className="w-3 h-3" />
               </Button>

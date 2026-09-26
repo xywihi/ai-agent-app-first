@@ -4,12 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import client from "@/lib/server";
+import { useRouter } from "next/navigation";
 const formSchema = z.object({
   username: z.string().min(2, "用户名至少2个字"),
   password: z.string(),
 });
 type FormValues = z.infer<typeof formSchema>;
 export default function LoginPage() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -48,6 +50,7 @@ export default function LoginPage() {
           borderRadius: "8px",
         },
       });
+      router.back();
       // localStorage.setItem("user", JSON.stringify(user));
     }
   };

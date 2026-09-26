@@ -12,7 +12,7 @@ import { type User } from "@/app/api/admin/list-users/type";
 import { ProcessedPortfolioWork } from "../utils/api/design/type";
 import Image from "next/image";
 import { getUserInfo, getUserProfiles } from "@/lib/data/user";
-import { getDefaultPortfolio } from "@/lib/data/portfolio";
+import { getOwnerPortfolio } from "@/lib/data/ownerPortfolio";
 import { getNewNotes } from "@/lib/data/notes/new-notes";
 import { getUserList } from "@/lib/data/user/user-list";
 import Link from "next/link";
@@ -21,7 +21,7 @@ export default async function User() {
     await Promise.all([
       getUserInfo(),
       getUserProfiles(),
-      getDefaultPortfolio("all"),
+      getOwnerPortfolio("all"),
       getNewNotes(),
       getUserList(),
     ]);
@@ -118,13 +118,15 @@ export default async function User() {
                 key={item.id}
                 className="mb-4 p-4 flex gap-4 bg-white dark:bg-gray-700 rounded-2xl shadow-xl cursor-pointer transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
               >
-                <Image
-                  src={item.portfolio_work_images[0].image_url}
-                  alt={item.title}
-                  width={400}
-                  height={400}
-                  className="object-cover object-top w-1/3 max-h-40 overflow-hidden"
-                />
+                {item.portfolio_work_images[0]?.image_url && (
+                  <Image
+                    src={item.portfolio_work_images[0]?.image_url}
+                    alt={item.title}
+                    width={400}
+                    height={400}
+                    className="object-cover object-top w-1/3 max-h-40 overflow-hidden"
+                  />
+                )}
                 <div className="flex-1">
                   <h1 className="text-xl font-bold mb-3">{item.title}</h1>
                   <p className="text-sm mb-8 text-gray-400">

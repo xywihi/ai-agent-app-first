@@ -1,21 +1,19 @@
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
 import server from "@/lib/server/server";
 import { reportBackendError } from "../server/reportBackendError";
-import { unstable_cache } from "next/cache";
-import { QueryKeys } from "@/app/utils/query-keys";
 import { cookies } from "next/headers";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import getUserClaimsServer from "./userClaimsServer";
 
-const _getDefaultPortfolio = async (
+const _getOwnerPortfolio = async (
   category: string,
   _cookies: ReadonlyRequestCookies
 ) => {
   try {
     const supabase = await server(_cookies);
     let data: ProcessedPortfolioWork[] = [];
+    const userId = await getUserClaimsServer();
     if (category === "all") {
-      const userId = await getUserClaimsServer();
       const { data: _data, error } = await supabase
         .from("portfolio_works")
         .select(
@@ -24,7 +22,7 @@ const _getDefaultPortfolio = async (
           portfolio_work_likes(*),
           portfolio_work_collects(*)`
         )
-        .eq("is_published", true)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false });
       data = _data as ProcessedPortfolioWork[];
       if (error) throw new Error("Failed to load portfolio works");
@@ -43,7 +41,7 @@ const _getDefaultPortfolio = async (
           portfolio_work_likes(*),
           portfolio_work_collects(*)`
           )
-          .eq("is_published", true)
+          .eq("user_id", userId)
           .eq("category_id", category_id)
           .order("created_at", { ascending: false })
           .limit(1, { referencedTable: "portfolio_work_likes" });
@@ -99,7 +97,7 @@ const _getDefaultPortfolio = async (
     });
   }
 };
-export const getDefaultPortfolio = async (category: string) => {
+export const getOwnerPortfolio = async (category: string) => {
   const _cookies = await cookies();
   // const _unstable_cache = unstable_cache(
   //   async () => await _getDefaultPortfolio(category, _cookies),
@@ -109,6 +107,6 @@ export const getDefaultPortfolio = async (category: string) => {
   //   }
   // );
   // const data = await _unstable_cache();
-  const data = await _getDefaultPortfolio(category, _cookies);
+  const data = await _getOwnerPortfolio(category, _cookies);
   return data;
 };

@@ -18,7 +18,7 @@ export const Recommands = ({
         <div className="flex flex-row gap-4">
           {recomandCards.map((card: ProcessedPortfolioWork) => (
             <figure key={card.id} className="h-full xl:max-w-60 shrink-0">
-              <Link href={`/design/detail/${card.id}`} className="relative">
+              <Link href={`/design/detail/${card.id}`} className=" relative">
                 <Image
                   width={200}
                   height={300}
@@ -26,7 +26,7 @@ export const Recommands = ({
                   src={card.portfolio_work_images[0].image_url}
                   alt="Event cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // 加载优化
-                  className="relative z-20 h-40 rounded-2xl aspect-4/3 w-full object-cover object-top select-none [-webkit-user-drag:none]"
+                  className="shadow-xl relative z-20 h-40 rounded-2xl aspect-4/3 w-full object-cover object-top select-none [-webkit-user-drag:none]"
                 />
                 <p className="absolute top-2 left-2 z-20 bg-white dark:bg-gray-700/20 backdrop-blur-md px-3 py-1 rounded-full text-sm text-white flex gap-1 items-center cursor-pointer">
                   <ThumbsUp
@@ -37,7 +37,7 @@ export const Recommands = ({
                 </p>
               </Link>
 
-              <figcaption className="w-full pt-2 flex justify-between items-center gap-2">
+              <figcaption className="w-full pt-4 flex justify-between items-center gap-2">
                 <span className="line-clamp-1 text-md font-bold">
                   {card.title}
                 </span>

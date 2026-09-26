@@ -20,20 +20,22 @@ export const HeaderNav = () => {
       data: { subscription },
     } = client.auth.onAuthStateChange(async (e, _data) => {
       if (e === "SIGNED_OUT") {
-        router.push("/login");
+        setUser(null);
         router.refresh();
+        router.push("/login");
       } else if (e === "SIGNED_IN") {
         const {
           data: { user },
         } = await client.auth.getUser();
+        setUser(user?.user_metadata as UserMetadata);
         if (user) return; // 避免重复登录
         // router.replace("/user");
         // router.back();
-        goBack();
         router.refresh();
+        goBack();
       }
-      if (_data && _data.user)
-        setUser((_data.user?.user_metadata as UserMetadata) ?? null);
+      // if (_data && _data.user)
+      //   setUser((_data.user?.user_metadata as UserMetadata) ?? null);
     });
     return () => {
       subscription.unsubscribe();

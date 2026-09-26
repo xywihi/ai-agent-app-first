@@ -6,9 +6,9 @@ export async function POST(req: Request) {
   const _cookie = await cookies();
   const supabase = await server(_cookie);
 
-  const { work_id, image_urls } = await req.json();
+  const { portfolio_id, image_urls } = await req.json();
 
-  if (!work_id || !Array.isArray(image_urls) || image_urls.length === 0) {
+  if (!portfolio_id || !Array.isArray(image_urls) || image_urls.length === 0) {
     return NextResponse.json({ error: "参数错误" }, { status: 400 });
   }
 
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const { data: work, error: workErr } = await supabase
     .from("portfolio_works")
     .select("id")
-    .eq("id", work_id)
+    .eq("id", portfolio_id)
     .single();
 
   if (workErr || !work) {
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
   // 组装批量插入数据，sort_order按数组顺序
   const insertRows = image_urls.map((url, idx) => ({
-    work_id,
+    portfolio_id,
     image_url: url,
     sort_order: idx,
   }));

@@ -8,7 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BookSearch,
   Calendar,
@@ -28,10 +28,11 @@ import { toast } from "sonner";
 
 export default function Design() {
   const [createNew, setCreateNew] = useState(false);
+
   const { data, isPending } = useQuery({
     queryKey: QueryKeys.portfolio.portfoliosAll,
     queryFn: async () => {
-      const data = await Get(`/api/user/design/portfolio`);
+      const data = await Get(`/api/user/design/portfolio/ownerPortfolio`);
       return data;
     },
   });
@@ -62,6 +63,10 @@ export default function Design() {
       {isPending ? (
         <div className="flex-1 text-center h-[calc(100vh-10rem)] flex flex-col justify-center items-center xl:text-xl text-gray-400">
           作品正在努力加载中...
+        </div>
+      ) : !data_update ? (
+        <div className="flex-1 text-center h-[calc(100vh-10rem)] flex flex-col justify-center items-center xl:text-xl text-gray-400">
+          暂无作品
         </div>
       ) : (
         data_update
@@ -101,6 +106,7 @@ const PortfolioItem = memo(function PortfolioItem({
   work: ProcessedPortfolioWork;
 }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [editable, setEditable] = useState(false);
 
   const handleToSee = () => {
@@ -112,13 +118,24 @@ const PortfolioItem = memo(function PortfolioItem({
       action: {
         label: "确认删除",
         onClick: async () => {
-          const res = await Post(`/api/user/design/portfolio/delete`, {
-            body: JSON.stringify({
-              id,
-            }),
-          });
-          if (res.status === 200) {
+          try {
+            await Post(`/api/user/design/portfolio/delete`, {
+              body: JSON.stringify({
+                id,
+              }),
+            });
+            await queryClient.invalidateQueries({
+              queryKey: QueryKeys.portfolio.portfoliosAll,
+            });
             toast.success("删除成功", {
+              position: "top-center",
+              style: {
+                backgroundColor: "#00d5be",
+                borderRadius: "8px",
+              },
+            });
+          } catch (error) {
+            toast.error("删除失败", {
               position: "top-center",
               style: {
                 backgroundColor: "#00d5be",
@@ -131,6 +148,10 @@ const PortfolioItem = memo(function PortfolioItem({
       cancel: {
         label: "取消",
         onClick: () => {},
+      },
+      style: {
+        backgroundColor: "white",
+        borderRadius: "8px",
       },
     });
   };
@@ -147,6 +168,7 @@ const PortfolioItem = memo(function PortfolioItem({
               alt={work.title}
               width={400}
               height={400}
+              loading="eager"
               className="mb-4 object-cover object-top w-full h-48 overflow-hidden"
             />
           )}
@@ -241,7 +263,7 @@ const PortfolioItem = memo(function PortfolioItem({
           <Card className="bg-white dark:bg-gray-700 w-full self-center">
             <CardContent>
               <EditePortfolioForm
-                // portfolio_data={note}
+                portfolio_data={work}
                 setEditable={setEditable}
               />
             </CardContent>

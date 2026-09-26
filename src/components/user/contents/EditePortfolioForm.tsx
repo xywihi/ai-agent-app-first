@@ -36,12 +36,22 @@ import client from "@/lib/server";
 import { useCallback } from "react";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { Post } from "@/app/utils/query";
-
+import { Switch } from "@/components/ui/switch";
+// 提交编辑作品表单
+const TOAST_STYLE_SUCCESS = {
+  backgroundColor: "#00d5be",
+  borderRadius: "8px",
+};
+const TOAST_STYLE_ERROR = {
+  backgroundColor: "#FF6470",
+  borderRadius: "8px",
+};
 const formSchema = z.object({
   title: z.string().min(2, {
     message: "标题至少2个字",
   }),
   description: z.string(),
+  is_public: z.boolean(),
   category_id: z.object({
     id: z.string(),
     name: z
@@ -66,10 +76,12 @@ export const EditePortfolioForm = ({
   const queryClient = useQueryClient();
   const {
     register,
+
     handleSubmit,
     getValues,
     setValue,
     reset,
+    getErrors,
     // watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
@@ -77,8 +89,12 @@ export const EditePortfolioForm = ({
     defaultValues: {
       title: portfolio_data?.title,
       description: portfolio_data?.description || "",
-      category_id: { id: "", name: "" },
-      tags: [],
+      is_public: portfolio_data?.is_published || false,
+      category_id: {
+        id: portfolio_data?.portfolio_categories.id,
+        name: portfolio_data?.portfolio_categories.title,
+      },
+      tags: portfolio_data?.tags,
       images: [],
     },
   });
@@ -107,96 +123,114 @@ export const EditePortfolioForm = ({
   const getFilePath = useCallback((userId: string, fileName: string) => {
     return `${userId}/${Date.now()}-${fileName}`;
   }, []);
-  // 提交编辑作品表单
-  const onSubmit = async (data: FormData, workId: string | null) => {
+
+  // workId：组件外层变量，不要再作为函数入参！！！
+  const onSubmit = async (data: FormData, workId?: string) => {
     try {
-      const _portfolio_data = {
+      // ========== 1.保存作品基础信息 ==========
+      const _portfolio_data: {
+        work: {
+          id?: string;
+          category_id: string;
+          title: string;
+          description: string;
+          tags: string[] | undefined;
+          is_published: boolean;
+        };
+      } = {
         work: {
           category_id: data.category_id.id,
           title: data.title,
           description: data.description,
           tags: data.tags,
-          is_published: true,
+          is_published: data.is_public,
         },
       };
-      const result_new_portfolio = await Post(`/api/user/design/portfolio`, {
-        body: JSON.stringify(_portfolio_data),
-      });
-      if (result_new_portfolio.error) {
-        toast.error("创建失败", {
+      if (workId) _portfolio_data.work.id = workId;
+      const result_new_portfolio = await Post(
+        `/api/user/design/portfolio${workId ? "/update" : ""}`,
+        { body: JSON.stringify(_portfolio_data) }
+      );
+      // 没有图片直接结束，不用执行上传逻辑
+      if (!data.images || data.images.length === 0) {
+        await queryClient.invalidateQueries({
+          queryKey: QueryKeys.portfolio.portfoliosAll,
+        });
+        toast.success("创建成功", {
           position: "top-center",
-          style: {
-            backgroundColor: "#FF6470",
-            borderRadius: "8px",
-          },
+          style: TOAST_STYLE_SUCCESS,
         });
+        reset();
+        window.scrollTo(0, 0);
+        setEditable(false);
         return;
-      } else {
-        if (!data.images) return;
-
-        const user = await client.auth.getUser();
-        const userId = user?.data.user?.id;
-        const imageUrls: string[] = [];
-        for (const file of data.images) {
-          // storage路径：portfolio-images/{userId}/{时间戳}-文件名
-          const filePath = getFilePath(userId!, file.name);
-          const { error: uploadErr } = await client.storage
-            .from("portfolio-images")
-            .upload(filePath, file, { cacheControl: "3600", upsert: false });
-          if (uploadErr) throw uploadErr;
-          // 获取公开访问url
-          const { data: urlData } = client.storage
-            .from("portfolio-images")
-            .getPublicUrl(filePath);
-          imageUrls.push(urlData.publicUrl);
-        }
-        const _images_data = {
-          work_id: result_new_portfolio.id,
-          image_urls: imageUrls,
-        };
-        const result_new_images = await Post(`/api/user/design/images`, {
-          body: JSON.stringify(_images_data),
-        });
-        if (result_new_images.error) {
-          toast.error("创建失败", {
-            position: "top-center",
-            style: {
-              backgroundColor: "#FF6470",
-              borderRadius: "8px",
-            },
-          });
-          return;
-        }
       }
-      // 更新(刷新)作品列表请求
-      queryClient.invalidateQueries({
+      // ========== 2.批量并发上传图片 ==========
+      const { data: claimsData, error: claimsError } =
+        await client.auth.getClaims();
+      if (claimsError || !claimsData?.claims?.sub)
+        throw new Error("用户未登录");
+      const userId = claimsData?.claims.sub;
+
+      // 并发上传所有图片
+      const uploadPromises = data.images.map(async (file) => {
+        const filePath = getFilePath(userId, file.name);
+        const { error: uploadErr } = await client.storage
+          .from("portfolio-images")
+          .upload(filePath, file, { cacheControl: "3600", upsert: false });
+
+        if (uploadErr) throw uploadErr;
+
+        const { data: urlData } = client.storage
+          .from("portfolio-images")
+          .getPublicUrl(filePath);
+
+        return urlData.publicUrl;
+      });
+
+      // 等待全部上传完成，任意一张失败直接抛异常进入catch
+      const imageUrls = await Promise.all(uploadPromises);
+
+      // ==========3.保存图片url入库 ==========
+      const _images_data = {
+        portfolio_id: workId || result_new_portfolio.id,
+        image_urls: imageUrls,
+      };
+
+      const result_new_images = await Post(`/api/user/design/images`, {
+        body: JSON.stringify(_images_data),
+      });
+
+      if (result_new_images && result_new_images.error) {
+        throw new Error("图片入库失败");
+      }
+
+      // ==========4.成功后操作 ==========
+      await queryClient.invalidateQueries({
         queryKey: QueryKeys.portfolio.portfoliosAll,
       });
       toast.success("创建成功", {
         position: "top-center",
-        style: {
-          backgroundColor: "#00d5be",
-          borderRadius: "8px",
-        },
+        style: TOAST_STYLE_SUCCESS,
       });
-      // 重置表单
       reset();
-      // 更新笔记列表
-      // refetch();
-      // 滚动到顶部
       window.scrollTo(0, 0);
       setEditable(false);
     } catch (error) {
-      console.log("error", error);
+      console.error("submit error：", error);
+      toast.error("出问题了，请重试！", {
+        position: "top-center",
+        style: TOAST_STYLE_ERROR,
+      });
     }
   };
 
   return (
     <form
       action=""
-      onSubmit={handleSubmit((data) =>
-        onSubmit(data, portfolio_data?.id ?? null)
-      )}
+      onSubmit={handleSubmit(async (data) => {
+        await onSubmit(data, portfolio_data?.id);
+      })}
     >
       <FieldGroup>
         <FieldSet>
@@ -230,10 +264,21 @@ export const EditePortfolioForm = ({
                     (portfolio_categories as PortfolioCategory[])
                   }
                 >
-                  <ComboboxInput
-                    placeholder="选择作品类型"
-                    // id="note-framework"
-                  />
+                  {!portfolio_data ? (
+                    <ComboboxInput
+                      placeholder="选择作品类型"
+
+                      // id="note-framework"
+                    />
+                  ) : (
+                    <ComboboxInput
+                      placeholder="选择一级类型"
+                      required
+                      value={portfolio_data.portfolio_categories.title}
+                      // id="note-framework"
+                    />
+                  )}
+
                   <FieldError className="text-red-500">
                     {errors.category_id?.message}
                   </FieldError>
@@ -281,10 +326,22 @@ export const EditePortfolioForm = ({
               </FieldError>
             </Field>
             <Field>
+              <FieldLabel htmlFor="portfolio-switch" className="text-xl">
+                是否公开
+              </FieldLabel>
+              <Switch
+                id="portfolio-switch"
+                className="data-unchecked:bg-gray-300 data-checked:bg-teal-300"
+                defaultChecked={portfolio_data?.is_published ?? false}
+                {...register("is_public")}
+              />
+            </Field>
+            <Field>
               <FieldLabel htmlFor="portfolio-tags" className="text-xl">
                 添加标签
               </FieldLabel>
               <CreateTags
+                defaultTags={portfolio_data?.tags ?? []}
                 getValues={getValues}
                 setValue={setValue}
                 reset={reset}
@@ -294,10 +351,11 @@ export const EditePortfolioForm = ({
               </FieldError>
             </Field>
             <Field>
-              <FieldLabel htmlFor="portfolio-description" className="text-xl">
-                作品图片
-              </FieldLabel>
-              <UpdateImages setValue={setValue} />
+              <FieldLabel className="text-xl">作品图片</FieldLabel>
+              <UpdateImages
+                setValue={setValue}
+                defaultImages={portfolio_data?.portfolio_work_images ?? []}
+              />
               <FieldError className="text-red-500">
                 {errors.description?.message}
               </FieldError>
@@ -313,10 +371,15 @@ export const EditePortfolioForm = ({
               reset();
               setEditable(false);
             }}
+            disabled={isSubmitting}
           >
             取消
           </Button>
-          <Button className="cursor-pointer hover:bg-teal-500" type="submit">
+          <Button
+            className="cursor-pointer hover:bg-teal-500"
+            type="submit"
+            disabled={isSubmitting}
+          >
             提交
           </Button>
         </div>

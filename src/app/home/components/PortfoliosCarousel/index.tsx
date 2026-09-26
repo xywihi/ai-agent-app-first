@@ -69,22 +69,25 @@ export const PortfoliosCarousel = ({
       >
         <CarouselContent className="flex-1">
           {portfolios &&
-            portfolios.map((item: ProcessedPortfolioWork, index: number) => (
-              <CarouselItem key={index}>
-                <Link href={`/design/detail/${item.id}`}>
-                  <Image
-                    width={800}
-                    height={600}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    fetchPriority={index === 0 ? "high" : "auto"} // 预加载
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    src={item.portfolio_work_images?.[0]?.image_url}
-                    alt="Event cover"
-                    className="relative z-20 aspect-video w-full object-cover object-top cursor-pointer"
-                  />
-                </Link>
-              </CarouselItem>
-            ))}
+            portfolios.map(
+              (item: ProcessedPortfolioWork, index: number) =>
+                item.portfolio_work_images?.[0]?.image_url && (
+                  <CarouselItem key={index}>
+                    <Link href={`/design/detail/${item.id}`}>
+                      <Image
+                        width={800}
+                        height={600}
+                        loading={index === 0 ? "eager" : "lazy"}
+                        fetchPriority={index === 0 ? "high" : "auto"} // 预加载
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        src={item.portfolio_work_images?.[0]?.image_url}
+                        alt="Event cover"
+                        className="relative z-20 aspect-video w-full object-cover object-top cursor-pointer"
+                      />
+                    </Link>
+                  </CarouselItem>
+                )
+            )}
         </CarouselContent>
       </CarouselComponent>
       <div className="absolute bottom-2 left-2 text-white">

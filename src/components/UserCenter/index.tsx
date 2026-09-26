@@ -14,7 +14,9 @@ export const UserCenter = ({
       className="w-full xl:w-fit py-2 px-3 xl:py-1 xl:px-3 flex gap-2 items-center border border-gray-200 dark:border-gray-700 rounded-lg group hover:text-teal-400 cursor-pointer"
     >
       <UserIcon size={16} />{" "}
-      <span className="text-nowrap">{userMetadata.username}</span>
+      <span className="inline-block text-nowrap max-w-18 truncate">
+        {userMetadata.username}
+      </span>
     </Link>
   );
 };
