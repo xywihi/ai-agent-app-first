@@ -1,11 +1,8 @@
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
 import server from "@/lib/server/server";
 import { reportBackendError } from "../server/reportBackendError";
-import { unstable_cache } from "next/cache";
-import { QueryKeys } from "@/app/utils/query-keys";
 import { cookies } from "next/headers";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import getUserClaimsServer from "./userClaimsServer";
 
 const _getDefaultPortfolio = async (
   category: string,
@@ -15,7 +12,6 @@ const _getDefaultPortfolio = async (
     const supabase = await server(_cookies);
     let data: ProcessedPortfolioWork[] = [];
     if (category === "all") {
-      const userId = await getUserClaimsServer();
       const { data: _data, error } = await supabase
         .from("portfolio_works")
         .select(
