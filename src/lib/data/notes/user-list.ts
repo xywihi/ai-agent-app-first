@@ -35,6 +35,7 @@ export const getNoteUserList = async () => {
         当你设置  count  参数时，查询结果会多出  .count  属性存放统计数字。 */
       head: false,
     })
+    .eq("is_published", true)
     .order("updated_at", { ascending: false });
   if (noteErr) throw new Error(noteErr.message);
 

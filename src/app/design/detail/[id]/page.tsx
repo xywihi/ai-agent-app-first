@@ -15,6 +15,7 @@ import { Author } from "./components/Author";
 import { LikeButton } from "@/components/design/DesignCard/components/LikeButton";
 import { CollectButton } from "@/components/design/DesignCard/components/CollectButton";
 import { GlobalLoading } from "@/components/GlobalLoading";
+import NotFound from "@/components/NotFount";
 
 export default function Design() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -63,6 +64,7 @@ export default function Design() {
     },
   });
   if (isPending) return <GlobalLoading />;
+  if (!card) return <NotFound content={"没有找到对应的设计作品"} />;
   return (
     card && (
       <div>

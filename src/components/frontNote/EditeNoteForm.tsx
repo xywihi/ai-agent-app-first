@@ -28,6 +28,7 @@ import { CreateCategory } from "./CreateCategory";
 import { Input } from "../ui/input";
 import {
   addNote,
+  getCategoryTree,
   getNoteSecondCategories,
   updateNote,
 } from "@/app/utils/api/font-notes/requery";
@@ -41,6 +42,7 @@ import { Spinner } from "../ui/spinner";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { NotebookPen } from "lucide-react";
 import client from "@/lib/server";
+import { Get } from "@/app/utils/query";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -71,11 +73,9 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export const EditeNoteForm = ({
-  root_category,
   note_data,
   setEditable,
 }: {
-  root_category: CategoryTree;
   note_data?: Note;
   setEditable: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -99,8 +99,27 @@ export const EditeNoteForm = ({
       seconde: { id: "", name: "" },
     },
   });
+  const { data: root_category, isPending: rooting } = useQuery({
+    queryKey: QueryKeys.fronend.rootCategories(),
+    // enabled: !!category_id,
+    queryFn: async () => {
+      try {
+        const { user } = await Get("/api/user");
+        if (!user) return null;
+
+        const data: CategoryTree = await getCategoryTree(user.id);
+        return data;
+      } catch (error) {
+        console.log("error", error);
+        return null;
+      }
+    },
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
   const currentContent = watch("content");
   useEffect(() => {
+    if (!root_category || !note_data) return;
     const default_root = root_category?.root.filter((item) => {
       if (item.id === note_data?.category_id) {
         return item;
@@ -165,9 +184,13 @@ export const EditeNoteForm = ({
       // 滚动到顶部
       window.scrollTo(0, 0);
       setEditable(false);
+      // 更新(刷新)笔记分类
+      // queryClient.refetchQueries({
+      //   queryKey: QueryKeys.fronend.rootCategories(),
+      // });
       // 更新(刷新)笔记列表请求
       queryClient.refetchQueries({
-        queryKey: QueryKeys.fronend.rootCategories(),
+        queryKey: QueryKeys.fronend.notesAll,
       });
       toast.success("创建成功", {
         position: "top-center",
@@ -214,7 +237,10 @@ export const EditeNoteForm = ({
                   一级类型
                 </FieldLabel>
                 <Combobox
-                  items={root_category && (root_category as CategoryTree)?.root}
+                  items={
+                    (root_category && (root_category as CategoryTree)?.root) ||
+                    []
+                  }
                 >
                   {/* {!note_data && (
                       <ComboboxInput
@@ -317,15 +343,20 @@ export const EditeNoteForm = ({
               reset();
               setEditable(false);
             }}
+            disabled={isSubmitting}
           >
             取消
           </Button>
-          <Button className="cursor-pointer hover:bg-teal-500" type="submit">
+          <Button
+            className="cursor-pointer hover:bg-teal-500"
+            type="submit"
+            disabled={isSubmitting}
+          >
             提交
           </Button>
         </div>
         {isSubmitting && (
-          <div className="flex ">
+          <div className="flex gap-2 items-center">
             <Spinner className="size-6" />
             笔记正在上传中...
           </div>

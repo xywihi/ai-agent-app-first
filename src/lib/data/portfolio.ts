@@ -1,18 +1,12 @@
 import { ProcessedPortfolioWork } from "@/app/utils/api/design/type";
-import server from "@/lib/server/server";
+import client from "@/lib/server";
 import { reportBackendError } from "../server/reportBackendError";
-import { cookies } from "next/headers";
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
-const _getDefaultPortfolio = async (
-  category: string,
-  _cookies: ReadonlyRequestCookies
-) => {
+export const getDefaultPortfolio = async (category: string) => {
   try {
-    const supabase = await server(_cookies);
     let data: ProcessedPortfolioWork[] = [];
     if (category === "all") {
-      const { data: _data, error } = await supabase
+      const { data: _data, error } = await client
         .from("portfolio_works")
         .select(
           `*, portfolio_categories(title,icon_name,id,key_name),
@@ -25,13 +19,13 @@ const _getDefaultPortfolio = async (
       data = _data as ProcessedPortfolioWork[];
       if (error) throw new Error("Failed to load portfolio works");
     } else {
-      const { data: _data, error } = await supabase
+      const { data: _data, error } = await client
         .from("portfolio_categories")
         .select("id,key_name")
         .eq("key_name", category);
       if (_data && !!_data.length) {
         const category_id = _data[0].id;
-        const { data: __data, error } = await supabase
+        const { data: __data, error } = await client
           .from("portfolio_works")
           .select(
             `*, portfolio_categories(title,icon_name,id,key_name),
@@ -54,7 +48,7 @@ const _getDefaultPortfolio = async (
     ];
 
     // 批量查询profiles
-    const { data: profiles, error: profilesError } = await supabase
+    const { data: profiles, error: profilesError } = await client
       .from("profiles")
       .select("id,display_name,avatar_url")
       .in("id", authorIds);
@@ -94,17 +88,4 @@ const _getDefaultPortfolio = async (
       meta: {},
     });
   }
-};
-export const getDefaultPortfolio = async (category: string) => {
-  const _cookies = await cookies();
-  // const _unstable_cache = unstable_cache(
-  //   async () => await _getDefaultPortfolio(category, _cookies),
-  //   [...QueryKeys.portfolio.data],
-  //   {
-  //     revalidate: 300, // 表示每 300 秒重新生成缓存
-  //   }
-  // );
-  // const data = await _unstable_cache();
-  const data = await _getDefaultPortfolio(category, _cookies);
-  return data;
 };

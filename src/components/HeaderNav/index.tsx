@@ -3,7 +3,6 @@ import { Breadcrumbs } from "../Breadcrumbs";
 import { UserCenter } from "../UserCenter";
 import { SearchAll } from "../SearchAll";
 import PerformanceClock from "../PerformanceClock";
-import LogoutButton from "../LogoutButton";
 import FullScreen from "./components/FullScreen";
 import NavMenuList from "./components/NavMenuList";
 import { useEffect, useState } from "react";
@@ -11,6 +10,7 @@ import client from "@/lib/server";
 import { UserMetadata } from "@/app/utils/api/user/type";
 import { useRouter } from "next/navigation";
 import { useCanGoBack } from "@/hooks/use-can-go-back";
+import LogoutButton from "../LogoutButton";
 export const HeaderNav = () => {
   const router = useRouter();
   const { goBack } = useCanGoBack();
@@ -26,6 +26,7 @@ export const HeaderNav = () => {
       } else if (e === "SIGNED_IN") {
         const {
           data: { user },
+          error,
         } = await client.auth.getUser();
         setUser(user?.user_metadata as UserMetadata);
         if (user) return; // 避免重复登录
@@ -63,7 +64,7 @@ export const HeaderNav = () => {
         {/* 性能时钟 */}
         <PerformanceClock />
         {/* 退出登录 */}
-        {user && <LogoutButton />}
+        {<LogoutButton user={user} />}
       </div>
     </div>
   );

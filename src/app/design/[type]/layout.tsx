@@ -1,13 +1,11 @@
 import { Icon } from "@/components/Icon";
 import { Item, ItemActions, ItemContent } from "@/components/ui/item";
-import { ChevronRight, Feather } from "lucide-react";
-import Image from "next/image";
+import { ChevronRight } from "lucide-react";
 import { cn } from "@/app/utils/tools";
 import { PortfolioCategory } from "@/app/utils/api/design/type";
 import { Suspense } from "react";
 import Link from "next/link";
 import { getPortfolioCategories } from "@/lib/data/portfolio/categories";
-import { getUserProfiles } from "@/lib/data/user";
 
 export default async function DesignLayout({
   children,
@@ -17,10 +15,11 @@ export default async function DesignLayout({
   params: Promise<{ type: string }>;
 }) {
   const { type } = await params;
-  const [user_profiles, portfolio_categories] = await Promise.all([
-    getUserProfiles(),
-    getPortfolioCategories(),
-  ]);
+  const portfolio_categories = await getPortfolioCategories();
+  // const [user_profiles, portfolio_categories] = await Promise.all([
+  //   getUserProfiles(),
+  //   getPortfolioCategories(),
+  // ]);
   const _portfolio_categories =
     portfolio_categories instanceof Error ? [] : portfolio_categories;
   return (
@@ -29,7 +28,7 @@ export default async function DesignLayout({
         <div className="min-h-[calc(100vh-10rem)] bg-gray-100 dark:bg-gray-800  rounded-2xl shadow-2xl py-8 px-6 flex flex-col justify-between">
           <div>
             <div className="w-[calc(100%+1.5rem)] mb-4 flex felx-row flex-nowrap items-center gap-6 shadow-md bg-white dark:bg-gray-700 p-4 py-8 rounded-l-2xl">
-              <div className="w-20 h-20">
+              {/* <div className="w-20 h-20">
                 {user_profiles?.avatar_url && (
                   <Image
                     width={100}
@@ -39,7 +38,7 @@ export default async function DesignLayout({
                     className={cn("w-20 h-20 rounded-full")}
                   ></Image>
                 )}
-              </div>
+              </div> */}
               <div className="flex-1">
                 <h1 className="text-2xl font-bold flex flex-row items-center gap-4">
                   设计作品集 <span>{"////////////"}</span>
@@ -112,10 +111,10 @@ export default async function DesignLayout({
             </div>
           </div>
           <div className="flex justify-between items-center mt-6">
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <Feather size={16} />
               {user_profiles?.display_name}
-            </div>
+            </div> */}
             <div className="text-sm flex flex-row text-gray-500 justify-self-center">
               有 {_portfolio_categories?.[0]?.total_count} 个设计作品
             </div>

@@ -3,9 +3,10 @@ import { getCategoryTree } from "@/app/utils/api/font-notes/requery";
 import { CategoryTree, Note } from "@/app/utils/api/font-notes/typs";
 import { Get, Post } from "@/app/utils/query";
 import { QueryKeys } from "@/app/utils/query-keys";
-import { getTime } from "@/app/utils/tools";
+import { cn, getTime } from "@/app/utils/tools";
 import { EditeNoteForm } from "@/components/frontNote/EditeNoteForm";
 import { GlobalModel } from "@/components/GlobalModel";
+import { ToTop } from "@/components/ToTop";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
@@ -19,6 +20,7 @@ import { memo, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 export default function Frontend() {
+  const [createNew, setCreateNew] = useState(false);
   const { data, isPending } = useQuery({
     queryKey: QueryKeys.fronend.notesAll,
     queryFn: async () => {
@@ -60,6 +62,31 @@ export default function Frontend() {
       ) : (
         data_update
       )}
+      <div className="fixed bottom-28 right-8 z-50 flex items-center gap-4">
+        <Tooltip disableHoverablePopup>
+          <TooltipTrigger
+            className={cn(
+              "bg-white dark:bg-gray-700 border border-gray-400 cursor-pointer shadow-xl hover:bg-teal-400 dark:bg-teal-600 font-bold py-2 px-4 rounded-full"
+            )}
+            onClick={() => setCreateNew(true)}
+          >
+            <Edit size={24} />
+          </TooltipTrigger>
+          <TooltipContent sideOffset={2} side="left">
+            创建新的设计作品
+          </TooltipContent>
+        </Tooltip>
+        <ToTop />
+        {createNew && (
+          <GlobalModel>
+            <Card className="bg-white dark:bg-gray-700 w-full self-center">
+              <CardContent>
+                <EditeNoteForm setEditable={setCreateNew} />
+              </CardContent>
+            </Card>
+          </GlobalModel>
+        )}
+      </div>
     </div>
   );
 }
@@ -67,29 +94,9 @@ export default function Frontend() {
 const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
   const router = useRouter();
   const [editable, setEditable] = useState(false);
-  const { data: root_category = {}, isPending: rooting } = useQuery({
-    queryKey: QueryKeys.fronend.rootCategories(),
-    // enabled: !!category_id,
-    queryFn: async () => {
-      try {
-        const { user } = await Get("/api/user");
-        if (!user) return null;
-        console.log("user-----", user);
 
-        const data: CategoryTree = await getCategoryTree(user.id);
-        return data;
-      } catch (error) {
-        console.log("error", error);
-        return {};
-      }
-    },
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-  });
   const handleToSee = () => {
-    router.push(
-      `/frontend/${note.id}?category_id=${note.category_id}&seconde_id=${note.sub_category_id}`
-    );
+    router.push(`/frontend/${note.owner_id}/detail/${note.id}`);
   };
   const handleToDelete = async (id: string) => {
     toast("删除笔记", {
@@ -189,11 +196,7 @@ const NoteItem = memo(function NoteItem({ note }: { note: Note }) {
         <GlobalModel>
           <Card className="bg-white dark:bg-gray-700 w-full self-center">
             <CardContent>
-              <EditeNoteForm
-                root_category={root_category as CategoryTree}
-                note_data={note}
-                setEditable={setEditable}
-              />
+              <EditeNoteForm note_data={note} setEditable={setEditable} />
             </CardContent>
           </Card>
         </GlobalModel>

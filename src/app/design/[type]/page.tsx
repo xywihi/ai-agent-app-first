@@ -1,11 +1,7 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { PortfolioList } from "./components/PortfolioList";
 import { SkeletonD } from "./components/SkeletonD";
-import { useUserQuery } from "@/hooks/use-user-query";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKeys } from "@/app/utils/query-keys";
@@ -14,13 +10,10 @@ import { Get } from "@/app/utils/query";
 export default function Design() {
   // const [showSearch, setShowSearch] = useState(false);
   // const [searchValue, setSearchValue] = useState("");
-  const { data: user } = useUserQuery();
   const { type } = useParams();
   const { data: portfolioWorks, isPending } = useQuery({
     queryKey: QueryKeys.portfolio.portfolios(type as string),
-    enabled: !!user,
     queryFn: async () => {
-      if (!user) return null;
       const data = await Get(
         `/api/user/design/portfolio/default?category=${type}`
       );

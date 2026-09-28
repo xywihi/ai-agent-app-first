@@ -42,6 +42,8 @@ export const CollapsibleItem = ({
                 return open
                   ? [fileItem.parent_id, fileItem.id as string]
                   : [fileItem.parent_id];
+              } else {
+                return open ? [fileItem.id as string] : [];
               }
             } else {
               return open

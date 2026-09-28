@@ -5,7 +5,8 @@ import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@/app/utils/query-keys";
-export default function LogoutButton() {
+import { UserMetadata } from "@/app/utils/api/user/type";
+export default function LogoutButton({ user }: { user: UserMetadata | null }) {
   const queryclient = useQueryClient();
   // 获取用户信息
   const handleSignOut = async () => {
@@ -25,8 +26,14 @@ export default function LogoutButton() {
         className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-teal-400 dark:hover:bg-teal-600 hover:text-white cursor-pointer"
         onClick={handleSignOut}
       >
-        <LogOut />
-        退出帐号
+        {user ? (
+          <>
+            <LogOut />
+            退出帐号
+          </>
+        ) : (
+          <>登录帐号</>
+        )}
       </Button>
     </div>
   );

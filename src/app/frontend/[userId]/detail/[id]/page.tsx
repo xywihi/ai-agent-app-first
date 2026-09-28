@@ -6,7 +6,7 @@ import { cn, getDateTime } from "@/app/utils/tools";
 import { getCategoryTree } from "@/lib/data/notes/categories";
 import { getNote } from "@/lib/data/notes/detail";
 import { recordNoteVisit } from "@/lib/data/notes/visit";
-import { getFrontNotesB } from "@/lib/data/back/notes";
+import NotFound from "@/components/NotFount";
 
 // frontend/[id]/page.tsx
 
@@ -34,7 +34,7 @@ export default async function Page({
     getNote(id as string),
     id && recordNoteVisit(id as string),
   ]);
-  if (!note_data) return null;
+  if (!note_data) return <NotFound content={"没有找到对应的笔记"} />;
   const root_category = await getCategoryTree(userId as string);
 
   const updateTime = getDateTime(note_data?.updated_at || 0);

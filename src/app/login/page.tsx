@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import client from "@/lib/server";
 import { useRouter } from "next/navigation";
 const formSchema = z.object({
-  username: z.string().min(2, "用户名至少2个字"),
+  email: z.string().min(2, "用户名至少2个字"),
   password: z.string(),
 });
 type FormValues = z.infer<typeof formSchema>;
@@ -19,7 +19,7 @@ export default function LoginPage() {
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
     mode: "onTouched",
@@ -29,7 +29,7 @@ export default function LoginPage() {
       error,
       data: { user },
     } = await client.auth.signInWithPassword({
-      email: data.username,
+      email: data.email,
       password: data.password,
     });
     if (error) {
@@ -73,15 +73,15 @@ export default function LoginPage() {
             </span>
           </div>
           <div className="flex flex-col w-full">
-            <label className="mb-2">用户名</label>
+            <label className="mb-2">用户邮箱</label>
             <input
-              type="text"
-              {...register("username")}
+              type="email"
+              {...register("email")}
               className="dark:bg-gray-700! border rounded-lg px-2 py-2 w-full border-teal-500 dark:border-teal-500"
             />
-            {errors.username && (
+            {errors.email && (
               <span className="text-red-500 text-sm">
-                {errors.username.message}
+                {errors.email.message}
               </span>
             )}
           </div>

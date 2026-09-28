@@ -5,11 +5,11 @@ import { cookies } from "next/headers";
 export const getPortfolioCategories = async () => {
   const _cookie = await cookies();
   const supabase = await server(_cookie);
-  const user = await supabase.auth.getUser();
-  const userId = user.data.user?.id;
-  if (!userId) {
-    throw new Error("user_id is required");
-  }
+  // const user = await supabase.auth.getUser();
+  // const userId = user.data.user?.id;
+  // if (!userId) {
+  //   throw new Error("user_id is required");
+  // }
   const { data: data, error } = await supabase
     .from("portfolio_categories")
     .select("*");
@@ -22,7 +22,7 @@ export const getPortfolioCategories = async () => {
     path: "/design/all",
     description:
       "用户界面设计，聚焦数字产品的视觉呈现与交互细节。通过布局、色彩、图标、控件等元素的系统化编排，让产品在美观的同时具备清晰的操作逻辑与一致的使用体验。",
-    user_id: userId,
+    // user_id: userId,
   };
   const totalCount = data?.reduce((acc: number, item: PortfolioCategory) => {
     acc += item.total_count;

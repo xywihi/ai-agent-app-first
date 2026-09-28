@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { cn } from "@/app/utils/tools";
 import { Post } from "@/app/utils/query";
+import { ImageUp } from "lucide-react";
 
 export function UploadAvatarApi({
   className,
@@ -24,12 +25,13 @@ export function UploadAvatarApi({
     const res = await Post("/api/user/upload-avatar", {
       body: formData,
     });
-    const data = await res.json();
-    setFileUrl(data.publicUrl);
+    if (res) {
+      setFileUrl(res.publicUrl);
+    }
     setUploading(false);
   };
   return (
-    <div className={cn("w-fit h-fit relative", className)}>
+    <div className={cn("w-fit h-fit relative group", className)}>
       <Input
         type="file"
         accept="image/*"
@@ -45,6 +47,12 @@ export function UploadAvatarApi({
         <AvatarImage src={fileUrl || avatarUrl} alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
+      <div className="hidden group-hover:block cursor-pointer bg-amber-200/40 absolute top-0 left-0 w-full h-full rounded-full">
+        <ImageUp
+          size={32}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        />
+      </div>
     </div>
   );
 }

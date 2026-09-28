@@ -1,6 +1,7 @@
 import client from "@/lib/server";
 import { CategoryItem, CategoryTree, Note, Root } from "./typs";
 import { reportErrorLog } from "@/lib/reportError";
+import getUserClaims from "@/lib/data/userClaims";
 
 // 获取公共值
 
@@ -34,7 +35,7 @@ export async function recordNoteVisit(noteId: string) {
       .insert([{ note_id: noteId, user_id: userId }]);
     return [];
   } else {
-    console.log("今日已有访问记录");
+    // console.log("今日已有访问记录");
     //更新访问时间
     await client
       .from("frontend_note_visits")
@@ -62,24 +63,30 @@ export async function getNoteSecondCategories(
   return data;
 }
 export async function getCategoryTree(userId: string) {
+  const ownerId = await getUserClaims();
+  const isOwner = userId === ownerId;
   const { data, error } = await client
     .from("note_categories")
     .select("*")
     .eq("user_id", userId)
     .order("sort_order", { ascending: true });
   if (error) throw error;
-  const { data: _noteData } = await client
+  const noteQuery = client
     .from("frontend_notes")
-    .select("id,title,sub_category_id");
-
+    .select("id,title,sub_category_id")
+    .eq("owner_id", userId);
+  if (!isOwner) {
+    noteQuery.eq("is_published", true);
+  }
+  const { data: _noteData } = await noteQuery;
   // 递归构建树，自动支持 1/2/3/N级
-  const buildTree = (list: CategoryItem[]): CategoryTree => {
+  const buildTree = (_list: CategoryItem[]): CategoryTree => {
     const map = new Map<string, CategoryItem>();
     const tree: CategoryTree = { root: [], seconde: [] };
     const root: Root[] = [];
     const _seconde: CategoryItem[] = [];
     const seconde: CategoryItem[] = [];
-    list.forEach((item) => {
+    _list.forEach((item) => {
       if (!item.parent_id) {
         root.push(item as Root);
       } else {
@@ -114,33 +121,54 @@ export async function getCategoryTree(userId: string) {
         }
       }
     });
-    tree.root = root;
-    tree.seconde = seconde;
+    const __seconde = isOwner
+      ? seconde
+      : seconde.filter((item) => item.children && item?.children?.length > 0);
+    const __root = isOwner
+      ? root
+      : root.filter((item) =>
+          __seconde.find((seconde) => seconde.parent_id === item.id)
+        );
+    tree.root = __root;
+    tree.seconde = __seconde;
     return tree;
   };
   return buildTree(data);
 }
 export async function getMCategoryTree(userId: string) {
+  const ownerId = await getUserClaims();
   const { data, error } = await client
     .from("note_categories")
     .select("*")
     .eq("user_id", userId)
     .order("sort_order", { ascending: true });
   if (error) throw error;
-  const { data: _noteData } = await client
+  const noteQuery = client
     .from("frontend_notes")
-    .select("id,title,sub_category_id");
+    .select("id,title,sub_category_id,category_id")
+    .eq("owner_id", userId);
+  if (userId !== ownerId) {
+    noteQuery.eq("is_published", true);
+  }
+  const { data: _noteData } = await noteQuery;
 
   // 递归构建树，自动支持 1/2/3/N级
   const buildTree = (list: CategoryItem[]): CategoryItem[] => {
     const map = new Map<string, CategoryItem>();
     const root: CategoryItem[] = [];
-    list.forEach((item) => {
+    if (!_noteData) return [];
+    const _list = list.filter((item) =>
+      _noteData.find(
+        (note) =>
+          note.sub_category_id === item.id || note.category_id === item.id
+      )
+    );
+    _list.forEach((item) => {
       if (!item.parent_id) {
         root.push(item);
       }
     });
-    list.forEach((item) => {
+    _list.forEach((item) => {
       if (item.type === "folder") {
         map.set(item.id as string, { ...item, children: [] });
       }
@@ -167,7 +195,10 @@ export async function getMCategoryTree(userId: string) {
     root.forEach((item) => {
       item.children = map.get(item.id as string)?.children;
     });
-    return root;
+    const __root = root.filter(
+      (item) => item.children && item?.children?.length > 0
+    );
+    return __root;
   };
   return buildTree(data);
 }
@@ -239,12 +270,16 @@ export async function updateNote(note: Note) {
 }
 // 查询笔记
 export async function getNote(noteId: string) {
-  const { data } = await client
-    .from("frontend_notes")
-    .select("*")
-    .eq("id", noteId)
-    .single();
-  return data;
+  try {
+    const { data } = await client
+      .from("frontend_notes")
+      .select("*")
+      .eq("id", noteId)
+      .single();
+    return data;
+  } catch (error) {
+    return null;
+  }
 }
 
 // 新增类别

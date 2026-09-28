@@ -16,6 +16,7 @@ import { getOwnerPortfolio } from "@/lib/data/ownerPortfolio";
 import { getNewNotes } from "@/lib/data/notes/new-notes";
 import { getUserList } from "@/lib/data/user/user-list";
 import Link from "next/link";
+import { UploadAvatarApi } from "@/components/user/UploadAvatar";
 export default async function User() {
   const [user, user_profiles, portfolioss_data, notes_data, _users] =
     await Promise.all([
@@ -45,17 +46,14 @@ export default async function User() {
             <div>
               <div>
                 <p className="text-gray-400">头像</p>
-                <p className="py-2 mb-2">
+                <div className="py-2 mb-2">
                   {user_profiles?.avatar_url && (
-                    <Image
-                      src={user_profiles?.avatar_url}
-                      width={50}
-                      height={50}
-                      alt="avatar"
-                      className="rounded-full"
+                    <UploadAvatarApi
+                      className="my-4"
+                      avatarUrl={user_profiles?.avatar_url}
                     />
                   )}
-                </p>
+                </div>
               </div>
               <div>
                 <p className="text-gray-400">昵称</p>
@@ -108,7 +106,7 @@ export default async function User() {
         <div className="overflow-y-scroll pb-4 h-[calc(100vh-16rem)]">
           {portfolioss_data && !portfolioss_data.list?.length && (
             <p className="text-gray-400 text-center h-full flex flex-col justify-center">
-              暂无笔记
+              暂无作品
             </p>
           )}
           {portfolioss_data?.list?.map((item: ProcessedPortfolioWork) => {
@@ -182,7 +180,7 @@ export default async function User() {
             {notes_data.list?.map((item: Note) => {
               return (
                 <Link
-                  href={`/frontend/${item.id}?category_id=${item.category_id}&seconde_id=${item.sub_category_id}`}
+                  href={`/frontend/${item.owner_id}/detail/${item.id}`}
                   key={item.id}
                   className="block mb-4 p-4 bg-white dark:bg-gray-700 rounded-2xl shadow-xl cursor-pointer transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
                 >

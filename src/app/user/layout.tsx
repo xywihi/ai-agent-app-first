@@ -7,7 +7,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { UploadAvatarApi } from "@/components/user/UploadAvatar";
+import Image from "next/image";
 import { Suspense } from "react";
 import { Icon } from "@/components/Icon";
 import { getUserInfo, getUserProfiles } from "@/lib/data/user";
@@ -73,9 +73,12 @@ export default async function UserLayout({
                 </DialogTrigger>
                 <DialogContent className="bg-white dark:bg-gray-700/40 backdrop-blur-md flex flex-col justify-center items-center gap-4">
                   <h1 className="text-2xl font-bold">修改头像</h1>
-                  <UploadAvatarApi
-                    className="my-4"
-                    avatarUrl={user_profiles?.avatar_url}
+                  <Image
+                    src={user_profiles?.avatar_url}
+                    width={50}
+                    height={50}
+                    alt="avatar"
+                    className="rounded-full my-4"
                   />
                 </DialogContent>
               </Dialog>
