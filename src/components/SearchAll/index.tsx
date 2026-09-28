@@ -129,7 +129,7 @@ export const SearchAll = () => {
                         .slice(0, !keyValue ? 4 : data.length)
                         ?.map((item: Note) => (
                           <Link
-                            href={`/frontend/${item.id}?category_id=${item.category_id}&seconde_id=${item.sub_category_id}`}
+                            href={`/frontend/${item.owner_id}/detail/${item.id}`}
                             className="flex items-center justify-between gap-2 p-2 hover:bg-white dark:bg-gray-700 hover:text-teal-400 cursor-pointer"
                             key={item.id}
                             onClick={() => {

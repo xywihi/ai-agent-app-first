@@ -25,7 +25,7 @@ export async function GET(req: Request) {
   const { data: note_visits_data, error: note_error } = await supabase
     .from("frontend_note_visits")
     .select(
-      `*, frontend_notes(title,category_id,sub_category_id,id,note_categories(name))`
+      `*, frontend_notes(title,category_id,sub_category_id,owner_id,id,note_categories(name))`
     )
     .gte("visited_at", oneWeekAgo.toISOString())
     .order("visited_at", { ascending: false });

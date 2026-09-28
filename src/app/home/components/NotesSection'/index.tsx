@@ -82,7 +82,7 @@ export const NotesSection = async <
             {list.map((item: Note, index: number) => (
               // 解决border影响元素高度问题
               <Link
-                href={`/frontend/${item.id}?category_id=${item.category_id}&seconde_id=${item.sub_category_id}`}
+                href={`/frontend/${item.owner_id}/detail/${item.id}`}
                 key={index}
                 className="block h-11 relative group"
               >

@@ -51,6 +51,7 @@ export const Record = () => {
                       alt={item.portfolio_works.title}
                       width={400}
                       height={400}
+                      loading="eager"
                       className="object-cover object-top w-full h-48 overflow-hidden hidden lg:block"
                     />
                     <div className="p-4">
@@ -100,7 +101,7 @@ export const Record = () => {
                     className="bg-white dark:bg-gray-700 rounded-2xl overflow-hidden shadow-xl transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
                     onClick={() => {
                       router.push(
-                        `/frontend?category_id=${item.frontend_notes.category_id}&seconde_id=${item.frontend_notes.sub_category_id}&note_id=${item.frontend_notes.id}`
+                        `/frontend/${item.frontend_notes.owner_id}/detail/${item.frontend_notes.id}`
                       );
                     }}
                   >
