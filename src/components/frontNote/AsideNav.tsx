@@ -161,10 +161,7 @@ export const AsideNav = () => {
                   <GlobalModel>
                     <Card className="bg-white dark:bg-gray-700 w-full self-center">
                       <CardContent>
-                        <EditeNoteForm
-                          root_category={root_category as CategoryTree}
-                          setEditable={setEditable}
-                        />
+                        <EditeNoteForm setEditable={setEditable} />
                       </CardContent>
                     </Card>
                   </GlobalModel>

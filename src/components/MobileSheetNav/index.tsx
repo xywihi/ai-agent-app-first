@@ -157,7 +157,7 @@ export function MobileSheetNav() {
             {/* <MusicPlayer />
             <hr className="my-4 border-gray-200" /> */}
             {/* 退出登录 */}
-            {user && <LogoutButton />}
+            {<LogoutButton user={user} />}
           </SheetFooter>
         </SheetContent>
       </DialogPortal>
