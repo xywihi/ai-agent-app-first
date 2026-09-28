@@ -34,26 +34,16 @@ export const ConverHistoryList = () => {
     queryKey: QueryKeys.aiChat.history,
     queryFn: async () => {
       try {
-        const data = await client.auth.getUser();
-        const user = Schema.safeParse(data.data);
-        if (user.success) {
-          const result_converList = await getConverHistoryList(
-            user?.data?.user.id as string
-          );
-          const result = ConverListSchema.safeParse(result_converList);
-          if (result.success) {
-            const filterList = result.data.filter(
-              (item) => item.user_id.toString() === user.data.user.id
-            );
-            return filterList;
-          } else {
-            throw new Error(result.error.message);
-          }
+        const result_converList = await getConverHistoryList();
+        const result = ConverListSchema.safeParse(result_converList);
+        if (result.success) {
+          return result.data;
         } else {
-          throw new Error(user.error.message);
+          throw new Error(result.error.message);
         }
       } catch (error) {
         console.log("error", error);
+        return [];
       }
     },
     staleTime: Infinity,
@@ -61,13 +51,11 @@ export const ConverHistoryList = () => {
   });
   const { mutate: mutateCreate, isPending: isLoadingCreate } = useMutation({
     mutationFn: async () => {
-      const data_user = await client.auth.getUser();
-      const user = Schema.safeParse(data_user.data);
-      if (user.success) {
-        const data_create = await createConver(user?.data?.user.id);
+      try {
+        const data_create = await createConver();
         return data_create;
-      } else {
-        throw new Error(user.error.message);
+      } catch (error) {
+        throw new Error("新建对话失败");
       }
     },
     onSuccess: (data_id) => {
@@ -87,12 +75,7 @@ export const ConverHistoryList = () => {
       queryClient.invalidateQueries({
         queryKey: QueryKeys.aiChat.history,
       });
-      if (data[0]) {
-        router.push(`/chat/${data[0].id}`);
-      } else {
-        router.refresh();
-      }
-      console.log("variables", variables);
+      router.replace(`/chat`);
     },
   });
   return (
@@ -108,7 +91,7 @@ export const ConverHistoryList = () => {
       </div>
       <div className="h-[calc(100%-3rem)] overflow-auto">
         {/* <hr className="my-4 opacity-50" /> */}
-        {data?.length === 0 && !isPending && (
+        {data && data?.length === 0 && !isPending && (
           <div className="flex flex-row justify-center items-center h-[calc(100%-5rem)] text-gray-500">
             <span>会话历史为空</span>
           </div>
@@ -149,6 +132,10 @@ export const ConverHistoryList = () => {
                     cancel: {
                       label: "取消",
                       onClick: () => {},
+                    },
+                    style: {
+                      background: "white",
+                      color: "black",
                     },
                   });
                 }}

@@ -18,22 +18,17 @@ const Schema = z.object({
 });
 // type User = z.infer<typeof Schema>;
 export default function Chat() {
-  const [userId, setUserId] = useState<string | null>(null);
   // const user = queryClient.getQueryData<{ id: string } | undefined>([
   //   "authUser",
   // ]);
   const { data = [], isPending } = useQuery({
     queryKey: QueryKeys.aiChat.history,
-    enabled: !userId,
     queryFn: async () => {
       try {
         const data = await client.auth.getUser();
         const user = Schema.safeParse(data.data);
         if (user.success) {
-          setUserId(user.data.user.id);
-          const result = await getConverHistoryList(
-            user?.data?.user.id as string
-          );
+          const result = await getConverHistoryList();
           return result;
         } else {
           throw new Error(user.error.message);

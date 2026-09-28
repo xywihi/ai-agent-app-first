@@ -1,11 +1,6 @@
 import { useChat } from "@ai-sdk/react";
-import { Suspense, useEffect, useState } from "react";
-import {
-  addHistoryMessage,
-  ConverListSchema,
-  getConverHistoryList,
-  getHistoryMessages,
-} from "@/app/utils/api/chat";
+import { Suspense, useEffect } from "react";
+import { addHistoryMessage, getHistoryMessages } from "@/app/utils/api/chat";
 import ConversateInput from "@/app/chat/[id]/components/ConversateInput";
 import { reportErrorLog } from "@/lib/reportError";
 import { useParams } from "next/navigation";
@@ -13,56 +8,12 @@ import { DefaultChatTransport } from "ai";
 import { MessageList } from "../MessageLIst";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKeys } from "@/app/utils/query-keys";
-import z from "zod";
-import client from "@/lib/server";
 import notFound from "../../not-found";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const Schema = z.object({
-  user: z.object({
-    id: z.string(),
-    user_metadata: z.object({
-      email: z.string(),
-      username: z.string(),
-    }),
-  }),
-});
-
 export const ConverBox = () => {
-  const params = useParams();
-  const conversationId = params.id as string;
-  const [userId, setUserId] = useState<string | null>(null);
-  // const converList: ConverListType = useQueryClient().getQueryData([
-  //   "converHistories",
-  // ]) as [];
-  const { data: converList = [], isPending: converListPending } = useQuery({
-    queryKey: QueryKeys.aiChat.history,
-    enabled: !userId,
-    queryFn: async () => {
-      try {
-        const data = await client.auth.getUser();
-        const user = Schema.safeParse(data.data);
-        if (user.success) {
-          setUserId(user.data.user.id);
-          const result_converList = await getConverHistoryList(
-            user?.data?.user.id as string
-          );
-          const result = ConverListSchema.safeParse(result_converList);
-          if (result.success) {
-            return result.data;
-          } else {
-            throw new Error(result.error.message);
-          }
-        } else {
-          throw new Error(user.error.message);
-        }
-      } catch (error) {
-        console.log("error", error);
-      }
-    },
-    staleTime: Infinity, //不过期
-    refetchOnWindowFocus: false,
-  });
+  const { id } = useParams();
+  const conversationId = id as string;
   const {
     data: { historyData: initialMessages, currentItem } = {
       historyData: [],
@@ -71,19 +22,11 @@ export const ConverBox = () => {
     isPending: historyPending,
     error: history_rror,
   } = useQuery({
-    queryKey: QueryKeys.aiChat.message(params.id as string),
+    queryKey: QueryKeys.aiChat.message(id as string),
     queryFn: async () => {
-      console.log("converList", converList);
-      if (
-        !converList ||
-        converList.findIndex((item) => item.id.toString() === params.id) === -1
-      ) {
-        throw new Error("会话不存在");
-      }
-
-      return getHistoryMessages(params.id as string);
+      return getHistoryMessages(id as string);
     },
-    enabled: !!converList,
+    enabled: !!id,
     refetchOnWindowFocus: false,
   });
 
@@ -130,8 +73,8 @@ export const ConverBox = () => {
   }, [initialMessages, setMessages]);
   //新建对话
   if (history_rror) {
-    console.log("error---", history_rror);
-    notFound();
+    // 返回404
+    return notFound();
   }
   return (
     <div className="lg:px-4 relative h-[calc(100vh-4rem)] lg:h-[calc(100vh-8rem)] xl:h-[calc(100vh-10rem)] lg:pt-0 pb-12 max-w-4xl  w-full xl:w-240">
@@ -160,7 +103,7 @@ export const ConverBox = () => {
           sendMessage={sendMessage}
           status={status}
           error={error}
-          isPending={converListPending}
+          isPending={historyPending}
           currentItem={currentItem}
         />
       </Suspense>

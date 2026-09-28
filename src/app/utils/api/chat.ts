@@ -1,6 +1,7 @@
 import { UIDataTypes, UIMessagePart, UITools } from "ai";
 import client from "@/lib/server";
 import z from "zod";
+import getUserClaims from "@/lib/data/userClaims";
 export interface ConverHistoryListInterface {
   id: number;
   conversation_name: string;
@@ -55,23 +56,18 @@ export const addHistoryMessage = async (
   }
 };
 
-export const createConver = async (user_id: string) => {
-  const { error } = await client
+export const createConver = async () => {
+  const userId = await getUserClaims();
+  const { data, error } = await client
     .from("conversation_history_list")
-    .insert({ conversation_name: "新建对话", user_id });
+    .insert({ conversation_name: "新建对话", user_id: userId })
+    .select()
+    .single();
+
   if (error) {
     throw new Error("新建对话失败");
   }
-  const { data: historyData, error: historyError } = await client
-    .from("conversation_history_list")
-    .select("*")
-    .eq("user_id", user_id);
-
-  if (historyError) {
-    console.log("historyError", historyError);
-    return;
-  }
-  return [...historyData][0]?.id;
+  return data?.id;
 };
 export const ConverListSchema = z.array(
   z.object({
@@ -80,11 +76,12 @@ export const ConverListSchema = z.array(
     user_id: z.string(),
   })
 );
-export const getConverHistoryList = async (user_id: string) => {
+export const getConverHistoryList = async () => {
+  const userId = await getUserClaims();
   const { data, error } = await client
     .from("conversation_history_list")
     .select("id,user_id,conversation_name")
-    .eq("user_id", user_id);
+    .eq("user_id", userId);
   if (error) {
     console.log("error", error);
     return;
