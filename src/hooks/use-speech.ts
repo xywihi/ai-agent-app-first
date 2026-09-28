@@ -14,23 +14,28 @@ export function useSpeech() {
   const isSupported =
     typeof window !== "undefined" && "speechSynthesis" in window;
   useEffect(() => {
+    if (!isSupported) return;
+    const synth = window.speechSynthesis;
     //获取语音列表
     const loadVoices = () => {
-      const list = window.speechSynthesis.getVoices();
+      if (!synth) return;
+      const list = synth?.getVoices();
       setVoices(list);
     };
     loadVoices();
 
-    window.speechSynthesis.onvoiceschanged = loadVoices;
+    synth.onvoiceschanged = loadVoices;
     //页面卸载停止朗读
     return () => {
-      window.speechSynthesis.cancel();
+      synth.cancel();
     };
   }, []);
   const speak = useCallback(
     (text: string) => {
-      if (!window.speechSynthesis || !text.trim()) return;
-      window.speechSynthesis.cancel();
+      if (!isSupported) return;
+      const synth = window.speechSynthesis;
+      if (!synth || !text.trim()) return;
+      synth.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "zh-CN";
       utterance.rate = 1; // 语速
@@ -47,12 +52,14 @@ export function useSpeech() {
       utterance.onerror = () => {
         setIsSpeaking(false);
       };
-      window.speechSynthesis.speak(utterance);
+      synth.speak(utterance);
     },
     [voices]
   );
   const stop = useCallback(() => {
-    window.speechSynthesis?.cancel();
+    if (!isSupported) return;
+    const synth = window.speechSynthesis;
+    synth?.cancel();
     setIsSpeaking(false);
   }, []);
   return {
