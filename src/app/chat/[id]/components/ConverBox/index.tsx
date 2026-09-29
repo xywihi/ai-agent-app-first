@@ -68,7 +68,6 @@ export const ConverBox = () => {
   });
   useEffect(() => {
     if (!initialMessages.length) return;
-    console.log("messages", initialMessages);
     setMessages(initialMessages);
   }, [initialMessages, setMessages]);
   //新建对话

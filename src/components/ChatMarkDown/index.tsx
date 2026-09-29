@@ -78,7 +78,7 @@ export const ChatMarkDown = ({
           ),
           p: ({ children, node, ...props }) => {
             return (
-              <div className={`my-1 leading-relaxed indent-8`} {...props}>
+              <div className={`my-1 leading-relaxed`} {...props}>
                 {children}
               </div>
             );

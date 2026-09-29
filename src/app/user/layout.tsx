@@ -42,12 +42,6 @@ export default async function UserLayout({
       path: "/user/profile",
       children: null,
     },
-    {
-      name: "用户统计",
-      icon: "chart-no-axes-combined",
-      path: "/user/statistic",
-      children: null,
-    },
   ];
   const [user, user_profiles] = await Promise.all([
     getUserInfo(),

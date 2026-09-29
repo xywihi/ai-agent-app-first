@@ -202,66 +202,68 @@ export default async function User() {
         </div>
       </div>
       {/* 用户统计 */}
-      <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
-        <div>
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">用户统计</h1>
-            <Link
-              href="/user/ui"
-              className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 block xl:hidden"
-            >
-              查看详情
-            </Link>
-            <div className="gap-2 items-center hidden xl:flex">
-              <Users size={14} />
-              <span>{users?.totalCount ?? 0}</span>
+      {user?.email === "anli_ang@yeah.net" && (
+        <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold">用户统计</h1>
+              <Link
+                href="/user/ui"
+                className="text-gray-400 px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 block xl:hidden"
+              >
+                查看详情
+              </Link>
+              <div className="gap-2 items-center hidden xl:flex">
+                <Users size={14} />
+                <span>{users?.totalCount ?? 0}</span>
+              </div>
+            </div>
+            <hr className="my-4 border-gray-200 dark:border-gray-700" />
+            <div className="overflow-y-scroll pb-4 h-[calc(100vh-16rem)]">
+              {users &&
+                users.users?.map((item: User) => {
+                  return (
+                    <div
+                      key={item.id}
+                      className="mb-4 p-4 bg-white dark:bg-gray-700 rounded-2xl shadow-xl cursor-pointer transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
+                    >
+                      <div className="flex items-center">
+                        <Avatar className="w-14 h-14 flex shrink-0 rounded-full after:absolute after:inset-0 after:rounded-full after:mix-blend-darken after:border-0">
+                          <AvatarImage
+                            src={item?.avatar_url}
+                            alt="@shadcn"
+                            className="border-none"
+                          />
+                          <AvatarFallback>CN</AvatarFallback>
+                          <AvatarBadge className="bg-green-600 dark:bg-green-800" />
+                        </Avatar>
+                        <div className="flex-1 ml-4">
+                          <p className="flex justify-between items-center mb-2">
+                            <span className="text-xl font-medium leading-none">
+                              {item.display_name}
+                            </span>
+                            {item.authority === "admin" && (
+                              <span className="px-2 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 rounded-xl">
+                                管理员
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.email}
+                          </p>
+                        </div>
+                      </div>
+                      <hr className="my-4 border-gray-200 dark:border-gray-700" />
+                      <p className="text-sm text-gray-400">
+                        最近登录于：{getTime(item.last_sign_in_at as string)}
+                      </p>
+                    </div>
+                  );
+                })}
             </div>
           </div>
-          <hr className="my-4 border-gray-200 dark:border-gray-700" />
-          <div className="overflow-y-scroll pb-4 h-[calc(100vh-16rem)]">
-            {users &&
-              users.users?.map((item: User) => {
-                return (
-                  <div
-                    key={item.id}
-                    className="mb-4 p-4 bg-white dark:bg-gray-700 rounded-2xl shadow-xl cursor-pointer transform hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
-                  >
-                    <div className="flex items-center">
-                      <Avatar className="w-14 h-14 flex shrink-0 rounded-full after:absolute after:inset-0 after:rounded-full after:mix-blend-darken after:border-0">
-                        <AvatarImage
-                          src={item?.avatar_url}
-                          alt="@shadcn"
-                          className="border-none"
-                        />
-                        <AvatarFallback>CN</AvatarFallback>
-                        <AvatarBadge className="bg-green-600 dark:bg-green-800" />
-                      </Avatar>
-                      <div className="flex-1 ml-4">
-                        <p className="flex justify-between items-center mb-2">
-                          <span className="text-xl font-medium leading-none">
-                            {item.display_name}
-                          </span>
-                          {item.authority === "admin" && (
-                            <span className="px-2 py-1 text-xs font-medium bg-gray-200 dark:bg-gray-700 rounded-xl">
-                              管理员
-                            </span>
-                          )}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.email}
-                        </p>
-                      </div>
-                    </div>
-                    <hr className="my-4 border-gray-200 dark:border-gray-700" />
-                    <p className="text-sm text-gray-400">
-                      最近登录于：{getTime(item.last_sign_in_at as string)}
-                    </p>
-                  </div>
-                );
-              })}
-          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

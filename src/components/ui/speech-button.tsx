@@ -6,7 +6,7 @@ import { Button } from "./button";
 import { cn } from "@/lib/utils";
 
 interface SpeechButtonProps {
-  text: string;
+  text: string | undefined;
   className?: string;
 }
 
@@ -21,7 +21,7 @@ export function SpeechButton({ text, className }: SpeechButtonProps) {
         className,
         "cursor-pointer hover:bg-teal-400 dark:bg-teal-600"
       )}
-      onClick={() => (isSpeaking ? stop() : speak(text))}
+      onClick={() => (isSpeaking ? stop() : text && speak(text))}
     >
       {isSpeaking ? <VolumeX size={16} /> : <Volume2 size={16} />}
     </Button>

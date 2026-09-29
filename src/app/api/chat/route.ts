@@ -1,22 +1,18 @@
-import { createOpenAI } from "@ai-sdk/openai";
 import {
   streamText,
-  UIMessage,
   convertToModelMessages,
   createUIMessageStreamResponse,
   toUIMessageStream,
   isStepCount,
-  ContentPart,
-  ToolSet,
+  hasToolCall,
 } from "ai";
-import { z } from "zod";
 import {
-  weatherTool,
   convertFahrenheitToCelsiusTool,
   dateTimeTool,
   frontEndQuestionTool,
 } from "../../utils/chatTools";
 import { reportBackendError } from "@/lib/server/reportBackendError";
+import { weatherTool } from "@/app/utils/chatTools/weather";
 // const mimo = createOpenAI({
 //   baseURL: "https://api.xiaomimimo.com/v1",
 //   // baseURL: "https://open.bigmodel.cn/api/paas/v4",
@@ -49,7 +45,7 @@ export async function POST(req: Request) {
       //         answer: z.string().describe("参考答案"),
       //       }),
       //     }),
-      stopWhen: isStepCount(1), // stop when the step count is 5，可以根据需要进行调整，但国内模型不支持
+      stopWhen: isStepCount(hasToolCall("dateTimeTool") ? 1 : 2), // stop when the step count is 5，可以根据需要进行调整，但国内模型不支持
       tools: {
         weatherTool,
         convertFahrenheitToCelsiusTool,
@@ -75,6 +71,8 @@ export async function POST(req: Request) {
           requestId: requestId,
         },
       },
+      // toolChoice: "required",
+      toolChoice: hasToolCall("dateTimeTool") ? "required" : "none",
       // onFinish: (msg) => {
       //   console.log("onFinish", msg);
       //   const userMessage = messages[messages.length - 1];

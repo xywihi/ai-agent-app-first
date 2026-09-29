@@ -44,7 +44,7 @@ export const AiAnswer = ({ type, data }: PropsInterface) => {
       </div>
     );
   } else if (type === "pre" && typeof data === "string") {
-    return <pre>{data}</pre>;
+    return <pre className="leading-relaxed">{data}</pre>;
   }
   return <ChatMarkDown content={data as string} />;
 };

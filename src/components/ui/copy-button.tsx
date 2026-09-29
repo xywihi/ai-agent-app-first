@@ -7,12 +7,13 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface CopyButtonProps {
-  text: string;
+  text: string | undefined;
   className?: string;
 }
 export function CopyButton({ text, className }: CopyButtonProps) {
   const { copied, copyToClipboard } = useCopyToClipboard();
   const handleCopy = async () => {
+    if (!text) return;
     const success = await copyToClipboard(text);
     if (success) {
       toast.success("复制成功", {

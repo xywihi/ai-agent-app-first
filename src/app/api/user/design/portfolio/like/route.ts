@@ -8,8 +8,9 @@ export async function POST(req: Request) {
   const supabase = await server(_cookie);
   const { workId, id } = await req.json();
   const { data: _user_data } = await supabase.auth.getUser();
-  if (!_user_data.user)
+  if (!_user_data.user) {
     return NextResponse.json({ error: "未登录" }, { status: 401 });
+  }
 
   if (!workId) {
     return NextResponse.json({ error: "参数错误" }, { status: 400 });

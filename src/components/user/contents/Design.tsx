@@ -138,7 +138,7 @@ const PortfolioItem = memo(function PortfolioItem({
             toast.error("删除失败", {
               position: "top-center",
               style: {
-                backgroundColor: "#00d5be",
+                backgroundColor: "#FF6470",
                 borderRadius: "8px",
               },
             });

@@ -58,39 +58,6 @@ export const frontEndQuestionTool = tool({
     }
   },
 });
-export const weatherTool = tool({
-  description: "获取某个地点的天气情况（以华氏温度为单位）",
-  inputSchema: z.object({
-    location: z.string().describe("获取天气信息的位置"),
-  }),
-  outputSchema: z.object({
-    location: z.string(),
-    temperature: z.number(),
-  }),
-  contextSchema: z.object({
-    conversationId: z.string(),
-    requestId: z.string(),
-  }),
-  execute: async ({ location }, { context }) => {
-    const temperature = Math.round(Math.random() * (90 - 32) + 32);
-    try {
-      return {
-        location,
-        temperature,
-      };
-    } catch (err) {
-      await reportBackendError({
-        conversationId: context.conversationId,
-        requestId: context.requestId,
-        path: "/api/chat tool execute",
-        errorType: "tool_execute_error",
-        error: err,
-        meta: { toolName: "weatherTool", input: location },
-      });
-      throw err; //继续抛出，让AI-SDK生成output-error tool part给到前端
-    }
-  },
-});
 
 export const convertFahrenheitToCelsiusTool = tool({
   description: "将华氏温度转换为摄氏温度",
@@ -125,7 +92,7 @@ export const convertFahrenheitToCelsiusTool = tool({
 });
 
 export const dateTimeTool = tool({
-  description: "获取当前日期和时间",
+  description: "获取当前日期和时间,此工具调用完成后，直接返回结果",
   inputSchema: z.object({}),
   contextSchema: z.object({
     conversationId: z.string(),
