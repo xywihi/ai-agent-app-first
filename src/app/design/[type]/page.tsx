@@ -28,11 +28,17 @@ export default function Design() {
     <div>
       <div className="mb-6 flex flex-col xl:flex-row gap-4 justify-between items-center">
         <h1 className="text-gray-400 xl:text-2xl">
-          设计作品{" "}
-          <span className="underline">
-            {portfolioWorks && portfolioWorks.list.length}
-          </span>{" "}
-          个
+          {isPending ? (
+            "作品加载中..."
+          ) : (
+            <>
+              设计作品{" "}
+              <span className="underline">
+                {portfolioWorks && portfolioWorks.list.length}
+              </span>{" "}
+              个
+            </>
+          )}
         </h1>
         {/* 搜索框 */}
         {/* <div className="relative w-[calc(100%-1.5rem)] xl:w-auto">

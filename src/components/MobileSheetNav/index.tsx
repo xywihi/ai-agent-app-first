@@ -91,6 +91,11 @@ export function MobileSheetNav() {
         path: "/ai-agent",
         icon: "computer",
       },
+      {
+        name: "关于我",
+        path: "/about-me",
+        icon: "feather",
+      },
     ];
   }, []);
   useEffect(() => {

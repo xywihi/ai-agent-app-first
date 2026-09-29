@@ -47,12 +47,12 @@ export const HomeHero = () => {
           喜欢把设计思维、现代 Web 技术与 AI 融合， 构建真正可以使用的产品。
         </p>
         <div className="flex justify-center flex-wrap gap-20 mt-8 text-lg">
-          <span className="font-bold cursor-pointer hover:text-teal-400">
+          {/* <span className="font-bold cursor-pointer hover:text-teal-400">
             [查看我的作品]
           </span>
           <span className="font-bold cursor-pointer hover:text-teal-400">
             [体验AI Agent]
-          </span>
+          </span> */}
           {/* <Badge
             className="bg-gray-100 dark:bg-gray-700 text-gray-400"
             variant="secondary"
