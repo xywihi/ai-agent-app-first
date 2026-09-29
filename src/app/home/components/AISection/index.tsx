@@ -1,4 +1,5 @@
 "use client";
+import { createConver, updateConverHistoryList } from "@/app/utils/api/chat";
 import { cn } from "@/app/utils/tools";
 import { GroundGlassCard } from "@/components/GroundGlassCard";
 import { MovingBorder } from "@/components/MovingBorder";
@@ -7,13 +8,15 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useUserQuery } from "@/hooks/use-user-query";
+import { useMutation } from "@tanstack/react-query";
 import { Bot } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const AISection = () => {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [inputValue, setInputValue] = useState<string>("");
   const { data: user, error, isPending } = useUserQuery();
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -21,17 +24,21 @@ export const AISection = () => {
     });
     return () => clearTimeout(timer);
   }, []);
-  const handleSendMessage = async () => {
-    // const response = await fetch("/api/chat", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ message }),
-    // });
-    // const data = await response.json();
-    // return data;
-  };
+  const { mutate: mutateCreate, isPending: isLoadingCreate } = useMutation({
+    mutationFn: async () => {
+      try {
+        if (!inputValue) return;
+        const data_create = await createConver();
+        return data_create;
+      } catch (error) {
+        throw new Error("新建对话失败");
+      }
+    },
+    onSuccess: (data_id) => {
+      if (!data_id) return;
+      router.push(`/chat/${data_id}?message=${inputValue}`);
+    },
+  });
   return (
     <GroundGlassCard
       className={cn("w-[calc(100%-2rem)] 2xl:max-w-1/4 max-w-lg")}
@@ -74,6 +81,8 @@ export const AISection = () => {
   /> */}
             <ButtonGroup className="w-full">
               <Input
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
                 id="input-button-group"
                 placeholder="给AI助手发消息..."
                 className="h-full bg-gray-100 dark:bg-gray-800 border-none rounded-lg outline-none focus:outline-none focus-visible:ring-0" //清楚input的默认样式
@@ -81,9 +90,9 @@ export const AISection = () => {
               <Button
                 size={"lg"}
                 className="h-12 bg-teal-400 dark:bg-teal-600 text-white rounded-lg hover:bg-teal-400 dark:hover:bg-teal-600 hover:text-white"
-                onClick={handleSendMessage}
+                onClick={() => mutateCreate()}
               >
-                <b>开始聊天</b>
+                <b>{isLoadingCreate ? "对话请求..." : "开始聊天"}</b>
               </Button>
             </ButtonGroup>
 

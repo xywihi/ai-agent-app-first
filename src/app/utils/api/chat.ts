@@ -88,7 +88,6 @@ export const getConverHistoryList = async () => {
   }
   const converList = ConverListSchema.safeParse(data);
   if (converList.success) {
-    console.log("conversation_history_list data", data);
     return converList.data;
   } else {
     console.log("error_获取对话历史失败", converList.error);

@@ -1,8 +1,11 @@
+"use client";
 import { useChat } from "@ai-sdk/react";
 import { memo, useCallback, useEffect, useState } from "react";
 import { updateConverHistoryList } from "@/app/utils/api/chat";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Send } from "lucide-react";
+import { QueryKeys } from "@/app/utils/query-keys";
+import { useQueryClient } from "@tanstack/react-query";
 interface PropsInterface {
   messages?: ReturnType<typeof useChat>["messages"];
   status: ReturnType<typeof useChat>["status"];
@@ -17,7 +20,11 @@ const WorkflowInput = ({
   setMessages,
 }: PropsInterface) => {
   const [input, setInput] = useState("");
+  const queryClient = useQueryClient();
   const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const message = searchParams.get("message");
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -42,9 +49,29 @@ const WorkflowInput = ({
     [input]
   );
   useEffect(() => {
+    if (!message) {
+      return;
+    }
+    const timer = setTimeout(async () => {
+      const currentConverId = params.id;
+      await updateConverHistoryList(currentConverId as string, message);
+      await sendMessage(
+        { text: message },
+        {
+          body: {
+            conversationId: currentConverId as string,
+          },
+        }
+      );
+      await queryClient.invalidateQueries({
+        queryKey: QueryKeys.aiChat.history,
+      });
+      router.push(`/chat/${currentConverId}`);
+    }, 0);
     console.log("初始化了");
     return () => {
       console.log("销毁了");
+      clearTimeout(timer);
     };
   }, []);
   return (
