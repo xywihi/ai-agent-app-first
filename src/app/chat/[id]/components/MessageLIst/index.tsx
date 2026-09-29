@@ -157,7 +157,11 @@ export const MessageList = ({
                 "bg-teal-400 w-fit": message.role === "user",
                 "py-2 bg-gray-200 dark:bg-gray-700": message.parts.some(
                   (part) => {
-                    return part?.state === "output-available";
+                    const toolPart = part as {
+                      type: string;
+                      state?: "input-streaming" | "output-available";
+                    };
+                    return toolPart?.state === "output-available";
                   }
                 ),
               })}
