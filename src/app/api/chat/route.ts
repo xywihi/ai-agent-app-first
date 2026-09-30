@@ -13,26 +13,51 @@ import {
 } from "../../utils/chatTools";
 import { reportBackendError } from "@/lib/server/reportBackendError";
 import { weatherTool } from "@/app/utils/chatTools/weather";
+import { createOpenAI } from "@ai-sdk/openai";
+import { dateCalcTool } from "@/app/utils/chatTools/dateCalc";
 // const mimo = createOpenAI({
-//   baseURL: "https://api.xiaomimimo.com/v1",
-//   // baseURL: "https://open.bigmodel.cn/api/paas/v4",
-//   apiKey: process.env.OPENAI_API_KEY,
+//   // baseURL: "https://api.xiaomimimo.com/v1",
+//   baseURL: "https://open.bigmodel.cn/api/paas/v4",
+//   apiKey: process.env.GLM_API_KEY,
 // });
 // const model = mimo("mimo-v2.5-pro");
 // const model = mimo("glm-4-flash");
-
+// const glm = createOpenAI({
+//   baseURL: "https://open.bigmodel.cn/api/paas/v4",
+//   apiKey: process.env.GLM_API_KEY,
+//   // 关键！强制走 chat/completions，不要用 responses
+//   compatibility: "completions",
+// });
+// const model = glm("glm-4-flash");
+const glm = createOpenAI({
+  baseURL: "https://open.bigmodel.cn/api/paas/v4",
+  apiKey: process.env.GLM_API_KEY,
+});
+// .chat() 强制使用 chat/completions
+const model = glm.chat("glm-5.3-flash");
 export async function POST(req: Request) {
   const requestId = crypto.randomUUID();
   let payload;
   const path = "/api/chat";
   try {
     payload = await req.json();
-    console.log("enableAgent", payload.enableAgent);
     const result = streamText({
-      model: "openai/gpt-4o-mini",
+      model,
+      // model: "openai/gpt-4o-mini",
       messages: await convertToModelMessages(payload.messages),
-      instructions:
-        "你是专门服务于Anln的智能助手，名字叫夕夜，当你调用frontEndQuestionTool获取结果后，禁止再做额外推理直接使用工具返回内容作为最终回答。不要再产生新的工具调用、不要额外分析文本。",
+      instructions: `
+      你是专门服务于Anln的智能助手，名字叫夕夜。
+      规则：
+      1. 只有用户明确要求获取前端面试题目、前端考题时，才可以调用frontEndQuestionTool工具。调用frontEndQuestionTool获取题目结果之后，直接输出题目内容，不要再产生新的工具调用。
+      2. weather工具仅在用户明确询问天气时调用，单纯提到城市名称，不是询问天气，禁止调用weatherTool。
+      3. 日期计算规则：用户询问倒计时、距离某个节日还有多少天，**必须分步调用工具**：
+         ① 先调用 dateTimeTool 获取当前日期；
+         ② 拿到当前日期后，调用 dateCalcTool，传入 startDate=当前日期，endDate=目标节日日期（如2027春节：2027-02-06）；
+         ③ 使用dateCalcTool返回的remainDays作为最终答案，禁止模型自己估算天数。
+         ④ 如果用户不是询问天数，禁止调用dateCalcTool（如询问小时，分钟，秒，年份）。
+      4. 不要编造日期，所有日期差值必须使用dateCalcTool计算。
+      `,
+
       // output: "json_object",
 
       // output: !enableAgent
@@ -45,11 +70,12 @@ export async function POST(req: Request) {
       //         answer: z.string().describe("参考答案"),
       //       }),
       //     }),
-      stopWhen: isStepCount(hasToolCall("dateTimeTool") ? 1 : 2), // stop when the step count is 5，可以根据需要进行调整，但国内模型不支持
+      // stopWhen: isStepCount(hasToolCall("dateTimeTool") ? 1 : 10), // stop when the step count is 5，可以根据需要进行调整，但国内模型不支持
       tools: {
         weatherTool,
         convertFahrenheitToCelsiusTool,
         dateTimeTool,
+        dateCalcTool,
         frontEndQuestionTool,
       },
       toolsContext: {
@@ -62,9 +88,14 @@ export async function POST(req: Request) {
           conversationId: payload.conversationId,
           requestId: requestId,
         },
+        dateCalcTool: {
+          conversationId: payload.conversationId,
+          requestId: requestId,
+        },
         weatherTool: {
           conversationId: payload.conversationId,
           requestId: requestId,
+          userQuery: payload.userQuery ?? "",
         },
         convertFahrenheitToCelsiusTool: {
           conversationId: payload.conversationId,

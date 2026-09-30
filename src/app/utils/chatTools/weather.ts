@@ -4,18 +4,42 @@ import { z } from "zod";
 
 // 天气工具
 const weatherTool = tool({
-  description:
-    "查询指定城市的实时天气，用户问某地天气时调用。参数为城市中文名，例如：成都、上海、北京。",
+  description: `仅当用户明确询问天气、气温、湿度、下雨、多云等气象信息时才调用。
+  ⚠️ 重要规则：
+  如果用户只是提到城市/国家名称，但不是询问天气，绝对禁止调用此工具！
+  例子：
+  ✅ 可以调用：美国纽约今天天气怎么样？
+  ❌ 禁止调用：美国对中国的态度？（仅提到国家，不是问天气，严禁调用）`,
+
   inputSchema: z.object({
     city: z.string().describe("城市名称，中文，如：成都"),
   }),
   contextSchema: z.object({
     conversationId: z.string(),
     requestId: z.string(),
+    userQuery: z.string(),
   }),
-  execute: async ({ city }, { context }) => {
-    console.log("city", city);
+  execute: async ({ city, ...args }, { context }) => {
     try {
+      console.log("city", city);
+      const weatherKeywords = [
+        "天气",
+        "气温",
+        "温度",
+        "湿度",
+        "风速",
+        "下雨",
+        "多云",
+        "降水量",
+      ];
+      const hasWeatherWord = weatherKeywords.some((word) =>
+        context.userQuery.includes(word)
+      );
+      if (!hasWeatherWord) {
+        throw new Error(
+          `用户问题【${context.userQuery}】不是天气查询，本次工具调用无效，请不要调用weatherTool，直接回答用户问题`
+        );
+      }
       // 1. 地理编码：城市名称转经纬度（open-meteo自带地理编码接口）
       const geoRes = await fetch(
         `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(

@@ -120,3 +120,15 @@ export const updateConverHistoryList = async (
     return;
   }
 };
+
+// 清空对话历史
+export const clearConverHistoryList = async (id: string | number) => {
+  const { data, error } = await client
+    .from("conversation_history")
+    .delete()
+    .eq("conversation_id", id);
+  if (error) {
+    console.log("error", error);
+    throw error;
+  }
+};

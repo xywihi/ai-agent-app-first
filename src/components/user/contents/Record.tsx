@@ -6,7 +6,16 @@ import { useQuery } from "@tanstack/react-query";
 import { Clock } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 export const Record = () => {
   const router = useRouter();
   const { data, isPending } = useQuery({
@@ -94,7 +103,44 @@ export const Record = () => {
           >
             <h1 className="text-2xl font-bold mb-6">前端笔记</h1>
             <div className="flex gap-4 flex-wrap">
-              {data.note_visits_data?.map((item: any) => {
+              <Table>
+                <TableCaption>A list of your recent invoices.</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-25">标题</TableHead>
+                    <TableHead className="text-right">类型</TableHead>
+                    <TableHead className="text-right">时间</TableHead>
+                    <TableHead className="text-right">操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.note_visits_data?.map((item: any) => {
+                    return (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium">
+                          {item.frontend_notes.title}
+                        </TableCell>
+                        <TableCell>
+                          {item.frontend_notes.note_categories.name}
+                        </TableCell>
+                        <TableCell>{getTime(item.visited_at)}</TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={() => {
+                              router.push(
+                                `/frontend/${item.frontend_notes.owner_id}/detail/${item.frontend_notes.id}`
+                              );
+                            }}
+                          >
+                            查看
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+              {/* {data.note_visits_data?.map((item: any) => {
                 return (
                   <div
                     key={item.id}
@@ -120,7 +166,7 @@ export const Record = () => {
                     </p>
                   </div>
                 );
-              })}
+              })} */}
             </div>
           </div>
         </div>

@@ -19,7 +19,10 @@ export const extractJsonFromAiText = (aiText: string) => {
 };
 
 export const frontEndQuestionTool = tool({
-  description: "前端面试或技术问题，包含React/Vue/Angular等前端框架",
+  description: `仅当用户**明确要求前端面试题、前端题目、前端知识点提问**的时候，才调用本工具。
+  ⚠️ 禁止场景：用户不是要前端题目，严禁调用！
+  ✅允许：给我一道React面试题、前端题目
+  ❌禁止：美国对中国的态度？（非前端题目，绝对不能调用）`,
   inputSchema: z.object({
     // question: z.string().describe("前端问题"),
     title: z.string().describe("题目"),
@@ -30,7 +33,7 @@ export const frontEndQuestionTool = tool({
       .describe(
         "参考答案,可能包含代码块,如果有的话，代码块的语言类型需要是json。"
       ),
-    codeLanguageType: z.string().describe("代码语言类型"),
+    codeLanguageType: z.string().describe("代码语言类型").optional(),
   }),
   // outputSchema: z.object({
   //   title: z.string(),

@@ -1,35 +1,13 @@
-import { cn } from "@/app/utils/tools";
 import { AiAnswer } from "@/components/AiAnswer";
-import { CopyButton } from "@/components/ui/copy-button";
-import { SpeechButton } from "@/components/ui/speech-button";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { UIMessage } from "@ai-sdk/react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface QuestionData {
-  title: string;
-  difficulty: string;
-  content: string;
-  answer: string;
-  codeLanguageType: string;
-}
-type DateType = {
-  year: number;
-  month: number;
-  day: number;
-  hour: number;
-  minute: number;
-  second: number;
-};
-type LocationType = {
-  country: string;
-  city: string;
-  temperature: number;
-  weather: string;
-  windSpeed: number;
-  humidity: number;
-};
+import { TextCard } from "./compoents/TextCard";
+import { WeatherCard } from "./compoents/WeatherCard";
+import { DateTimeCard } from "./compoents/DateTimeCard";
+import { DateCalcCard } from "./compoents/DateCalcCard";
+import { FrontEndQuestionCard } from "./compoents/FrontEndQuestionCard";
 
 export const MessageList = ({
   messages,
@@ -54,46 +32,7 @@ export const MessageList = ({
     if (lastUserMessage.length === 0) return;
     sendMessage(lastUserMessage[lastUserMessage.length - 1]);
   }, [messages, sendMessage]);
-  const getPartsString = useCallback((parts: any[]) => {
-    try {
-      let str = "";
-      parts.forEach((part) => {
-        switch (part.type) {
-          case "text":
-            str += part.text;
-            break;
-          case "code":
-            str += part.code;
-            break;
-          case "tool-weatherTool":
-            const { city, temperature, weather, windSpeed, humidity, country } =
-              part.output as LocationType;
-            str += `${city}的天气为：${temperature}°C，${weather}，风速为${windSpeed}米/秒，湿度为${humidity}%。`;
-            break;
-          case "tool-convertFahrenheitToCelsius":
-            const { fahrenheit, celsius } = part.output as {
-              fahrenheit: number;
-              celsius: number;
-            };
-            str += `华氏温度：${fahrenheit}，摄氏温度：${celsius}`;
-            break;
-          case "tool-dateTimeTool":
-            const { year, month, day, hour, minute, second } =
-              part.output as DateType;
-            str += `当前的时间为${year}-${month}-${day} ${hour}:${minute}:${second}。`;
-            break;
-          case "tool-frontEndQuestionTool":
-            const { title, difficulty, content, answer, codeLanguageType } =
-              part.output as QuestionData;
-            str += `问题：${title}，难度：${difficulty}，知识点：${content}，参考答案：${answer}，代码语言类型：${codeLanguageType}`;
-            break;
-          default:
-            break;
-        }
-      });
-      return str;
-    } catch (error) {}
-  }, []);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
@@ -139,201 +78,79 @@ export const MessageList = ({
       ref={scrollRef}
       className="flex-1 h-[calc(100vh-8rem)] lg:h-[calc(100vh-11rem)] overflow-auto"
     >
-      <div className="space-y-4 pb-16 pt-8 flex flex-col">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={cn("whitespace-pre-wrap mb-8 flex flex-col", {
-              "self-end": message.role === "user",
-            })}
-          >
-            {/* <div
-              className={cn("mb-2", { "self-end": message.role === "user" })}
-            >
-              {message.role === "user" ? "🧒: " : "🤖: "}
-            </div> */}
-            <div
-              className={cn("relative rounded-2xl px-4 my-2", {
-                "bg-teal-400 w-fit": message.role === "user",
-                "py-2 bg-gray-200 dark:bg-gray-700": message.parts.some(
-                  (part) => {
-                    const toolPart = part as {
-                      type: string;
-                      state?: "input-streaming" | "output-available";
-                    };
-                    return toolPart?.state === "output-available";
-                  }
-                ),
-              })}
-            >
-              {message.parts.map((part, i) => {
-                switch (part.type) {
-                  case "text":
-                    const text =
-                      (part as unknown as { parseStr: string }).parseStr ||
-                      part.text;
-                    return (
-                      <div key={`${message.id}-${i}`}>
-                        <div>
-                          <AiAnswer
-                            type={
-                              (part as unknown as { parseStr: string }).parseStr
-                                ? "object"
-                                : "string"
-                            }
-                            data={text}
-                          />
-                        </div>
-                      </div>
-                    );
-                  case "tool-weatherTool":
-                    try {
-                      if (part.state === "input-streaming") {
-                        return (
-                          <div key={`${message.id}-${i}`}>
-                            <p className="w-fit text-sm rounded-2xl text-gray-400 px-4 py-2 bg-gray-100 dark:bg-gray-700">
-                              正在调用天气工具
-                            </p>
-                          </div>
-                        );
-                      }
-                      if (part.state !== "output-available") {
-                        //执行失败，返回错误信息
-                        return (
-                          <div key={`${message.id}-${i}`}>
-                            <p className="w-fit text-sm rounded-2xl px-4 py-2 text-gray-400 bg-gray-100 dark:bg-gray-700">
-                              正在获取城市天气...
-                            </p>
-                          </div>
-                        );
-                      }
-                      const {
-                        city,
-                        temperature,
-                        weather,
-                        windSpeed,
-                        humidity,
-                        country,
-                      } = part.output as LocationType;
-                      if (!city)
-                        return (
-                          <div key={`${message.id}-${i}`}>
-                            <div>未找到该城市的天气信息</div>
-                          </div>
-                        );
-                      //执行中状态
+      <div className="pb-16 pt-8 flex flex-col">
+        {messages.map((message) => {
+          return message.parts.map((part, i) => {
+            switch (part.type) {
+              case "text":
+                if (part.text.length === 0) return null;
+                return (
+                  <div
+                    key={`${message.id}-${i}`}
+                    className="flex flex-col w-full"
+                  >
+                    <TextCard part={part} message={message} />
+                  </div>
+                );
+              case "tool-weatherTool":
+                console.log("******part.state", part.state);
+                return (
+                  <div
+                    key={`${message.id}-${i}`}
+                    className="flex flex-col w-full"
+                  >
+                    <WeatherCard message={message} part={part} />
+                  </div>
+                );
+              case "tool-convertFahrenheitToCelsius":
+                return (
+                  <div
+                    key={`${message.id}-${i}`}
+                    className="flex flex-col w-full"
+                  >
+                    <div className="">
+                      <AiAnswer
+                        type="pre"
+                        data={JSON.stringify(part, null, 2)}
+                      />
+                    </div>
+                  </div>
+                );
+              case "tool-dateTimeTool":
+                return (
+                  <div
+                    key={`${message.id}-${i}`}
+                    className="flex flex-col w-full"
+                  >
+                    <DateTimeCard message={message} part={part} />
+                  </div>
+                );
 
-                      // if (!part.output)
-                      //   return (
-                      //     <p
-                      //       key={`${message.id}-${i}`}
-                      //       className="w-fit text-sm rounded-2xl text-gray-400 bg-gray-100 dark:bg-gray-700"
-                      //     >
-                      //       正在获取{city}天气...
-                      //     </p>
-                      //   );
-                      const weatherData = `${city}的天气为：${temperature}°C，${weather}，风速为${windSpeed}米/秒，湿度为${humidity}%。`;
-                      return (
-                        <div key={`${message.id}-${i}`}>
-                          <div className="">
-                            <AiAnswer type="string" data={weatherData} />
-                          </div>
-                        </div>
-                      );
-                    } catch (error) {
-                      console.log("error", error);
-                    }
-                  case "tool-convertFahrenheitToCelsius":
-                    return (
-                      <div key={`${message.id}-${i}`}>
-                        <div className="">
-                          <AiAnswer
-                            type="pre"
-                            data={JSON.stringify(part, null, 2)}
-                          />
-                        </div>
-                      </div>
-                    );
-                  case "tool-dateTimeTool":
-                    try {
-                      if (part.state === "input-streaming") {
-                        return (
-                          <div key={`${message.id}-${i}`}>
-                            <p className="w-fit text-sm rounded-2xl px-4 py-2 text-gray-400 bg-gray-100 dark:bg-gray-700">
-                              正在调用时间工具
-                            </p>
-                          </div>
-                        );
-                      }
-                      if (part.state !== "output-available") {
-                        //执行失败，返回错误信息
-                        return (
-                          <div key={`${message.id}-${i}`}>
-                            <p className="w-fit text-sm rounded-2xl px-4 py-2 text-gray-400 bg-gray-100 dark:bg-gray-700">
-                              正在获取当前时间...
-                            </p>
-                          </div>
-                        );
-                      }
-                      const { year, month, day, hour, minute, second } =
-                        part.output as DateType;
-                      const tool_dateTimeTool_text = `当前的时间为${year}-${month}-${day} ${hour}:${minute}:${second}。`;
-                      return (
-                        <div key={`${message.id}-${i}`}>
-                          <div className="">
-                            <AiAnswer
-                              type="pre"
-                              data={tool_dateTimeTool_text}
-                            />
-                          </div>
-                        </div>
-                      );
-                    } catch (error) {
-                      console.log("error", error);
-                    }
-                  case "tool-frontEndQuestionTool":
-                    return (
-                      <div key={`${message.id}-${i}`}>
-                        <div className="">
-                          <AiAnswer
-                            type="object"
-                            data={part.output as QuestionData}
-                          />
-                          {i !== message.parts.length - 1 && (
-                            <hr className="my-4" />
-                          )}
-                        </div>
-                        {/* <div className="flex row gap-1.5 my-2">
-                    <button className="rounded-lg bg-gray-200 dark:bg-gray-700">
-                      <CopyButton text={part.output as QuestionData} />
-                    </button>
-                    <button className="rounded-lg bg-gray-200 dark:bg-gray-700">
-                      <AudioLines size={16} />
-                    </button>
-                  </div> */}
-                      </div>
-                    );
-                  default:
-                    return null;
-                }
-              })}
-            </div>
-            <div className="flex row gap-1.5 my-2">
-              <CopyButton
-                className="rounded-lg bg-gray-200 dark:bg-gray-700"
-                text={getPartsString(message.parts)}
-              />
-              <SpeechButton
-                text={getPartsString(message.parts)}
-                className="rounded-lg bg-gray-200 dark:bg-gray-700"
-              />
-            </div>
-            {/* <div>
-            <Icon name="copy" className="animate-spin" />
-            <Icon name="audio-lines" className="animate-spin" />
-          </div> */}
-          </div>
-        ))}
+              case "tool-dateCalcTool":
+                return (
+                  <div
+                    key={`${message.id}-${i}`}
+                    className="flex flex-col w-full"
+                  >
+                    <DateCalcCard message={message} part={part} />
+                  </div>
+                );
+
+              case "tool-frontEndQuestionTool":
+                return (
+                  <div
+                    key={`${message.id}-${i}`}
+                    className="flex flex-col w-full"
+                  >
+                    <FrontEndQuestionCard message={message} part={part} />
+                  </div>
+                );
+
+              default:
+                return null;
+            }
+          });
+        })}
 
         <div>
           {error && (

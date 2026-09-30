@@ -92,7 +92,7 @@ export function MobileSheetNav() {
         icon: "computer",
       },
       {
-        name: "关于我",
+        name: "关于作者",
         path: "/about-me",
         icon: "feather",
       },

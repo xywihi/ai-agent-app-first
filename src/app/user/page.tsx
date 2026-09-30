@@ -150,7 +150,7 @@ export default async function User() {
       <div className="bg-white dark:bg-gray-700/20 backdrop-blur-md p-4 shadow-xl rounded-2xl flex flex-col justify-between">
         <div>
           <div className="flex justify-between items-center">
-            <div className="flex justify-between items-center">
+            <div className="flex-1 flex justify-between items-center">
               <h1 className="text-2xl font-bold">前端笔记</h1>
               <Link
                 href="/user/frontend"

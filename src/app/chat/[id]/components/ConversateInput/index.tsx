@@ -1,11 +1,16 @@
 "use client";
 import { useChat } from "@ai-sdk/react";
 import { memo, useCallback, useEffect, useState } from "react";
-import { updateConverHistoryList } from "@/app/utils/api/chat";
+import {
+  clearConverHistoryList,
+  updateConverHistoryList,
+} from "@/app/utils/api/chat";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Send } from "lucide-react";
 import { QueryKeys } from "@/app/utils/query-keys";
 import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 interface PropsInterface {
   messages?: ReturnType<typeof useChat>["messages"];
   status: ReturnType<typeof useChat>["status"];
@@ -21,7 +26,7 @@ const WorkflowInput = ({
 }: PropsInterface) => {
   const [input, setInput] = useState("");
   const queryClient = useQueryClient();
-  const params = useParams();
+  const { id } = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
   const message = searchParams.get("message");
@@ -32,41 +37,60 @@ const WorkflowInput = ({
         alert("请输入内容");
         return;
       }
-      console.log("input", input);
-      const currentConverId = params.id;
-      await updateConverHistoryList(currentConverId as string, input);
+      await updateConverHistoryList(id as string, input);
 
       sendMessage(
         { text: input },
         {
           body: {
-            conversationId: currentConverId as string,
+            conversationId: id as string,
+            userQuery: input,
           },
         }
       );
       setInput("");
     },
-    [input]
+    [input, sendMessage, id]
   );
+  const handleRemoveHistory = useCallback(async () => {
+    try {
+      await clearConverHistoryList(id as string);
+      setMessages([]);
+      toast.success("清空成功", {
+        position: "top-center",
+        style: {
+          backgroundColor: "#00d5be",
+          borderRadius: "8px",
+        },
+      });
+    } catch (error) {
+      toast.error("删除失败，请稍后重试", {
+        position: "top-center",
+        style: {
+          backgroundColor: "#FF6470",
+          borderRadius: "8px",
+        },
+      });
+    }
+  }, [id, setMessages]);
   useEffect(() => {
     if (!message) {
       return;
     }
     const timer = setTimeout(async () => {
-      const currentConverId = params.id;
-      await updateConverHistoryList(currentConverId as string, message);
+      await updateConverHistoryList(id as string, message);
       await sendMessage(
         { text: message },
         {
           body: {
-            conversationId: currentConverId as string,
+            conversationId: id as string,
           },
         }
       );
       await queryClient.invalidateQueries({
         queryKey: QueryKeys.aiChat.history,
       });
-      router.push(`/chat/${currentConverId}`);
+      router.push(`/chat/${id}`);
     }, 0);
     console.log("初始化了");
     return () => {
@@ -81,13 +105,13 @@ const WorkflowInput = ({
     >
       <div>
         <div className="flex flex-row-reverse mb-2 pointer-events-none">
-          <button
+          <Button
             type="button"
-            className="p-2 border border-zinc-300 bg-gray-200 dark:bg-gray-700 w-max text-xs rounded-md"
-            onClick={() => setMessages([])}
+            className="p-2 border border-zinc-300 bg-gray-200 dark:bg-gray-700 w-max text-xs rounded-md cursor-pointer pointer-events-auto"
+            onClick={handleRemoveHistory}
           >
             清空当前对话
-          </button>
+          </Button>
         </div>
         <div className="flex flex-row justify-between bg-gray-100 dark:bg-gray-800  border border-zinc-300 rounded-xl overflow-auto">
           <textarea
@@ -124,7 +148,7 @@ const WorkflowInput = ({
               )}
             </div>
             <div className="sm:hidden">
-              {status === "streaming" ? (
+              {status === "streaming" || status === "submitted" ? (
                 <button
                   type="button"
                   className="dark:bg-zinc-900 min-h-12 max-w-md p-2 w-max px-8 bg-zinc-200"

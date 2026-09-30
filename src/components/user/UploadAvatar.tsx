@@ -47,7 +47,7 @@ export function UploadAvatarApi({
         <AvatarImage src={fileUrl || avatarUrl} alt="@shadcn" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
-      <div className="hidden group-hover:block cursor-pointer bg-amber-200/40 absolute top-0 left-0 w-full h-full rounded-full">
+      <div className="hidden group-hover:block cursor-pointer select-none pointer-events-none bg-amber-200/40 absolute top-0 left-0 w-full h-full rounded-full">
         <ImageUp
           size={32}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
