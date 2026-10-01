@@ -43,22 +43,12 @@ export const TextCard = ({
           {message.role === "user" ? "🧒: " : "🤖: "}
         </div> */}
       <div
-        className={cn("relative rounded-2xl", {
-          "bg-teal-400 w-fit px-4 my-2": message.role === "user",
-          "py-2 px-4 my-2 bg-gray-200 dark:bg-gray-700": message.parts.some(
-            (part) => {
-              const toolPart = part as {
-                type: string;
-                state?: "input-streaming" | "output-available" | "done";
-              };
-              return (
-                // toolPart?.state === "output-available" ||
-                // (toolPart?.state === "done" && toolPart?.type === "text")
-                toolPart.state === "done"
-              );
-            }
-          ),
-        })}
+        className={cn(
+          "relative rounded-2xl py-2 px-4 my-2 bg-gray-200 dark:bg-gray-700",
+          {
+            "bg-teal-400 w-fit px-4 my-2": message.role === "user",
+          }
+        )}
       >
         <div>
           <AiAnswer
@@ -71,18 +61,20 @@ export const TextCard = ({
           />
         </div>
       </div>
-      {message.role === "assistant" && (
-        <div className="flex row gap-1.5 my-2">
-          <CopyButton
-            className="rounded-lg bg-gray-200 dark:bg-gray-700"
-            text={getPartsString(message.parts)}
-          />
-          <SpeechButton
-            text={getPartsString(message.parts)}
-            className="rounded-lg bg-gray-200 dark:bg-gray-700"
-          />
-        </div>
-      )}
+      {message.role === "assistant" &&
+        part.type === "text" &&
+        part.state === "done" && (
+          <div className="flex row gap-1.5 my-2">
+            <CopyButton
+              className="rounded-lg bg-gray-200 dark:bg-gray-700"
+              text={getPartsString(message.parts)}
+            />
+            <SpeechButton
+              text={getPartsString(message.parts)}
+              className="rounded-lg bg-gray-200 dark:bg-gray-700"
+            />
+          </div>
+        )}
     </div>
   );
 };

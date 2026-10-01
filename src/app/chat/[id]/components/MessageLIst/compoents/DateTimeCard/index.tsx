@@ -37,21 +37,6 @@ export const DateTimeCard = ({
   const partsString = useCallback(() => {
     try {
       if (part.type === "tool-dateTimeTool") {
-        if (part.state === "input-streaming") {
-          return (
-            <p className="w-fit text-sm rounded-2xl px-4 py-2 text-gray-400 bg-gray-100 dark:bg-gray-700">
-              正在调用时间工具
-            </p>
-          );
-        }
-        if (part.state !== "output-available") {
-          //执行失败，返回错误信息
-          return (
-            <p className="w-fit text-sm rounded-2xl px-4 py-2 text-gray-400 bg-gray-100 dark:bg-gray-700">
-              正在获取当前时间...
-            </p>
-          );
-        }
         const { year, month, day, hour, minute, second } =
           part.output as DateType;
         const tool_dateTimeTool_text = `当前的时间为${year}-${month}-${day} ${hour}:${minute}:${second}。`;
@@ -100,18 +85,28 @@ export const DateTimeCard = ({
       >
         {partsString()}
       </div>
-      {message.role === "assistant" && (
-        <div className="flex row gap-1.5 my-2">
-          <CopyButton
-            className="rounded-lg bg-gray-200 dark:bg-gray-700"
-            text={getPartsString(message.parts)}
-          />
-          <SpeechButton
-            text={getPartsString(message.parts)}
-            className="rounded-lg bg-gray-200 dark:bg-gray-700"
-          />
-        </div>
+      {part.type === "tool-dateTimeTool" && (
+        <p className="w-fit text-sm rounded-2xl text-gray-400 px-4 py-2 bg-gray-100 dark:bg-gray-700">
+          {part.state === "input-streaming" && "正在调用时间工具"}
+          {part.state !== "output-available" &&
+            part.state !== "input-streaming" &&
+            "正在获取当前时间..."}
+        </p>
       )}
+      {message.role === "assistant" &&
+        part.type === "tool-dateTimeTool" &&
+        part.state === "output-available" && (
+          <div className="flex row gap-1.5 my-2">
+            <CopyButton
+              className="rounded-lg bg-gray-200 dark:bg-gray-700"
+              text={getPartsString(message.parts)}
+            />
+            <SpeechButton
+              text={getPartsString(message.parts)}
+              className="rounded-lg bg-gray-200 dark:bg-gray-700"
+            />
+          </div>
+        )}
     </div>
   );
 };

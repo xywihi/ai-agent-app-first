@@ -31,21 +31,6 @@ export const DateCalcCard = ({
   const partsString = useCallback(() => {
     try {
       if (part.type === "tool-dateCalcTool") {
-        if (part.state === "input-streaming") {
-          return (
-            <p className="w-fit text-sm rounded-2xl px-4 py-2 text-gray-400 bg-gray-100 dark:bg-gray-700">
-              正在调用时间工具
-            </p>
-          );
-        }
-        if (part.state !== "output-available") {
-          //执行失败，返回错误信息
-          return (
-            <p className="w-fit text-sm rounded-2xl px-4 py-2 text-gray-400 bg-gray-100 dark:bg-gray-700">
-              正在获取时间...
-            </p>
-          );
-        }
         const { remainDays } = part.output as DaysType;
         const tool_dateTimeTool_text = `距离天数为${remainDays}。`;
         return (
@@ -93,18 +78,28 @@ export const DateCalcCard = ({
       >
         {partsString()}
       </div>
-      {message.role === "assistant" && (
-        <div className="flex row gap-1.5 my-2">
-          <CopyButton
-            className="rounded-lg bg-gray-200 dark:bg-gray-700"
-            text={getPartsString(message.parts)}
-          />
-          <SpeechButton
-            text={getPartsString(message.parts)}
-            className="rounded-lg bg-gray-200 dark:bg-gray-700"
-          />
-        </div>
+      {part.type === "tool-dateCalcTool" && (
+        <p className="w-fit text-sm rounded-2xl text-gray-400 px-4 py-2 bg-gray-100 dark:bg-gray-700">
+          {part.state === "input-streaming" && "正在调用时间工具"}
+          {part.state !== "output-available" &&
+            part.state !== "input-streaming" &&
+            "正在获取天数..."}
+        </p>
       )}
+      {message.role === "assistant" &&
+        part.type === "tool-dateCalcTool" &&
+        part.state === "output-available" && (
+          <div className="flex row gap-1.5 my-2">
+            <CopyButton
+              className="rounded-lg bg-gray-200 dark:bg-gray-700"
+              text={getPartsString(message.parts)}
+            />
+            <SpeechButton
+              text={getPartsString(message.parts)}
+              className="rounded-lg bg-gray-200 dark:bg-gray-700"
+            />
+          </div>
+        )}
     </div>
   );
 };

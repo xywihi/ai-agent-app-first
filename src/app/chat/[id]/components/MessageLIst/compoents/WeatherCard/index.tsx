@@ -37,21 +37,6 @@ export const WeatherCard = ({
   const partsString = useCallback(() => {
     try {
       if (part.type === "tool-weatherTool") {
-        if (part.state === "input-streaming") {
-          return (
-            <p className="w-fit text-sm rounded-2xl text-gray-400 px-4 py-2 bg-gray-100 dark:bg-gray-700">
-              正在调用天气工具
-            </p>
-          );
-        }
-        if (part.state !== "output-available") {
-          //执行失败，返回错误信息
-          return (
-            <p className="w-fit text-sm rounded-2xl px-4 py-2 text-gray-400 bg-gray-100 dark:bg-gray-700">
-              正在获取城市天气...
-            </p>
-          );
-        }
         const { city, temperature, weather, windSpeed, humidity, country } =
           part.output as LocationType;
         if (!city) return <div>未找到该城市的天气信息</div>;
@@ -77,7 +62,6 @@ export const WeatherCard = ({
       console.log("error", error);
     }
   }, []);
-
   return (
     <div
       key={message.id}
@@ -112,6 +96,14 @@ export const WeatherCard = ({
       >
         {partsString()}
       </div>
+      {part.type === "tool-weatherTool" && (
+        <p className="w-fit text-sm rounded-2xl text-gray-400 px-4 py-2 bg-gray-100 dark:bg-gray-700">
+          {part.state === "input-streaming" && "正在调用天气工具"}
+          {part.state !== "output-available" &&
+            part.state !== "input-streaming" &&
+            "正在获取城市天气..."}
+        </p>
+      )}
       {message.role === "assistant" &&
         part.type === "tool-weatherTool" &&
         part.state === "output-available" && (

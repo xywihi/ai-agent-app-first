@@ -36,21 +36,6 @@ export const FrontEndQuestionCard = ({
   const partsString = useCallback(() => {
     try {
       if (part.type === "tool-frontEndQuestionTool") {
-        if (part.state === "input-streaming") {
-          return (
-            <p className="w-fit text-sm rounded-2xl text-gray-400 px-4 py-2 bg-gray-100 dark:bg-gray-700">
-              正在调用提问工具
-            </p>
-          );
-        }
-        if (part.state !== "output-available") {
-          //执行失败，返回错误信息
-          return (
-            <p className="w-fit text-sm rounded-2xl px-4 py-2 text-gray-400 bg-gray-100 dark:bg-gray-700">
-              正在获取问题答案...
-            </p>
-          );
-        }
         return (
           <div className="">
             <AiAnswer type="object" data={part.output as QuestionData} />
@@ -97,18 +82,28 @@ export const FrontEndQuestionCard = ({
       >
         {partsString()}
       </div>
-      {message.role === "assistant" && (
-        <div className="flex row gap-1.5 my-2">
-          <CopyButton
-            className="rounded-lg bg-gray-200 dark:bg-gray-700"
-            text={getPartsString(message.parts)}
-          />
-          <SpeechButton
-            text={getPartsString(message.parts)}
-            className="rounded-lg bg-gray-200 dark:bg-gray-700"
-          />
-        </div>
+      {part.type === "tool-frontEndQuestionTool" && (
+        <p className="w-fit text-sm rounded-2xl text-gray-400 px-4 py-2 bg-gray-100 dark:bg-gray-700">
+          {part.state === "input-streaming" && "正在调用提问工具"}
+          {part.state !== "output-available" &&
+            part.state !== "input-streaming" &&
+            "正在获取问题答案..."}
+        </p>
       )}
+      {message.role === "assistant" &&
+        part.type === "tool-frontEndQuestionTool" &&
+        part.state === "output-available" && (
+          <div className="flex row gap-1.5 my-2">
+            <CopyButton
+              className="rounded-lg bg-gray-200 dark:bg-gray-700"
+              text={getPartsString(message.parts)}
+            />
+            <SpeechButton
+              text={getPartsString(message.parts)}
+              className="rounded-lg bg-gray-200 dark:bg-gray-700"
+            />
+          </div>
+        )}
     </div>
   );
 };

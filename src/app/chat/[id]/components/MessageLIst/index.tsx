@@ -93,7 +93,6 @@ export const MessageList = ({
                   </div>
                 );
               case "tool-weatherTool":
-                console.log("******part.state", part.state);
                 return (
                   <div
                     key={`${message.id}-${i}`}
